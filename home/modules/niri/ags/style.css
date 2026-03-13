@@ -1,7 +1,121 @@
+* {
+  font-family: "JetBrains Mono", "Noto Sans", sans-serif;
+  font-size: 14px;
+  color: #d0d0d0;
+}
+
+window {
+  background: transparent;
+}
+
 .launcher {
-  background: rgba(25, 25, 25, 0.85);
-  border-radius: 16px;
-  padding: 2em;
-  color: #f0f0f0;
-  font-family: "JetBrains Mono", sans-serif;
+  background: #1c1c1c;
+  border-radius: 8px;
+  padding: 32px;
+  min-width: 660px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
+  border: 1px solid #2a2a2a;
+}
+
+.clock {
+  font-size: 56px;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: -1px;
+}
+
+.date {
+  font-size: 13px;
+  color: #777;
+}
+
+.search-entry {
+  background: #252525;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 8px 12px;
+  color: #e0e0e0;
+  font-size: 14px;
+}
+
+.search-entry:focus {
+  border-color: #5277c3;
+}
+
+.app-scroll {
+  min-height: 220px;
+  max-height: 300px;
+}
+
+.app-grid {
+  padding: 4px;
+}
+
+.app-button {
+  background: #252525;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 12px 8px;
+  min-width: 90px;
+}
+
+.app-button:hover {
+  background: #2d2d2d;
+  border-color: #383838;
+}
+
+.app-button label {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.status-bar {
+  border-top: 1px solid #272727;
+  border-bottom: 1px solid #272727;
+  padding: 10px 0;
+}
+
+.status-bar label {
+  color: #888;
+  font-size: 13px;
+}
+
+.media-player {
+  padding: 2px 0;
+}
+
+.media-button {
+  background: #252525;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 4px 10px;
+  min-width: 0;
+}
+
+.media-button:hover {
+  background: #2d2d2d;
+}
+
+.power-row {
+  padding-top: 10px;
+  border-top: 1px solid #272727;
+}
+
+.power-button {
+  background: #252525;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 6px 20px;
+  color: #bbb;
+}
+
+.power-button:hover {
+  background: #2d2d2d;
+  border-color: #444;
+}
+
+.power-button.shutdown:hover {
+  background: #2d1a1a;
+  border-color: #5a2a2a;
+  color: #e07070;
 }
