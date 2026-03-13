@@ -7,7 +7,6 @@ import Mpris from "gi://AstalMpris"
 import Apps from "gi://AstalApps"
 
 const style = readFile(`${GLib.get_home_dir()}/.config/ags/style.css`)
-
 const search = Variable("")
 
 function Clock() {
@@ -22,7 +21,7 @@ function Clock() {
 }
 
 function AppGrid() {
-  const apps = Apps.get_default()
+  const apps = new Apps.Apps()
   return (
     <scrollable vexpand cssClasses={["app-scroll"]}>
       <flowbox
@@ -65,21 +64,25 @@ function AppGrid() {
 }
 
 function Status() {
-  const battery = Battery.get_default()
-  const network = Network.get_default()
-  const wp = Wp.get_default()
+  const battery = Battery.Battery.get_default()
+  const network = Network.Network.get_default()
+  const wp = Wp.Wp.get_default()
 
   return (
     <box cssClasses={["status-bar"]} spacing={32} halign={Gtk.Align.CENTER}>
-      <box spacing={8}>
-        <icon icon={bind(battery, "icon_name")} />
-        <label label={bind(battery, "percentage").as(p => `${Math.round(p * 100)}%`)} />
-      </box>
+      {battery && (
+        <box spacing={8}>
+          <icon icon={bind(battery, "icon_name")} />
+          <label label={bind(battery, "percentage").as(p => `${Math.round(p * 100)}%`)} />
+        </box>
+      )}
 
-      <box spacing={8}>
-        <icon icon="network-wireless-symbolic" />
-        <label label={bind(network, "wifi").as(w => (w as any)?.ssid || "Offline")} />
-      </box>
+      {network && (
+        <box spacing={8}>
+          <icon icon="network-wireless-symbolic" />
+          <label label={bind(network, "wifi").as(w => (w as any)?.ssid || "Offline")} />
+        </box>
+      )}
 
       {wp && (
         <box spacing={8}>
@@ -94,7 +97,9 @@ function Status() {
 }
 
 function MediaPlayer() {
-  const mpris = Mpris.get_default()
+  const mpris = Mpris.Mpris.get_default()
+  if (!mpris) return <box />
+
   return (
     <box>
       {bind(mpris, "players").as(players => {
