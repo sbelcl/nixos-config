@@ -55,7 +55,7 @@
     vlc
     audacity
     # Social media
-    #discord telegram-desktop
+    discord telegram-desktop
 
     #Temp for testing
     dconf
@@ -67,5 +67,7 @@
       "claude-code"
       "kiro"
       "google-chrome"
+      "discord"
+      "telegram-desktop"
     ];
 }

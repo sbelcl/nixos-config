@@ -25,13 +25,9 @@ in {
         command = "${pkgs.niri}/bin/niri msg action power-off-monitors";
       }
     ];
-    events = [
-      # Lock before the system goes to sleep
-      {
-        event = "before-sleep";
-        command = "${swaylock} -f";
-      }
-    ];
+    events = {
+      before-sleep = "${swaylock} -f";
+    };
   };
 
   services.swayosd.enable = true;
