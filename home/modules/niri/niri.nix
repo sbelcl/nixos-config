@@ -5,7 +5,7 @@
   ...
 }: {
   imports = [
-    ./niri-eww.nix
+    ./ags.nix
     ./swaylock.nix
   ];
   # Packages needed for the session (adjust if you don't want wallpaper helper)
@@ -394,8 +394,8 @@
           // shows a list of important hotkeys.
           Mod+Shift+Slash { show-hotkey-overlay; }
 
-          //Gnome style eww widget and launcher
-          Super+Space { spawn "${config.home.homeDirectory}/.config/eww/bin/toggle-eww-overview"; }
+          // Toggle AGS launcher overlay
+          Super+Space { spawn-sh "ags toggle launcher"; }
 
           // Suggested binds for running programs: terminal, app launcher, screen locker.
           Mod+T hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }

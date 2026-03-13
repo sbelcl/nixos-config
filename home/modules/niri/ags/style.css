@@ -1,0 +1,7 @@
+.launcher {
+  background: rgba(25, 25, 25, 0.85);
+  border-radius: 16px;
+  padding: 2em;
+  color: #f0f0f0;
+  font-family: "JetBrains Mono", sans-serif;
+}
