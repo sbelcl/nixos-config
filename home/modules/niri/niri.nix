@@ -22,7 +22,7 @@
       After = ["graphical-session.target"];
     };
     Service = {
-      ExecStart = "${pkgs.swaybg}/bin/swaybg -o namespace=wallpaper -i ${config.home.homeDirectory}/Slike/Ozadja/nix-wallpaper-simple-red.png -m fill";
+      ExecStart = "${pkgs.swaybg}/bin/swaybg -i ${../../../assets/wallpapers/default.png} -m fill";
       Restart = "on-failure";
     };
     Install.WantedBy = ["graphical-session.target"];
