@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
-
-let
+{
+  config,
+  pkgs,
+  ...
+}: let
   ewwDir = "${config.home.homeDirectory}/.config/eww";
 
   # --- Bash skripta za aplikacije (.desktop -> JSON)
@@ -41,63 +43,62 @@ let
       eww update overview-class="visible"
     fi
   '';
-
 in {
-  home.packages = with pkgs; [ eww jq ];
+  home.packages = with pkgs; [eww jq];
 
   xdg.configFile = {
     # =========================
     # EWW.YUCK
     # =========================
     "eww/eww.yuck".text = ''
-	;; =========================
-	;; VARIABLES
-	;; =========================
-	(defpoll apps :interval "120s" "''${appsJsonScript}")
-	(defvar search "")
-	(defvar time "")
-	(defvar overview-class "")
-	(deflisten battery "cat /sys/class/power_supply/BAT0/capacity")
-
       ;; =========================
-      ;; WIDGETS
+      ;; VARIABLES
       ;; =========================
-      (defwidget app-button [app]
-        (button
-          :class "app"
-          :onclick "''${app.exec}"
-          (box :orientation "v" :halign "center"
-            (label :class "app-name" :text "''${app.name}"))))
+      (defpoll apps :interval "120s" "''${appsJsonScript}")
+      (defvar search "")
+      (defvar time "")
+      (defvar overview-class "")
+      (deflisten battery "cat /sys/class/power_supply/BAT0/capacity")
 
-      (defwidget app-grid []
-        (flowbox :min-children-per-line 6 :max-children-per-line 6 :column-spacing 20 :row-spacing 12
-          (for app in apps
-            (if (str-contains? (downcase search) (downcase app.name))
-                (app-button :app app)))))
+           ;; =========================
+           ;; WIDGETS
+           ;; =========================
+           (defwidget app-button [app]
+             (button
+               :class "app"
+               :onclick "''${app.exec}"
+               (box :orientation "v" :halign "center"
+                 (label :class "app-name" :text "''${app.name}"))))
 
-      (defwidget overview []
-        (box :orientation "v" :class "overview"
-          (label :class "time" :text "''${time}")
-          (label :class "date" :text "{{ date +'%A, %d %B %Y' }}")
-          (entry :class "search" :text search :onchange "eww update search={}")
-          (scroll :vexpand true :class "apps"
-            (app-grid))
-          (box :class "footer" :orientation "h" :halign "center" :spacing 20
-            (label :text "🔋 ''${battery}%")
-            (button :onclick "systemctl reboot" (label :text "🔄 Restart"))
-            (button :onclick "systemctl poweroff" (label :text "⏻ Power Off"))
-            (button :onclick "loginctl terminate-user $USER" (label :text "🚪 Logout"))
-          )
-        ))
+           (defwidget app-grid []
+             (flowbox :min-children-per-line 6 :max-children-per-line 6 :column-spacing 20 :row-spacing 12
+               (for app in apps
+                 (if (str-contains? (downcase search) (downcase app.name))
+                     (app-button :app app)))))
 
-      ;; =========================
-      ;; WINDOW
-      ;; =========================
-      (defwindow overview-window
-        :geometry (geometry :x "0%" :y "0%" :width "100%" :height "100%")
-        :stacking "overlay" :focusable true :exclusive false
-        :class "''${overview-class}"
-        (overview))
+           (defwidget overview []
+             (box :orientation "v" :class "overview"
+               (label :class "time" :text "''${time}")
+               (label :class "date" :text "{{ date +'%A, %d %B %Y' }}")
+               (entry :class "search" :text search :onchange "eww update search={}")
+               (scroll :vexpand true :class "apps"
+                 (app-grid))
+               (box :class "footer" :orientation "h" :halign "center" :spacing 20
+                 (label :text "🔋 ''${battery}%")
+                 (button :onclick "systemctl reboot" (label :text "🔄 Restart"))
+                 (button :onclick "systemctl poweroff" (label :text "⏻ Power Off"))
+                 (button :onclick "loginctl terminate-user $USER" (label :text "🚪 Logout"))
+               )
+             ))
+
+           ;; =========================
+           ;; WINDOW
+           ;; =========================
+           (defwindow overview-window
+             :geometry (geometry :x "0%" :y "0%" :width "100%" :height "100%")
+             :stacking "overlay" :focusable true :exclusive false
+             :class "''${overview-class}"
+             (overview))
     '';
 
     # =========================
@@ -190,26 +191,25 @@ in {
     "eww-daemon" = {
       Unit = {
         Description = "Eww Daemon";
-        After = [ "graphical-session.target" ];
+        After = ["graphical-session.target"];
       };
       Service = {
         ExecStart = "${pkgs.eww}/bin/eww daemon";
         Restart = "on-failure";
       };
-      Install = { WantedBy = [ "default.target" ]; };
+      Install = {WantedBy = ["default.target"];};
     };
 
     "eww-time-updater" = {
       Unit = {
         Description = "Eww time updater";
-        After = [ "eww-daemon.service" ];
+        After = ["eww-daemon.service"];
       };
       Service = {
         ExecStart = "${pkgs.bash}/bin/bash -c 'while true; do eww update time=\"$(date +%H:%M)\"; sleep 30; done'";
         Restart = "always";
       };
-      Install = { WantedBy = [ "default.target" ]; };
+      Install = {WantedBy = ["default.target"];};
     };
   };
 }
-

@@ -1,11 +1,13 @@
 #
 # ~/.nixos/modules/settings/printing.nix
 #
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   services.printing.enable = true;
-  services.printing.drivers = [ pkgs.hplip ];  # Replace or extend with your printer drivers
+  services.printing.drivers = [pkgs.hplip]; # Replace or extend with your printer drivers
 
   # For network printer discovery (mDNS)
   services.avahi = {
@@ -14,4 +16,3 @@
     openFirewall = true;
   };
 }
-

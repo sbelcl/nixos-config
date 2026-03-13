@@ -1,9 +1,11 @@
 #
 # ~/.nixos/modules/settings/locales.nix
 #
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   # Set your time zone
   time.timeZone = "Europe/Ljubljana";
 
@@ -13,7 +15,7 @@
     "en_US.UTF-8/UTF-8"
     "sl_SI.UTF-8/UTF-8"
   ];
-  
+
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "sl_SI.UTF-8";
     LC_IDENTIFICATION = "sl_SI.UTF-8";
@@ -28,7 +30,7 @@
 
   # Console keymap
   console.keyMap = "slovene";
-  
+
   # Configure X11 keymap
   services.xserver.xkb = {
     layout = "si";

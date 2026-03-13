@@ -1,5 +1,4 @@
-{ ... }:
-{
+{...}: {
   imports = [
     ./niri/niri.nix
     ./fonts.nix

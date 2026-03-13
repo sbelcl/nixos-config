@@ -1,9 +1,11 @@
 #
 # ~/.nixos/modules/settings/default.nix
 #
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
     ./audio.nix
     ./bluetooth.nix

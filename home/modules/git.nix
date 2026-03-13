@@ -1,16 +1,18 @@
 #
 # ~/.nixos/home/modules/git.nix
 #
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   programs.git = {
     enable = true;
 
     settings = {
       user = {
         name = "Imnos";
-        email = "sbelcl@users.noreply.github.com";  # GitHub noreply email
+        email = "sbelcl@users.noreply.github.com"; # GitHub noreply email
       };
 
       init.defaultBranch = "main";

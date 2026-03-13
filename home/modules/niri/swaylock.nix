@@ -1,11 +1,9 @@
 #
 # ~/.nixos/home/modules/niri/swaylock.nix
 #
-{ pkgs, ... }:
-let
+{pkgs, ...}: let
   swaylock = "${pkgs.swaylock}/bin/swaylock";
-in
-{
+in {
   programs.swaylock = {
     enable = true;
     settings = {
@@ -17,13 +15,22 @@ in
     enable = true;
     timeouts = [
       # Lock screen after 5 minutes of inactivity
-      { timeout = 300; command = "${swaylock} -f"; }
+      {
+        timeout = 300;
+        command = "${swaylock} -f";
+      }
       # Turn off displays after 10 minutes
-      { timeout = 600; command = "${pkgs.niri}/bin/niri msg action power-off-monitors"; }
+      {
+        timeout = 600;
+        command = "${pkgs.niri}/bin/niri msg action power-off-monitors";
+      }
     ];
     events = [
       # Lock before the system goes to sleep
-      { event = "before-sleep"; command = "${swaylock} -f"; }
+      {
+        event = "before-sleep";
+        command = "${swaylock} -f";
+      }
     ];
   };
 

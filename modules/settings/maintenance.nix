@@ -1,9 +1,11 @@
 #
 # ~/.nixos/modules/settings/maintenance.nix
 #
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   # Automatic Nix garbage collection
   nix.gc = {
     automatic = true;
@@ -14,7 +16,7 @@
   # Optimize Nix store (deduplicate files)
   nix.optimise = {
     automatic = true;
-    dates = [ "weekly" ];
+    dates = ["weekly"];
   };
 
   # Limit systemd journal size

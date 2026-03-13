@@ -1,9 +1,11 @@
 #
 # ~/.nixos/modules/settings/bluetooth.nix
 #
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
 

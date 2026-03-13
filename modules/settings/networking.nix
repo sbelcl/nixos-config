@@ -1,8 +1,7 @@
 #
 # ~/.nixos/modules/settings/networking.nix
 #
-{ lib, ...}:
-{
+{lib, ...}: {
   networking = {
     # 🔹 Hostname
     hostName = "flanker";
@@ -11,7 +10,7 @@
     useDHCP = lib.mkDefault true;
     # networking.interfaces.enp2s0.useDHCP = lib.mkDefault true;
     # networking.interfaces.wlp3s0.useDHCP = lib.mkDefault true;
- 
+
     # 🔹 Network manager (easy Wi-Fi / VPN handling)
     networkmanager.enable = true;
 
@@ -19,19 +18,19 @@
     tempAddresses = "enabled";
 
     # 🔹 DNS (override ISP if you want)
-    nameservers = [ "77.88.8.88" "77.88.8.2" ];
+    nameservers = ["77.88.8.88" "77.88.8.2"];
 
     # 🔹 Firewall
     firewall = {
       enable = true;
 
       # Basic laptop rules
-      allowPing = false;                 # optional, nice for diagnostics
-      logRefusedConnections = true;     # log dropped packets
+      allowPing = false; # optional, nice for diagnostics
+      logRefusedConnections = true; # log dropped packets
 
       # Open only what you need
-      allowedTCPPorts = [ 22 ];         # SSH (if you ever need it)
-      allowedUDPPorts = [ 67 68 5353 ]; # DHCP client + mDNS for printers/lan
+      allowedTCPPorts = [22]; # SSH (if you ever need it)
+      allowedUDPPorts = [67 68 5353]; # DHCP client + mDNS for printers/lan
     };
   };
 
@@ -47,4 +46,3 @@
   # 🔹 (Optional) Fail2ban if you expose SSH
   # services.fail2ban.enable = true;
 }
-

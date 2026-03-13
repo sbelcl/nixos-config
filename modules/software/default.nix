@@ -1,12 +1,13 @@
 #
 # ~/.nixos/modules/software/default.nix
 #
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
     ./common.nix
-   # ./ollama.nix
     ./niri.nix
     ./thunar.nix
     ./steam.nix

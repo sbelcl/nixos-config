@@ -10,7 +10,7 @@
     TERMINAL = "alacritty";
 
     # Cursor settings
-    XCURSOR_SIZE = "24";  # Adjust to 32 or 48 for HiDPI displays
+    XCURSOR_SIZE = "24"; # Adjust to 32 or 48 for HiDPI displays
   };
 
   # Add user bin directory to PATH

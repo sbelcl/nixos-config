@@ -1,9 +1,11 @@
 #
 # ~/.nixos/modules/settings/power.nix
 #
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
 
@@ -12,4 +14,3 @@
   # services.acpid.enable = true;
   # services.logind.lidSwitch = "suspend";
 }
-

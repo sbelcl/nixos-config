@@ -1,9 +1,7 @@
 #
 # ~/.nixos/modudles/software/greetd.nix
 #
-{ config, ... }:
-
-{
+{config, ...}: {
   services.greetd = {
     enable = true;
     settings = {
@@ -16,4 +14,3 @@
     };
   };
 }
-

@@ -1,8 +1,10 @@
-{ lib, config, pkgs, ... }:
-
-with lib;
-
 {
+  lib,
+  config,
+  pkgs,
+  ...
+}:
+with lib; {
   options.hardware.nvidia = {
     enable = mkOption {
       type = types.bool;
@@ -11,14 +13,14 @@ with lib;
     };
 
     mode = mkOption {
-      type = types.enum [ "hybrid" "nvidia-only" ];
+      type = types.enum ["hybrid" "nvidia-only"];
       default = "hybrid";
       description = "Choose between hybrid (default) and NVIDIA-only graphics mode.";
     };
   };
 
   config = mkIf config.hardware.nvidia.enable {
-    services.xserver.videoDrivers = [ "nvidia" ];
+    services.xserver.videoDrivers = ["nvidia"];
 
     hardware.nvidia = {
       modesetting.enable = true;
@@ -29,12 +31,12 @@ with lib;
       prime = {
         sync.enable = config.hardware.nvidia.mode == "nvidia-only";
         offload.enable = config.hardware.nvidia.mode == "hybrid";
-	offload.enableOffloadCmd = true;
+        offload.enableOffloadCmd = true;
         # GPU Bus IDs:
         # Note: 'intelBusId' is the attribute name from NixOS PRIME module,
         # but this system has AMD integrated GPU (not Intel)
-        intelBusId = "PCI:6:0:0";    # AMD integrated GPU (attribute name is misleading)
-        nvidiaBusId = "PCI:1:0:0";   # NVIDIA discrete GPU
+        intelBusId = "PCI:6:0:0"; # AMD integrated GPU (attribute name is misleading)
+        nvidiaBusId = "PCI:1:0:0"; # NVIDIA discrete GPU
       };
     };
 
@@ -52,4 +54,3 @@ with lib;
     ];
   };
 }
-

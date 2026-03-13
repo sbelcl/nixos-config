@@ -1,15 +1,24 @@
 #
 # ~/.nixos/home/software/packages.nix
 #
-{ config, pkgs, lib, ... }:
 {
-
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   # Enable firefox
   programs.firefox.enable = true;
 
   home.packages = with pkgs; [
     # Image viewing and manipultaion
-    gimp inkscape krita qview blender imagemagick upscayl
+    gimp
+    inkscape
+    krita
+    qview
+    blender
+    imagemagick
+    upscayl
     # Terminal & tools
     alacritty
     eza
@@ -23,7 +32,8 @@
     fuzzel
     mission-center
     # Programming
-    nodejs_20 godot
+    nodejs_20
+    godot
     dos2unix
     claude-code
     gemini-cli
@@ -31,25 +41,31 @@
     codex
     python315
     # LibreOffice
-    libreoffice-qt-fresh hunspell
+    libreoffice-qt-fresh
+    hunspell
     # Web browsers & mail clients
-    brave google-chrome #vivaldi
+    brave
+    google-chrome #vivaldi
     thunderbird
-    # Remote tools 
-    filezilla putty dig #rustdesk anydesk
+    # Remote tools
+    filezilla
+    putty
+    dig #rustdesk anydesk
     # Audi&Videi playback and manipulation
-    vlc audacity
+    vlc
+    audacity
     # Social media
     #discord telegram-desktop
-    
+
     #Temp for testing
     dconf
     gsettings-desktop-schemas
   ];
 
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
-    "claude-code"
-    "kiro"
-    "google-chrome"
-  ];
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (lib.getName pkg) [
+      "claude-code"
+      "kiro"
+      "google-chrome"
+    ];
 }

@@ -1,9 +1,12 @@
 #
 # ~/.nixos/home/module/polkit-gnome.nnix
 #
-{ config, pkgs, lib, ... }:
-
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}: {
   # Namesti GNOME polkit agent
   home.packages = [
     pkgs.polkit_gnome
@@ -13,18 +16,17 @@
   systemd.user.services.polkit-gnome-agent = {
     Unit = {
       Description = "GNOME PolicyKit Authentication Agent";
-      PartOf = [ "graphical-session.target" ];
-      After   = [ "graphical-session.target" ];
+      PartOf = ["graphical-session.target"];
+      After = ["graphical-session.target"];
     };
 
     Service = {
       ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
-      Restart   = "on-failure";
+      Restart = "on-failure";
     };
 
     Install = {
-      WantedBy = [ "graphical-session.target" ];
+      WantedBy = ["graphical-session.target"];
     };
   };
 }
-

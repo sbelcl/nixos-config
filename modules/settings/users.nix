@@ -1,13 +1,16 @@
 #
 # ~/.nixos/modules/settings/users.nix
 #
-{ config, pkgs, ... }:
 {
+  config,
+  pkgs,
+  ...
+}: {
   users.users.imnos = {
     isNormalUser = true;
     description = "imnos";
-    extraGroups = [ 
-      "networkmanager" 
+    extraGroups = [
+      "networkmanager"
       "wheel"
       "seat"
       "video"
@@ -17,11 +20,11 @@
       "storage"
       "plugdev"
       "scanner"
-      "lp"	 
+      "lp"
       "docker"
     ];
   };
-  
+
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
 }
