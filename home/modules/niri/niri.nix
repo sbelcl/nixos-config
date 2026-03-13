@@ -395,7 +395,7 @@
           Mod+Shift+Slash { show-hotkey-overlay; }
 
           // Toggle AGS launcher overlay
-          Super+Space { spawn-sh "ags toggle launcher"; }
+          Super+Space { spawn "ags" "toggle" "launcher"; }
 
           // Suggested binds for running programs: terminal, app launcher, screen locker.
           Mod+T hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }

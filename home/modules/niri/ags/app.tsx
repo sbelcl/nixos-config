@@ -23,7 +23,7 @@ function Launcher() {
 }
 
 App.start({
-  instanceName: "ags",
+  instanceName: "astal",
   main() {
     Launcher()
   },
