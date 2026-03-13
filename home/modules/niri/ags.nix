@@ -13,7 +13,6 @@
     wireplumber
     mpris
     tray
-    notifd
   ];
 
   # AGS needs to find the GObject Introspection typelibs for all astal libraries
