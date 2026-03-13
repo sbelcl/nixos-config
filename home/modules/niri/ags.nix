@@ -1,11 +1,7 @@
 #
 # ~/.nixos/home/modules/niri/ags.nix
 #
-{
-  pkgs,
-  lib,
-  ...
-}: let
+{pkgs, ...}: let
   astalPkgs = with pkgs.astal; [
     apps
     battery
@@ -14,9 +10,6 @@
     mpris
     tray
   ];
-
-  # AGS needs to find the GObject Introspection typelibs for all astal libraries
-  typeLibPath = lib.makeSearchPath "lib/girepository-1.0" ([pkgs.ags] ++ astalPkgs);
 in {
   home.packages = [pkgs.ags] ++ astalPkgs;
 
@@ -33,7 +26,11 @@ in {
     };
     Service = {
       ExecStart = "${pkgs.ags}/bin/ags run";
-      Environment = ["GI_TYPELIB_PATH=${typeLibPath}"];
+      # Include typelibs from the home-manager profile (aggregates all user packages)
+      # and the system profile (for system packages like NetworkManager)
+      Environment = [
+        "GI_TYPELIB_PATH=%h/.nix-profile/lib/girepository-1.0:/run/current-system/sw/lib/girepository-1.0"
+      ];
       Restart = "on-failure";
     };
     Install.WantedBy = ["graphical-session.target"];
