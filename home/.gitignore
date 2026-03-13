@@ -1,0 +1,31 @@
+# Nix build results
+result
+result-*
+
+# Vim/Editor temporary files
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Secrets
+secrets/
+*.age
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp

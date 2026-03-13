@@ -1,0 +1,45 @@
+# Nix build results
+result
+result-*
+
+# Vim/Editor temporary files
+*.swp
+*.swo
+*~
+.*.swp
+.*.swo
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Secrets (if you use sops-nix or agenix)
+secrets/
+*.age
+*.key
+keys.txt
+
+# OS files
+.DS_Store
+Thumbs.db
+.Trash-*
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Temporary files
+*.tmp
+.temp/
+
+# Home-manager result links (if built locally)
+home-manager-result
+
+# Local development/testing
+test-result
+vm-result
+
+# Claude Code internals
+.claude/
