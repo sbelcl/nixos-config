@@ -1,11 +1,12 @@
 import { App, Astal, Gtk, Gdk } from "astal/gtk3"
-import { Variable, bind, execAsync, GLib } from "astal"
+import { Variable, bind, execAsync, GLib, readFile } from "astal"
 import Battery from "gi://AstalBattery"
 import Network from "gi://AstalNetwork"
 import Wp from "gi://AstalWp"
 import Mpris from "gi://AstalMpris"
 import Apps from "gi://AstalApps"
-import style from "./style.css"
+
+const style = readFile(`${GLib.get_home_dir()}/.config/ags/style.css`)
 
 const search = Variable("")
 
