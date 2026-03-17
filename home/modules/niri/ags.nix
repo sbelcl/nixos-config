@@ -10,6 +10,12 @@
     mpris
     tray
   ];
+  # Collect typelib dirs from all relevant packages using their Nix store paths
+  giDirs = pkgs.lib.concatStringsSep ":" [
+    "%h/.local/state/nix/profiles/home-manager/home-path/lib/girepository-1.0"
+    "${pkgs.networkmanager}/lib/girepository-1.0"
+    "/run/current-system/sw/lib/girepository-1.0"
+  ];
 in {
   home.packages = [pkgs.ags] ++ astalPkgs;
 
@@ -26,10 +32,9 @@ in {
     };
     Service = {
       ExecStart = "${pkgs.ags}/bin/ags run";
-      # Include typelibs from the home-manager profile (aggregates all user packages)
-      # and the system profile (for system packages like NetworkManager)
       Environment = [
-        "GI_TYPELIB_PATH=%h/.nix-profile/lib/girepository-1.0:/run/current-system/sw/lib/girepository-1.0"
+        "GI_TYPELIB_PATH=${giDirs}"
+        "XDG_DATA_DIRS=${pkgs.adwaita-icon-theme}/share:/run/current-system/sw/share:%h/.local/share"
       ];
       Restart = "on-failure";
     };

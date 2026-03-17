@@ -23,6 +23,7 @@
     alacritty
     eza
     bat
+    gh
     mako
     swaylock
     swaybg

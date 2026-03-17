@@ -2,11 +2,7 @@
   description = "Home Manager configuration";
 
   inputs = {
-    # Reference the parent system flake with absolute path
-    system-flake.url = "path:/home/imnos/.nixos";
-
-    # Use the same nixpkgs as the system flake
-    nixpkgs.follows = "system-flake/nixpkgs";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager = {
       url = "github:nix-community/home-manager";

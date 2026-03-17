@@ -10,60 +10,73 @@ const style = readFile(`${GLib.get_home_dir()}/.config/ags/style.css`)
 const search = Variable("")
 
 // ── Clock ────────────────────────────────────────────────────────────────────
+// Use setup + explicit destroy-signal cleanup to avoid "already disposed" errors
+// when the Variable poll fires after a widget is destroyed from C code.
 
 function Clock() {
-  const time = Variable("").poll(1000, "date '+%H:%M'")
-  const date = Variable("").poll(60000, "date '+%A, %-d %B %Y'")
+  const timeVar = Variable("").poll(1000, "date '+%H:%M'")
+  const dateVar = Variable("").poll(60000, "date '+%A, %-d %B %Y'")
+
   return (
     <box vertical halign={Gtk.Align.CENTER} spacing={4}
-      onDestroy={() => { time.drop(); date.drop() }}>
-      <label cssClasses={["clock"]} label={bind(time)} />
-      <label cssClasses={["date"]} label={bind(date)} />
+      onDestroy={() => { timeVar.drop(); dateVar.drop() }}>
+      <label cssClasses={["clock"]} setup={self => {
+        self.label = timeVar.get()
+        const unsub = timeVar.subscribe(t => { self.label = t })
+        self.connect("destroy", () => unsub())
+      }} />
+      <label cssClasses={["date"]} setup={self => {
+        self.label = dateVar.get()
+        const unsub = dateVar.subscribe(d => { self.label = d })
+        self.connect("destroy", () => unsub())
+      }} />
     </box>
   )
 }
 
-// ── App grid ─────────────────────────────────────────────────────────────────
+// ── App list ──────────────────────────────────────────────────────────────────
+// Fully imperative via setup — avoids JSX reactive-children issues in GTK3.
+
+function makeAppButton(app: Apps.Application): Gtk.Button {
+  const btn = new Gtk.Button()
+  btn.get_style_context().add_class("app-button")
+  btn.tooltip_text = app.description || ""
+  btn.visible = true
+
+  const row = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10, visible: true })
+  const img = new Gtk.Image({ icon_name: app.icon_name || "application-x-executable", pixel_size: 24, visible: true })
+  const lbl = new Gtk.Label({ label: app.name, xalign: 0, visible: true })
+
+  row.pack_start(img, false, false, 0)
+  row.pack_start(lbl, true, true, 0)
+  btn.add(row)
+
+  btn.connect("clicked", () => {
+    app.launch()
+    search.set("")
+    App.toggle_window("launcher")
+  })
+
+  return btn
+}
 
 function AppGrid() {
-  const apps = new Apps.Apps()
+  const A = Apps as any
+  const apps = A.Apps ? new A.Apps() : (A.get_default?.() ?? { fuzzy_query: () => [] })
   return (
     <scrollable vexpand cssClasses={["app-scroll"]}>
-      <flowbox
-        cssClasses={["app-grid"]}
-        homogeneous
-        columnSpacing={8}
-        rowSpacing={8}
-        maxChildrenPerLine={6}
-        minChildrenPerLine={3}
-        selectionMode={Gtk.SelectionMode.NONE}
-      >
-        {bind(search).as(s =>
-          apps.fuzzy_query(s || "").slice(0, 24).map(app => (
-            <flowboxchild canFocus={false}>
-              <button
-                cssClasses={["app-button"]}
-                tooltipText={app.description || ""}
-                onClicked={() => {
-                  app.launch()
-                  search.set("")
-                  App.toggle_window("launcher")
-                }}
-              >
-                <box vertical halign={Gtk.Align.CENTER} spacing={4}>
-                  <icon icon={app.icon_name || "application-x-executable"} pixelSize={32} />
-                  <label
-                    label={app.name}
-                    maxWidthChars={10}
-                    ellipsize={3}
-                    justify={Gtk.Justification.CENTER}
-                  />
-                </box>
-              </button>
-            </flowboxchild>
-          ))
-        )}
-      </flowbox>
+      <box vertical cssClasses={["app-grid"]} setup={(container: Gtk.Box) => {
+        const populate = (s: string) => {
+          for (const child of container.get_children()) child.destroy()
+          for (const app of apps.fuzzy_query(s || "").slice(0, 18)) {
+            container.add(makeAppButton(app))
+          }
+          container.show_all()
+        }
+        populate(search.get())
+        const unsub = search.subscribe(populate)
+        container.connect("destroy", () => unsub())
+      }} />
     </scrollable>
   )
 }
@@ -71,9 +84,19 @@ function AppGrid() {
 // ── Status bar ───────────────────────────────────────────────────────────────
 
 function Status() {
-  const battery = Battery.Battery.get_default()
-  const network = Network.Network.get_default()
-  const wp = Wp.Wp.get_default()
+  // Log available names to diagnose GI namespace class naming
+  console.log("Battery exports:", Object.getOwnPropertyNames(Battery).filter(k => !k.startsWith("_")).join(", "))
+  console.log("Network exports:", Object.getOwnPropertyNames(Network).filter(k => !k.startsWith("_")).join(", "))
+  console.log("Wp exports:", Object.getOwnPropertyNames(Wp).filter(k => !k.startsWith("_")).join(", "))
+
+  const B = Battery as any
+  const N = Network as any
+  const W = Wp as any
+
+  const battery = B.Battery?.get_default?.() ?? B.get_default?.() ?? null
+  const network = N.Network?.get_default?.() ?? N.get_default?.() ?? null
+  const wp      = W.Wp?.get_default?.()      ?? W.get_default?.() ?? null
+  const audio   = wp?.audio ?? null
 
   return (
     <box cssClasses={["status-bar"]} spacing={32} halign={Gtk.Align.CENTER}>
@@ -89,10 +112,10 @@ function Status() {
           <label label={bind(network, "wifi").as(w => (w as any)?.ssid || "Offline")} />
         </box>
       )}
-      {wp && (
+      {audio && (
         <box spacing={8}>
           <icon icon="audio-volume-high-symbolic" />
-          <label label={bind(wp.audio, "default_speaker").as(s =>
+          <label label={bind(audio, "default_speaker").as(s =>
             s ? `${Math.round((s as any).volume * 100)}%` : "—"
           )} />
         </box>
@@ -104,7 +127,8 @@ function Status() {
 // ── Media player ─────────────────────────────────────────────────────────────
 
 function MediaPlayer() {
-  const mpris = Mpris.Mpris.get_default()
+  const M = Mpris as any
+  const mpris = M.Mpris?.get_default?.() ?? M.get_default?.() ?? null
   if (!mpris) return <box />
 
   return (
@@ -162,10 +186,13 @@ function PowerButtons() {
 
 // ── Main window ───────────────────────────────────────────────────────────────
 
+// Module-scope reference prevents GJS GC of the window object.
+let launcherWindow: Astal.Window
+
 function Launcher() {
   let searchEntry: Gtk.Entry | undefined
 
-  return (
+  launcherWindow = (
     <window
       name="launcher"
       application={App}
@@ -195,13 +222,17 @@ function Launcher() {
         <PowerButtons />
       </box>
     </window>
-  )
+  ) as Astal.Window
 }
 
 App.start({
   instanceName: "astal",
   css: style,
   main() {
-    Launcher()
+    try {
+      Launcher()
+    } catch (e) {
+      console.error("Launcher failed:", e)
+    }
   },
 })
