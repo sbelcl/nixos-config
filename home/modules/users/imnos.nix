@@ -26,8 +26,7 @@
       lta = "eza -laT --icons=auto";
       cat = "bat";
       ".." = "cd ..";
-      updsys = "sudo nixos-rebuild switch --flake ~/.nixos/.#flanker";
-      updhome = "home-manager switch --flake ~/.nixos/home/.#imnos";
+      # updsys and updhome are set per-host in home/hosts/<hostname>.nix
     };
     history.size = 10000;
   };

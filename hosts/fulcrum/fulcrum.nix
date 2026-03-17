@@ -84,6 +84,9 @@
     # System monitoring
     btop
     nvtopPackages.nvidia
+
+    #AI
+    claude-code
   ];
 
   # Enable Steam hardware support
