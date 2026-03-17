@@ -46,9 +46,8 @@
     libvdpau
     nvidia-vaapi-driver
 
-    # Debug/testing
+    # Debug/testing (glxinfo is included in mesa-demos)
     mesa-demos
-    glxinfo
 
     # Gaming utilities
     mangohud
