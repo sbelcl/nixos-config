@@ -13,5 +13,7 @@
     ./steam.nix
     ./docker.nix
     ./packages.nix
+    ./plasma.nix
+    ./hyprland.nix
   ];
 }

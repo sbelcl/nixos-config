@@ -1,27 +1,61 @@
 #
-# ~/.nixos/modules/software/niri.nix
+# ~/.nixos/modules/software/hyprland.nix
+#
+# Hyprland - dynamic tiling Wayland compositor
 #
 {
-  pkgs,
-  lib,
   config,
+  lib,
+  pkgs,
   ...
-}: {
-  #services.displayManager.lightdm.enable = true;
-  #services.displayManager.sddm.enable = true;
-  #services.displayManager.sddm.wayland.enable = true;
+}:
+with lib; {
+  options.desktop.hyprland = {
+    enable = mkEnableOption "Hyprland Wayland compositor";
+  };
 
-  services.seatd.enable = true;
+  config = mkIf config.desktop.hyprland.enable {
+    programs.hyprland = {
+      enable = true;
+      # xwayland.enable = true; # enabled by default
+    };
 
-  programs.niri.enable = true;
+    services.seatd.enable = true;
 
-  xdg.portal = {
-    enable = true;
-    extraPortals = [
-      pkgs.xdg-desktop-portal-wlr # za Niri (wlroots-based)
-      pkgs.xdg-desktop-portal-gtk # file picker, tematski dialogi
-      pkgs.xdg-desktop-portal-gnome # file picker, tematski dialogi
+    # XDG portal for Hyprland
+    xdg.portal = {
+      enable = true;
+      extraPortals = [pkgs.xdg-desktop-portal-hyprland];
+    };
+
+    # Hyprland ecosystem packages
+    environment.systemPackages = with pkgs; [
+      # Core utilities
+      hyprpaper # wallpaper
+      hyprlock # screen locker
+      hypridle # idle daemon
+      hyprpicker # color picker
+
+      # Notification
+      dunst
+
+      # Launcher
+      wofi
+      fuzzel
+
+      # Bar
+      waybar
+
+      # Screenshot
+      grim
+      slurp
+
+      # Clipboard
+      wl-clipboard
+      cliphist
+
+      # Input
+      libinput
     ];
   };
-  environment.systemPackages = with pkgs; [libinput];
 }

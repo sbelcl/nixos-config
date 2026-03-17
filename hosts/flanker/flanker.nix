@@ -1,5 +1,7 @@
 #
-#~/.nixos/hosts/flanker/flanker.nix
+# ~/.nixos/hosts/flanker/flanker.nix
+#
+# Laptop with hybrid NVIDIA + AMD graphics, Niri WM
 #
 {
   config,
@@ -7,13 +9,15 @@
   ...
 }: {
   imports = [
-    # Include the results of the hardware scan.
     ./hardware
     ../../modules/software
     ../../modules/settings
   ];
 
-  # Bootloader.
+  # Hostname
+  networking.hostName = "flanker";
+
+  # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 

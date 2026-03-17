@@ -3,8 +3,7 @@
 #
 {lib, ...}: {
   networking = {
-    # 🔹 Hostname
-    hostName = "flanker";
+    # Hostname is set per-host in hosts/<hostname>/<hostname>.nix
 
     # 🔹Enable DHCP on all interfaces or use explicitly
     useDHCP = lib.mkDefault true;

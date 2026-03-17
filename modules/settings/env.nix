@@ -1,12 +1,13 @@
 #
 # ~/.nixos/modules/settings/env.nix
 #
+# Environment variables for Wayland sessions
+# Note: XDG_CURRENT_DESKTOP is set by the session/display manager
+#
 {
   environment.variables = {
-    # Compositor identification (required for desktop integration)
-    XDG_CURRENT_DESKTOP = "niri";
+    # Wayland session type
     XDG_SESSION_TYPE = "wayland";
-    XDG_SESSION_DESKTOP = "niri";
 
     # Enable Wayland support for applications (system-wide requirements)
     MOZ_ENABLE_WAYLAND = "1"; # Firefox Wayland backend
@@ -20,11 +21,11 @@
     # Java applications on non-reparenting window managers
     _JAVA_AWT_WM_NONREPARENTING = "1";
 
-    # NVIDIA Wayland support (for hybrid GPU setup)
+    # NVIDIA Wayland support
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
     GBM_BACKEND = "nvidia-drm";
 
-    # Niri-specific workarounds
+    # wlroots-based compositors (Niri, Hyprland) may need this
     WLR_NO_HARDWARE_CURSORS = "1";
   };
 }
