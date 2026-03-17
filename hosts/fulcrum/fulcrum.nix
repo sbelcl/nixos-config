@@ -71,7 +71,7 @@
 
     # Media creation
     obs-studio
-    kdenlive
+    kdePackages.kdenlive
     gimp
     krita
     audacity
