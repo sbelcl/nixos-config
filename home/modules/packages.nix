@@ -11,7 +11,7 @@
   programs.firefox.enable = true;
 
   home.packages = with pkgs; [
-    # Image viewing and manipultaion
+    # Image viewing and manipulation
     gimp
     inkscape
     krita
@@ -24,13 +24,7 @@
     eza
     bat
     gh
-    mako
-    swaylock
-    swaybg
     wl-clipboard
-    wlr-randr
-    xwayland-satellite
-    fuzzel
     mission-center
     # Programming
     nodejs_20
@@ -46,21 +40,18 @@
     hunspell
     # Web browsers & mail clients
     brave
-    google-chrome #vivaldi
+    google-chrome
     thunderbird
     # Remote tools
     filezilla
     putty
-    dig #rustdesk anydesk
-    # Audi&Videi playback and manipulation
+    dig
+    # Audio & video
     vlc
     audacity
     # Social media
-    discord telegram-desktop
-
-    #Temp for testing
-    dconf
-    gsettings-desktop-schemas
+    discord
+    telegram-desktop
   ];
 
   nixpkgs.config.allowUnfreePredicate = pkg:

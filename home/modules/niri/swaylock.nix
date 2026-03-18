@@ -14,12 +14,10 @@ in {
   services.swayidle = {
     enable = true;
     timeouts = [
-      # Lock screen after 5 minutes of inactivity
       {
         timeout = 300;
         command = "${swaylock} -f";
       }
-      # Turn off displays after 10 minutes
       {
         timeout = 600;
         command = "${pkgs.niri}/bin/niri msg action power-off-monitors";
@@ -29,6 +27,11 @@ in {
       before-sleep = "${swaylock} -f";
     };
   };
+
+  # Only start swayidle and swayosd inside a Niri session —
+  # Plasma handles locking and OSD itself via kscreenlocker/plasma-workspace.
+  systemd.user.services.swayidle.Unit.ConditionEnvironment = "NIRI_SOCKET";
+  systemd.user.services.swayosd.Unit.ConditionEnvironment = "NIRI_SOCKET";
 
   services.swayosd.enable = true;
 }

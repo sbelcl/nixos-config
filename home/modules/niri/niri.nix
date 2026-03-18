@@ -8,10 +8,14 @@
     ./ags.nix
     ./swaylock.nix
   ];
-  # Packages needed for the session (adjust if you don't want wallpaper helper)
-  home.packages = [
-    pkgs.niri
-    pkgs.swaybg
+  # Niri session packages — only relevant when running Niri
+  home.packages = with pkgs; [
+    niri
+    swaybg
+    mako          # notification daemon
+    fuzzel        # app launcher
+    wlr-randr     # display management (wlroots)
+    xwayland-satellite  # XWayland bridge for Niri
   ];
 
   # Optional: simple wallpaper service (uses the layer-rule in your KDL via namespace=wallpaper)
