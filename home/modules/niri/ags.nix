@@ -29,6 +29,8 @@ in {
       Description = "AGS desktop shell";
       After = ["graphical-session.target"];
       PartOf = ["graphical-session.target"];
+      # Only run in Niri sessions
+      ConditionEnvironment = "NIRI_SOCKET";
     };
     Service = {
       ExecStart = "${pkgs.ags}/bin/ags run";

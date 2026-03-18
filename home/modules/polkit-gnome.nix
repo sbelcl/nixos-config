@@ -18,6 +18,8 @@
       Description = "GNOME PolicyKit Authentication Agent";
       PartOf = ["graphical-session.target"];
       After = ["graphical-session.target"];
+      # Only run in non-Plasma sessions (Plasma has its own polkit agent)
+      ConditionEnvironment = "NIRI_SOCKET";
     };
 
     Service = {

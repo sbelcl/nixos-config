@@ -20,6 +20,8 @@
       Description = "Wallpaper (swaybg) for Niri";
       PartOf = ["graphical-session.target"];
       After = ["graphical-session.target"];
+      # Only run in Niri sessions
+      ConditionEnvironment = "NIRI_SOCKET";
     };
     Service = {
       ExecStart = "${pkgs.swaybg}/bin/swaybg -i ${../../../assets/wallpapers/default.png} -m fill";
