@@ -12,13 +12,51 @@
   home.packages = with pkgs; [
     niri
     swaybg
-    mako          # notification daemon
-    fuzzel        # app launcher
-    wlr-randr     # display management (wlroots)
-    xwayland-satellite  # XWayland bridge for Niri
+    mako               # notification daemon
+    fuzzel             # app launcher
+    wlr-randr          # display management (wlroots)
+    xwayland-satellite # XWayland bridge for Niri
+    cliphist           # clipboard history
+    wl-clipboard       # wl-copy / wl-paste
+    brightnessctl      # backlight control
+    grim               # screenshot (whole output)
+    slurp              # region selector
+    swappy             # screenshot annotation
+    hyprpicker         # color picker (works on any Wayland compositor)
+    networkmanagerapplet # nm-applet tray icon
   ];
 
-  # Optional: simple wallpaper service (uses the layer-rule in your KDL via namespace=wallpaper)
+  # Clipboard history — store copied text (Niri sessions only)
+  systemd.user.services.cliphist = {
+    Unit = {
+      Description = "Clipboard history daemon";
+      After = ["graphical-session.target"];
+      PartOf = ["graphical-session.target"];
+      ConditionEnvironment = "NIRI_SOCKET";
+    };
+    Service = {
+      ExecStart = "${pkgs.wl-clipboard}/bin/wl-paste --type text --watch ${pkgs.cliphist}/bin/cliphist store";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = ["graphical-session.target"];
+  };
+
+  # NetworkManager tray applet (Niri sessions only — Plasma has its own)
+  systemd.user.services.nm-applet = {
+    Unit = {
+      Description = "NetworkManager applet";
+      After = ["graphical-session.target"];
+      PartOf = ["graphical-session.target"];
+      ConditionEnvironment = "NIRI_SOCKET";
+    };
+    Service = {
+      ExecStart = "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = ["graphical-session.target"];
+  };
+
+  # Wallpaper service
   systemd.user.services.wallpaper = {
     Unit = {
       Description = "Wallpaper (swaybg) for Niri";
@@ -637,6 +675,11 @@
           Print { screenshot; }
           Ctrl+Print { screenshot-screen; }
           Alt+Print { screenshot-window; }
+          // Region screenshot → annotate with swappy
+          Mod+Print { spawn "sh" "-c" "grim -g \"$(slurp)\" - | swappy -f -"; }
+
+          // Clipboard history picker (cliphist + fuzzel)
+          Mod+Shift+C { spawn "sh" "-c" "cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"; }
 
           // Applications such as remote-desktop clients and software KVM switches may
           // request that niri stops processing the keyboard shortcuts defined here

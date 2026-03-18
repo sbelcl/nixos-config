@@ -6,6 +6,11 @@
   pkgs,
   ...
 }: {
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true; # Ctrl+R history, Ctrl+T file, Alt+C dir
+  };
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;

@@ -3,7 +3,7 @@
 #
 # Fulcrum-specific home overrides (gaming rig)
 #
-{pkgs, lib, ...}: {
+{pkgs, ...}: {
   programs.zsh.shellAliases = {
     updsys = "sudo nixos-rebuild switch --flake ~/.nixos#fulcrum";
     updhome = "home-manager switch --flake ~/.nixos/home#imnos@fulcrum";
@@ -15,13 +15,4 @@
     btop
   ];
 
-  nixpkgs.config.allowUnfreePredicate = lib.mkForce (pkg:
-    builtins.elem (lib.getName pkg) [
-      "claude-code"
-      "kiro"
-      "google-chrome"
-      "discord"
-      "telegram-desktop"
-      "vscode"
-    ]);
 }

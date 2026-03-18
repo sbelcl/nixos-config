@@ -1,7 +1,7 @@
 #
 # ~/.nixos/home/modules/niri/swaylock.nix
 #
-{pkgs, ...}: let
+{pkgs, lib, ...}: let
   swaylock = "${pkgs.swaylock}/bin/swaylock";
 in {
   programs.swaylock = {
@@ -30,8 +30,8 @@ in {
 
   # Only start swayidle and swayosd inside a Niri session —
   # Plasma handles locking and OSD itself via kscreenlocker/plasma-workspace.
-  systemd.user.services.swayidle.Unit.ConditionEnvironment = "NIRI_SOCKET";
-  systemd.user.services.swayosd.Unit.ConditionEnvironment = "NIRI_SOCKET";
+  systemd.user.services.swayidle.Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";
+  systemd.user.services.swayosd.Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";
 
   services.swayosd.enable = true;
 }

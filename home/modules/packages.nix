@@ -26,6 +26,20 @@
     gh
     wl-clipboard
     mission-center
+    # CLI utilities
+    ripgrep
+    fd
+    jq
+    htop
+    tree
+    # Archive management
+    file-roller
+    p7zip
+    unrar
+    # Disk & hardware
+    gparted
+    smartmontools
+    nvtopPackages.nvidia
     # Programming
     nodejs_20
     godot
@@ -54,12 +68,5 @@
     telegram-desktop
   ];
 
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (lib.getName pkg) [
-      "claude-code"
-      "kiro"
-      "google-chrome"
-      "discord"
-      "telegram-desktop"
-    ];
+  nixpkgs.config.allowUnfree = true;
 }

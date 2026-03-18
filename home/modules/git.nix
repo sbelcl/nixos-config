@@ -21,6 +21,9 @@
       # Better diff algorithm
       diff.algorithm = "histogram";
 
+      # Store credentials via GitHub CLI
+      credential."https://github.com".helper = "${pkgs.gh}/bin/gh auth git-credential";
+
       # Color output
       color.ui = "auto";
 
