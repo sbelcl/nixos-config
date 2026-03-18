@@ -1,12 +1,10 @@
 #
 # ~/.nixos/hosts/fulcrum/fulcrum.nix
 #
-# Gaming rig configuration with SDDM + Plasma, Niri, and Hyprland
+# Gaming rig — SDDM + Plasma, Hyprland, Xmonad, Niri
 #
 {
-  config,
   pkgs,
-  lib,
   ...
 }: {
   imports = [
@@ -32,72 +30,57 @@
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
   # ==========================================================================
-  # Display Manager and Desktop Environment
+  # Display Manager and Desktop Environments
   # ==========================================================================
 
-  # Disable greetd (used on flanker for Niri-only setup)
+  # Disable greetd (flanker-specific auto-login to Niri)
   displayManager.greetd.enable = false;
 
-  # Enable SDDM (good integration with Plasma)
-  displayManager.sddm.enable = true;
+  # SDDM — lets user choose between Plasma, Hyprland, Xmonad, Niri at login
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+  };
 
-  # Enable KDE Plasma as default desktop
-  desktop.plasma.enable = true;
+  # KDE Plasma 6
+  services.desktopManager.plasma6.enable = true;
 
-  # Enable Hyprland as alternative WM
+  # Hyprland (defined as custom module in modules/software/hyprland.nix)
   desktop.hyprland.enable = true;
 
-  # Niri is already enabled via modules/software/niri.nix
+  # Xmonad
+  services.xserver = {
+    enable = true;
+    windowManager.xmonad = {
+      enable = true;
+      enableContribAndExtras = true;
+    };
+  };
+
+  # Niri is enabled unconditionally via modules/software/niri.nix
 
   # ==========================================================================
-  # Gaming and Media
+  # Gaming
   # ==========================================================================
 
-  # Steam is already enabled in modules/software/steam.nix
+  # Steam hardware support (controllers, etc.)
+  hardware.steam-hardware.enable = true;
 
-  # Additional gaming packages
+  # Gaming packages (not in home config)
   environment.systemPackages = with pkgs; [
-    # Core tools
-    wget
-    curl
-    git
-
-    # Gaming
     lutris
     heroic
     protonup-qt
     wine
     winetricks
-
-    # Media creation
     obs-studio
     kdePackages.kdenlive
-    gimp
-    krita
-    audacity
-    blender
-
-    # Development
-    vscode
-    neovim
-
-    # System monitoring
-    btop
     nvtopPackages.nvidia
-
-    #AI
-    claude-code
   ];
-
-  # Enable Steam hardware support
-  hardware.steam-hardware.enable = true;
 
   # ==========================================================================
   # System
   # ==========================================================================
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken.
   system.stateVersion = "25.11";
 }
