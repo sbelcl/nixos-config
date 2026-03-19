@@ -18,7 +18,16 @@
     qview
     blender
     imagemagick
-    upscayl
+    # Upscayl wrapped to disable Electron GPU process (crashes with NVIDIA
+    # due to glibc tpp thread-priority assertion). ncnn/Vulkan still works.
+    (symlinkJoin {
+      name = "upscayl";
+      paths = [upscayl];
+      nativeBuildInputs = [makeWrapper];
+      postBuild = ''
+        wrapProgram $out/bin/upscayl --add-flags "--disable-gpu"
+      '';
+    })
     # Terminal & tools
     alacritty
     eza

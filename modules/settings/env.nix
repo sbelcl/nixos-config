@@ -25,6 +25,10 @@
     __GLX_VENDOR_LIBRARY_NAME = "nvidia";
     GBM_BACKEND = "nvidia-drm";
 
+    # NVIDIA VA-API (hardware video decode for Chromium-based browsers)
+    LIBVA_DRIVER_NAME = "nvidia";
+    NVD_BACKEND = "direct";
+
     # wlroots-based compositors (Niri, Hyprland) may need this
     WLR_NO_HARDWARE_CURSORS = "1";
   };

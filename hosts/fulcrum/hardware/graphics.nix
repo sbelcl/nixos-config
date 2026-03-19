@@ -48,6 +48,7 @@
 
     # Debug/testing (glxinfo is included in mesa-demos)
     mesa-demos
+    libva-utils # vainfo — verify VA-API / hardware decode
 
     # Gaming utilities
     mangohud

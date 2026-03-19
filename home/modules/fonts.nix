@@ -1,5 +1,8 @@
 {pkgs, ...}: {
   fonts.fontconfig.enable = true;
+
+  # Enables GTK config management and keeps the icon cache up to date
+  gtk.enable = true;
   home.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans
