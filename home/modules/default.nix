@@ -9,5 +9,7 @@
     ./polkit-gnome.nix
     ./yandex.nix
     ./git.nix
+    ./alacritty.nix
+    ./rofi.nix
   ];
 }

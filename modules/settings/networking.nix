@@ -39,8 +39,9 @@
     nssmdns4 = true;
   };
 
-  # 🔹 (Optional) systemd-resolved instead of resolvconf
-  # services.resolved.enable = true;
+  # Use systemd-resolved for DNS — faster, caches results, avoids dbus errors
+  # from avahi/cups trying to reach org.freedesktop.resolve1
+  services.resolved.enable = true;
 
   # 🔹 (Optional) Fail2ban if you expose SSH
   # services.fail2ban.enable = true;

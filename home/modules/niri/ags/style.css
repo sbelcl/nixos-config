@@ -1,6 +1,6 @@
 * {
-  font-family: "JetBrains Mono", "Noto Sans", sans-serif;
-  font-size: 14px;
+  font-family: "Inter", "Noto Sans", sans-serif;
+  font-size: 15px;
   color: #d0d0d0;
 }
 
@@ -8,42 +8,66 @@ window {
   background: transparent;
 }
 
+/* ── Main container (EventBox — has GdkWindow, so background renders) ── */
 .launcher {
-  background: #1c1c1c;
-  border-radius: 8px;
-  padding: 32px;
-  min-width: 660px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7);
-  border: 1px solid #2a2a2a;
+  background-color: #111111;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
 }
 
+.launcher-inner {
+  padding: 40px;
+}
+
+/* ── Columns ── */
+.col-left {
+  /* takes all remaining space */
+}
+
+.col-right {
+  min-width: 280px;
+  /* GTK3: no max-width — controlled via widthRequest in code */
+}
+
+.col-divider {
+  background: rgba(255, 255, 255, 0.07);
+  min-width: 1px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+/* ── Clock ── */
 .clock {
-  font-size: 56px;
+  font-size: 72px;
   font-weight: bold;
   color: #ffffff;
-  letter-spacing: -1px;
+  letter-spacing: -3px;
 }
 
 .date {
-  font-size: 13px;
-  color: #777;
+  font-size: 14px;
+  color: #555;
+  letter-spacing: 0.5px;
 }
 
+/* ── Search ── */
 .search-entry {
-  background: #252525;
-  border: 1px solid #333;
-  border-radius: 4px;
-  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 16px;
   color: #e0e0e0;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .search-entry:focus {
-  border-color: #5277c3;
+  border-color: #7fc8ff;
+  background: rgba(127, 200, 255, 0.07);
 }
 
+/* ── App grid ── */
 .app-scroll {
-  min-height: 220px;
+  /* fills available vertical space */
 }
 
 .app-grid {
@@ -51,69 +75,96 @@ window {
 }
 
 .app-button {
-  background: #252525;
+  background: transparent;
   border: 1px solid transparent;
-  border-radius: 4px;
-  padding: 6px 10px;
+  border-radius: 10px;
+  padding: 8px 12px;
 }
 
 .app-button:hover {
-  background: #2d2d2d;
-  border-color: #383838;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .app-button label {
-  font-size: 13px;
+  font-size: 14px;
   color: #aaa;
 }
 
+/* ── Status bar ── */
 .status-bar {
-  border-top: 1px solid #272727;
-  border-bottom: 1px solid #272727;
-  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding-bottom: 16px;
 }
 
-.status-bar label {
+.status-item {
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+.status-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.status-item label,
+.status-item icon {
   color: #888;
   font-size: 13px;
 }
 
+/* ── System tray ── */
+.tray {
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding-bottom: 16px;
+}
+
+.tray-button {
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.tray-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Media player ── */
 .media-player {
-  padding: 2px 0;
+  padding: 4px 0;
 }
 
 .media-button {
-  background: #252525;
-  border: 1px solid #333;
-  border-radius: 4px;
-  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  padding: 6px 12px;
   min-width: 0;
 }
 
 .media-button:hover {
-  background: #2d2d2d;
+  background: rgba(255, 255, 255, 0.1);
 }
 
+/* ── Power row ── */
 .power-row {
-  padding-top: 10px;
-  border-top: 1px solid #272727;
+  padding-top: 0;
 }
 
 .power-button {
-  background: #252525;
-  border: 1px solid #333;
-  border-radius: 4px;
-  padding: 6px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  padding: 8px 20px;
   color: #bbb;
 }
 
 .power-button:hover {
-  background: #2d2d2d;
-  border-color: #444;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .power-button.shutdown:hover {
-  background: #2d1a1a;
-  border-color: #5a2a2a;
+  background: rgba(220, 80, 80, 0.15);
+  border-color: rgba(220, 80, 80, 0.4);
   color: #e07070;
 }

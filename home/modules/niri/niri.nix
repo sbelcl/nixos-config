@@ -8,11 +8,98 @@
     ./ags.nix
     ./swaylock.nix
   ];
+
+  # Notification daemon — replaces mako, adds notification center panel
+  services.swaync = {
+    enable = true;
+    style = ./swaync-style.css;
+    settings = {
+      positionX = "right";
+      positionY = "top";
+      layer = "overlay";
+      control-center-layer = "top";
+      layer-shell = true;
+      cssPriority = "user";
+      control-center-margin-top = 8;
+      control-center-margin-bottom = 8;
+      control-center-margin-right = 8;
+      control-center-margin-left = 0;
+      control-center-width = 380;
+      notification-window-width = 380;
+      notification-icon-size = 48;
+      notification-body-image-height = 100;
+      notification-body-image-width = 200;
+      timeout = 5;
+      timeout-low = 2;
+      timeout-critical = 0;
+      transition-time = 200;
+      hide-on-action = true;
+      hide-on-clear = false;
+      image-visibility = "when-available";
+      # Control center panel widget layout
+      widgets = [ "title" "dnd" "notifications" ];
+      widget-config = {
+        title = {
+          text = "Notifications";
+          clear-all-button = true;
+          button-text = "Clear all";
+        };
+        dnd = {
+          text = "Do not disturb";
+        };
+        notifications = {};
+      };
+    };
+  };
+  systemd.user.services.swaync.Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";
+
+  # Polkit agent — handles GUI privilege prompts (mounting drives, etc.)
+  systemd.user.services.polkit-gnome = {
+    Unit = {
+      Description = "Polkit GNOME authentication agent";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+      ConditionEnvironment = "NIRI_SOCKET";
+    };
+    Service = {
+      ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+      # Kill any orphan instance (e.g. from a previous rebuild) then wait for
+      # polkitd to clear the registration before we register again.
+      ExecStartPre = [
+        "-${pkgs.procps}/bin/pkill -f polkit-gnome-authentication-agent-1"
+        "${pkgs.coreutils}/bin/sleep 0.5"
+      ];
+      Restart = "no";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
+  # USB auto-mount
+  services.udiskie = {
+    enable = true;
+    automount = true;
+    notify = true;
+    tray = "auto";
+  };
+  systemd.user.services.udiskie.Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";
+
+  # Night light — reduce blue light after sunset (Ljubljana ~46°N 14°E)
+  services.gammastep = {
+    enable = true;
+    provider = "manual";
+    latitude = 46.05;
+    longitude = 14.51;
+    temperature = {
+      day = 6500;
+      night = 3500;
+    };
+  };
+  systemd.user.services.gammastep.Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";
   # Niri session packages — only relevant when running Niri
   home.packages = with pkgs; [
     niri
     swaybg
-    mako               # notification daemon
+    # mako replaced by swaync (services.swaync below)
     fuzzel             # app launcher
     wlr-randr          # display management (wlroots)
     xwayland-satellite # XWayland bridge for Niri
@@ -289,40 +376,11 @@
               // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
           }
 
-          // You can enable drop shadows for windows.
           shadow {
-              // Uncomment the next line to enable shadows.
-              // on
-
-              // By default, the shadow draws only around its window, and not behind it.
-              // Uncomment this setting to make the shadow draw behind its window.
-              //
-              // Note that niri has no way of knowing about the CSD window corner
-              // radius. It has to assume that windows have square corners, leading to
-              // shadow artifacts inside the CSD rounded corners. This setting fixes
-              // those artifacts.
-              //
-              // However, instead you may want to set prefer-no-csd and/or
-              // geometry-corner-radius. Then, niri will know the corner radius and
-              // draw the shadow correctly, without having to draw it behind the
-              // window. These will also remove client-side shadows if the window
-              // draws any.
-              //
-              // draw-behind-window true
-
-              // You can change how shadows look. The values below are in logical
-              // pixels and match the CSS box-shadow properties.
-
-              // Softness controls the shadow blur radius.
+              on
               softness 30
-
-              // Spread expands the shadow.
               spread 5
-
-              // Offset moves the shadow relative to the window.
               offset x=0 y=5
-
-              // You can also change the shadow color and opacity.
               color "#0007"
           }
 
@@ -355,12 +413,8 @@
         skip-at-startup
       }
 
-      // Uncomment this line to ask the clients to omit their client-side decorations if possible.
-      // If the client will specifically ask for CSD, the request will be honored.
-      // Additionally, clients will be informed that they are tiled, removing some client-side rounded corners.
-      // This option will also fix border/focus ring drawing behind some semitransparent windows.
-      // After enabling or disabling this, you need to restart the apps for this to take effect.
-      // prefer-no-csd
+      // Ask clients to omit client-side decorations where possible.
+      prefer-no-csd
 
       // You can change the path where screenshots are saved.
       // A ~ at the front will be expanded to the home directory.
@@ -395,6 +449,12 @@
           default-column-width {}
       }
 
+      // Mission Center floats above tiled windows — useful for killing frozen apps.
+      window-rule {
+          match app-id="missioncenter"
+          open-floating true
+      }
+
       // Open the Firefox picture-in-picture player as floating by default.
       window-rule {
           // This app-id regular expression will work for both:
@@ -416,9 +476,8 @@
           // block-out-from "screencast"
       }
 
-      // Example: enable rounded corners for all windows.
-      // (This example rule is commented out with a "/-" in front.)
-      /-window-rule {
+      // Rounded corners for all windows.
+      window-rule {
           geometry-corner-radius 12
           clip-to-geometry true
       }
@@ -438,14 +497,17 @@
           // shows a list of important hotkeys.
           Mod+Shift+Slash { show-hotkey-overlay; }
 
-          // Toggle AGS launcher overlay
-          Super+Space { spawn "ags" "toggle" "launcher"; }
+          // Dashboard / app launcher (rofi with clock message)
+          Super+Space hotkey-overlay-title="Dashboard: rofi" { spawn "rofi-launcher"; }
+          Super+Shift+Q hotkey-overlay-title="Power menu: rofi" { spawn "rofi-power"; }
 
           // Suggested binds for running programs: terminal, app launcher, screen locker.
           Mod+T hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
-          Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
+          Mod+D hotkey-overlay-title="Run an Application: rofi" { spawn "rofi-launcher"; }
           Mod+E hotkey-overlay-title="Run an Application: thunar" { spawn "thunar"; }
+          Mod+M hotkey-overlay-title="System Monitor: Mission Center" { spawn "missioncenter"; }
           Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
+          Mod+N hotkey-overlay-title="Notification Center: swaync" { spawn "swaync-client" "-t"; }
 
           // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
           // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
@@ -455,16 +517,20 @@
           // Example volume keys mappings for PipeWire & WirePlumber.
           // The allow-when-locked=true property makes them work even when the session is locked.
           // Using spawn-sh allows to pass multiple arguments together with the command.
-          XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+"; }
-          XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
-          XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-          XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+          // Volume — routed through swayosd for OSD popup
+          XF86AudioRaiseVolume allow-when-locked=true { spawn "swayosd-client" "--output-volume" "raise"; }
+          XF86AudioLowerVolume allow-when-locked=true { spawn "swayosd-client" "--output-volume" "lower"; }
+          XF86AudioMute        allow-when-locked=true { spawn "swayosd-client" "--output-volume" "mute-toggle"; }
+          XF86AudioMicMute     allow-when-locked=true { spawn "swayosd-client" "--input-volume" "mute-toggle"; }
 
-          // Example brightness key mappings for brightnessctl.
-          // You can use regular spawn with multiple arguments too (to avoid going through "sh"),
-          // but you need to manually put each argument in separate "" quotes.
-          XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
-          XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+          // Brightness — routed through swayosd for OSD popup
+          XF86MonBrightnessUp   allow-when-locked=true { spawn "swayosd-client" "--brightness" "raise"; }
+          XF86MonBrightnessDown allow-when-locked=true { spawn "swayosd-client" "--brightness" "lower"; }
+
+          // Lock key OSD indicators (small delay lets kernel finish toggling the LED)
+          Caps_Lock   allow-when-locked=true { spawn-sh "sleep 0.1 && swayosd-client --caps-lock-led input0::capslock"; }
+          Num_Lock    allow-when-locked=true { spawn-sh "sleep 0.1 && swayosd-client --num-lock-led input0::numlock"; }
+          Scroll_Lock allow-when-locked=true { spawn-sh "sleep 0.1 && swayosd-client --scroll-lock-led input0::scrolllock"; }
 
           // Open/close the Overview: a zoomed-out view of workspaces and windows.
           // You can also move the mouse into the top-left hot corner,
@@ -678,8 +744,8 @@
           // Region screenshot → annotate with swappy
           Mod+Print { spawn "sh" "-c" "grim -g \"$(slurp)\" - | swappy -f -"; }
 
-          // Clipboard history picker (cliphist + fuzzel)
-          Mod+Shift+C { spawn "sh" "-c" "cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"; }
+          // Clipboard history picker (cliphist + rofi)
+          Mod+Shift+C { spawn-sh "cliphist list | rofi -dmenu -p '󰅇 Clipboard' | cliphist decode | wl-copy"; }
 
           // Applications such as remote-desktop clients and software KVM switches may
           // request that niri stops processing the keyboard shortcuts defined here

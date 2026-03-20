@@ -1,0 +1,125 @@
+// Rofi theme — colors from the wavy wallpaper
+// Clock injected via textbox-clock with hardcoded text in launcher script
+
+* {
+    bg:          #0d0e1f;
+    bg-alt:      #13152e;
+    bg-hover:    #1a1d3d;
+    fg:          #f0f0f8;
+    fg-dim:      #7878a8;
+    cyan:        #22d4e0;
+    niri-active: #7fc8ff;
+    pink:        #ec4899;
+    transparent: rgba(0,0,0,0);
+
+    background-color: transparent;
+    text-color:       @fg;
+    font:             "Sans 14";
+}
+
+window {
+    background-color: @bg;
+    border:           4px solid;
+    border-color:     @niri-active;
+    border-radius:    20px;
+    width:            860px;
+    padding:          0px;
+    location:         center;
+}
+
+mainbox {
+    background-color: @transparent;
+    children:         [ inputbar, listview ];
+    spacing:          0px;
+    padding:          28px;
+}
+
+// ── textbox-clock is injected by the launcher script at the top ──────────────
+
+// ── Search bar ───────────────────────────────────────────────────────────────
+
+inputbar {
+    background-color: @bg-alt;
+    border-radius:    12px;
+    border:           1px solid;
+    border-color:     rgba(127, 200, 255, 0.3);
+    padding:          14px 18px;
+    margin:           0px 0px 20px 0px;
+    children:         [ prompt, entry ];
+    spacing:          10px;
+}
+
+prompt {
+    background-color: @transparent;
+    text-color:       @cyan;
+    font:             "Sans Bold 14";
+    vertical-align:   0.5;
+}
+
+entry {
+    background-color: @transparent;
+    text-color:       @fg;
+    placeholder:      "Search applications…";
+    placeholder-color: @fg-dim;
+    vertical-align:   0.5;
+}
+
+// ── App grid ─────────────────────────────────────────────────────────────────
+
+listview {
+    background-color: @transparent;
+    columns:          3;
+    lines:            4;
+    spacing:          10px;
+    cycle:            true;
+    dynamic:          true;
+    scrollbar:        false;
+    fixed-height:     false;
+}
+
+element {
+    background-color: @bg-alt;
+    border-radius:    12px;
+    border:           1px solid;
+    border-color:     rgba(255, 255, 255, 0.05);
+    padding:          14px 12px;
+    spacing:          10px;
+    orientation:      vertical;
+    cursor:           pointer;
+}
+
+element normal.normal {
+    background-color: @bg-alt;
+    text-color:       @fg;
+}
+
+element selected.normal {
+    background-color: @bg-hover;
+    border-color:     @niri-active;
+    text-color:       @fg;
+}
+
+element alternate.normal {
+    background-color: @bg-alt;
+    text-color:       @fg;
+}
+
+element normal.urgent,
+element selected.urgent {
+    border-color:     @pink;
+}
+
+element-icon {
+    size:             48px;
+    background-color: @transparent;
+    horizontal-align: 0.5;
+    margin:           0px 0px 8px 0px;
+}
+
+element-text {
+    background-color: @transparent;
+    text-color:       @fg;
+    horizontal-align: 0.5;
+    vertical-align:   0.5;
+    font:             "Sans 12";
+}

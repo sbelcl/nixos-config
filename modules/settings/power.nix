@@ -9,8 +9,12 @@
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
 
-  # Optional laptop-specific settings:
-  # services.tlp.enable = true;
-  # services.acpid.enable = true;
-  # services.logind.lidSwitch = "suspend";
+  # Suspend on lid close, hibernate after longer inactivity on battery
+  services.logind.settings.Login = {
+    HandleLidSwitch = "suspend";
+    HandleLidSwitchExternalPower = "lock";
+    HandlePowerKey = "suspend";
+    IdleAction = "suspend";
+    IdleActionSec = "30min";
+  };
 }

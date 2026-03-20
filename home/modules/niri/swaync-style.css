@@ -1,0 +1,116 @@
+/* Override colour variables only — keeps swaync layout intact */
+:root {
+  --cc-bg: rgba(20, 20, 20, 0.95);
+  --noti-border-color: rgba(255, 255, 255, 0.08);
+  --noti-bg: 35, 35, 35;
+  --noti-bg-alpha: 0.96;
+  --noti-bg-darker: rgb(25, 25, 25);
+  --noti-bg-hover: rgb(50, 50, 50);
+  --noti-bg-focus: rgba(60, 60, 60, 0.6);
+  --noti-close-bg: rgba(255, 255, 255, 0.08);
+  --noti-close-bg-hover: rgba(220, 80, 80, 0.5);
+  --text-color: rgb(255, 255, 255);
+  --text-color-disabled: rgb(130, 130, 130);
+  --bg-selected: rgb(127, 200, 255);
+  --border-radius: 12px;
+  --border: 1px solid var(--noti-border-color);
+  --notification-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --font-size-body: 13px;
+  --font-size-summary: 14px;
+}
+
+/* Critical: all GTK windows must be transparent so only .control-center shows */
+window,
+window.background,
+.background,
+notificationwindow,
+notificationwindow.background,
+blankwindow,
+blankwindow.background {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.blank-window,
+.blank-window > * {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.floating-notifications,
+.floating-notifications > * {
+  background: transparent !important;
+}
+
+/* Font */
+* {
+  font-family: "Fira Code", monospace;
+}
+
+/* Control center panel */
+.control-center {
+  background: var(--cc-bg);
+  border-radius: 16px;
+  border: var(--border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  margin: 8px;
+}
+
+/* Widget title ("Notifications" + Clear all button) */
+.widget-title > label {
+  color: var(--text-color);
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.widget-title > button {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-color);
+  border: none;
+  border-radius: var(--border-radius);
+}
+
+.widget-title > button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* DnD toggle */
+.widget-dnd label {
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+.widget-dnd switch {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: var(--border-radius);
+}
+
+.widget-dnd switch:checked {
+  background: rgba(127, 200, 255, 0.4);
+}
+
+.widget-dnd switch slider {
+  background: #ffffff;
+  border-radius: var(--border-radius);
+}
+
+/* Close button */
+.close-button {
+  background: var(--noti-close-bg);
+  color: var(--text-color);
+  border: none;
+  border-radius: 100%;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 0;
+  margin-top: 8px;
+  margin-right: 8px;
+}
+
+.close-button:hover {
+  background: var(--noti-close-bg-hover);
+}

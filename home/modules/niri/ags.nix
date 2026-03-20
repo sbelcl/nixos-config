@@ -37,6 +37,7 @@ in {
       Environment = [
         "GI_TYPELIB_PATH=${giDirs}"
         "XDG_DATA_DIRS=${pkgs.adwaita-icon-theme}/share:/run/current-system/sw/share:%h/.local/share"
+        "PATH=${pkgs.brightnessctl}/bin:${pkgs.swayosd}/bin:/run/current-system/sw/bin"
       ];
       Restart = "on-failure";
     };

@@ -10,6 +10,7 @@
     TERMINAL = "alacritty";
 
     # Cursor
+    XCURSOR_THEME = "Bibata-Modern-Classic";
     XCURSOR_SIZE = "24";
 
     # Native Wayland rendering for Electron apps (VSCode, Discord, Obsidian…)
@@ -17,6 +18,12 @@
 
     # Native Wayland for Firefox
     MOZ_ENABLE_WAYLAND = "1";
+  };
+
+  # Propagate cursor into the systemd user environment (picked up by Niri and Wayland apps)
+  systemd.user.sessionVariables = {
+    XCURSOR_THEME = "Bibata-Modern-Classic";
+    XCURSOR_SIZE = "24";
   };
 
   # Add user bin directory to PATH

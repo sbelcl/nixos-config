@@ -10,6 +10,20 @@
   # Enable firefox
   programs.firefox.enable = true;
 
+  # Persistent default app associations
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "text/html"                = "yandex-browser-beta.desktop";
+      "x-scheme-handler/http"   = "yandex-browser-beta.desktop";
+      "x-scheme-handler/https"  = "yandex-browser-beta.desktop";
+      "x-scheme-handler/ftp"    = "yandex-browser-beta.desktop";
+      "x-scheme-handler/about"  = "yandex-browser-beta.desktop";
+      "x-scheme-handler/unknown"= "yandex-browser-beta.desktop";
+      "application/xhtml+xml"   = "yandex-browser-beta.desktop";
+    };
+  };
+
   home.packages = with pkgs; [
     # Image viewing and manipulation
     gimp
@@ -29,11 +43,11 @@
       '';
     })
     # Terminal & tools
-    alacritty
     eza
     bat
     gh
     wl-clipboard
+    libnotify          # notify-send command
     mission-center
     # CLI utilities
     ripgrep

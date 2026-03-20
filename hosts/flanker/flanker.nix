@@ -24,6 +24,25 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  # amd_pstate: enable active mode for better CPU power management
+  # (ACPI _CPC is missing in SBIOS but passive/active still improves scaling)
+  boot.kernelParams = [ "amd_pstate=active" ];
+
+  # Blacklist ucsi_ccg — causes i2c timeout errors on ASUS laptops with NVIDIA.
+  # The USB-C controller fails to probe cleanly, blacklisting prevents the hang.
+  boot.blacklistedKernelModules = [ "ucsi_ccg" ];
+
+  # pre-shutdown.service is generated empty by NixOS when no shutdown scripts
+  # are registered; give it a no-op so systemd doesn't log an error.
+  systemd.services.pre-shutdown.serviceConfig.ExecStart = "${pkgs.coreutils}/bin/true";
+
+  # NetworkManager-wait-online blocks boot for 4.5s — not needed on a desktop.
+  systemd.services.NetworkManager-wait-online.enable = false;
+
+  # Docker doesn't need to wait for network-online to start.
+  systemd.services.docker.wants = [];
+  systemd.services.docker.after = ["network.target"];
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 

@@ -4,7 +4,6 @@
 {
   pkgs,
   lib,
-  config,
   ...
 }: {
   #services.displayManager.lightdm.enable = true;
@@ -17,11 +16,17 @@
 
   xdg.portal = {
     enable = true;
+    # wlr portal handles screen capture/sharing on wlroots compositors (Niri)
+    wlr.enable = true;
     extraPortals = [
-      pkgs.xdg-desktop-portal-wlr # za Niri (wlroots-based)
-      pkgs.xdg-desktop-portal-gtk # file picker, tematski dialogi
-      pkgs.xdg-desktop-portal-gnome # file picker, tematski dialogi
+      pkgs.xdg-desktop-portal-gtk  # file picker, colour chooser, etc.
     ];
+    # Tell the portal chooser which backend to use per-interface on Niri
+    config.niri = {
+      default = lib.mkForce [ "gtk" ];
+      "org.freedesktop.impl.portal.ScreenCast"  = [ "wlr" ];
+      "org.freedesktop.impl.portal.Screenshot"  = [ "wlr" ];
+    };
   };
   environment.systemPackages = with pkgs; [libinput];
 }
