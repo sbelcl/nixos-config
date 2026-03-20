@@ -79,6 +79,23 @@
   ];
 
   # ==========================================================================
+  # Storage
+  # ==========================================================================
+
+  # Games NVMe drive (NTFS) — permanent mount for Steam library
+  fileSystems."/mnt/games" = {
+    device = "/dev/disk/by-uuid/1AE8D3F9E8D3D0DD";
+    fsType = "ntfs3"; # kernel NTFS driver, better performance than ntfs-3g
+    options = [
+      "uid=1000"       # imnos
+      "gid=100"        # users
+      "umask=0022"
+      "nofail"         # don't block boot if drive is missing
+      "x-systemd.automount"  # mount on first access, not at boot
+    ];
+  };
+
+  # ==========================================================================
   # System
   # ==========================================================================
 
