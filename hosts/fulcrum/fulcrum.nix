@@ -73,6 +73,7 @@
     protonup-qt
     wine
     winetricks
+    unrar # required by gamma-launcher to extract STALKER GAMMA mod archives
     obs-studio
     kdePackages.kdenlive
     nvtopPackages.nvidia
@@ -90,6 +91,7 @@
       "uid=1000"       # imnos
       "gid=100"        # users
       "umask=0022"
+      "acl"            # enable POSIX ACL support (needed for Wine/MO2)
       "nofail"         # don't block boot if drive is missing
       "x-systemd.automount"  # mount on first access, not at boot
     ];
