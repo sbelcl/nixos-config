@@ -14,6 +14,8 @@
       url = "github:sbelcl/nix-yandex-browser";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    vibepanel.url = "github:prankstr/vibepanel";
   };
 
   outputs = {

@@ -64,12 +64,6 @@ in {
   # Only start swayidle and swayosd inside a Niri session —
   # Plasma handles locking and OSD itself via kscreenlocker/plasma-workspace.
   systemd.user.services.swayidle.Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";
-  # Force dark GTK4 color scheme so swaync window background is dark not white
-  systemd.user.services.swaync.Service.Environment = [
-    "GTK_THEME=Adwaita:dark"
-    "ADW_DEBUG_COLOR_SCHEME=prefer-dark"
-    "GSK_RENDERER=cairo"
-  ];
 
   systemd.user.services.swayosd = {
     Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";

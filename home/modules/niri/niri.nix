@@ -9,50 +9,6 @@
     ./swaylock.nix
   ];
 
-  # Notification daemon — replaces mako, adds notification center panel
-  services.swaync = {
-    enable = true;
-    style = ./swaync-style.css;
-    settings = {
-      positionX = "right";
-      positionY = "top";
-      layer = "overlay";
-      control-center-layer = "top";
-      layer-shell = true;
-      cssPriority = "user";
-      control-center-margin-top = 8;
-      control-center-margin-bottom = 8;
-      control-center-margin-right = 8;
-      control-center-margin-left = 0;
-      control-center-width = 380;
-      notification-window-width = 380;
-      notification-icon-size = 48;
-      notification-body-image-height = 100;
-      notification-body-image-width = 200;
-      timeout = 5;
-      timeout-low = 2;
-      timeout-critical = 0;
-      transition-time = 200;
-      hide-on-action = true;
-      hide-on-clear = false;
-      image-visibility = "when-available";
-      # Control center panel widget layout
-      widgets = [ "title" "dnd" "notifications" ];
-      widget-config = {
-        title = {
-          text = "Notifications";
-          clear-all-button = true;
-          button-text = "Clear all";
-        };
-        dnd = {
-          text = "Do not disturb";
-        };
-        notifications = {};
-      };
-    };
-  };
-  systemd.user.services.swaync.Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";
-
   # Polkit agent — handles GUI privilege prompts (mounting drives, etc.)
   systemd.user.services.polkit-gnome = {
     Unit = {
@@ -402,8 +358,8 @@
       // which may be more convenient to use.
       // See the binds section below for more spawn examples.
 
-      // This line starts waybar, a commonly used bar for Wayland compositors.
-      // spawn-at-startup "waybar"
+      // Pre-warm rofi drun cache so Super+Space opens instantly
+      spawn-at-startup "sh" "-c" "sleep 5 && rofi -drun-use-desktop-cache -drun-reload-desktop-cache &"
 
       // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
       // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
@@ -499,7 +455,11 @@
 
           // Dashboard / app launcher (rofi with clock message)
           Super+Space hotkey-overlay-title="Dashboard: rofi" { spawn "rofi-launcher"; }
-          Super+Shift+Q hotkey-overlay-title="Power menu: rofi" { spawn "rofi-power"; }
+          Super+Shift+Q hotkey-overlay-title="Power menu" { spawn "rofi-power"; }
+
+          // Volume scroll: Super+Alt+Scroll (Super+Scroll is taken by workspaces)
+          Super+Alt+WheelScrollUp   cooldown-ms=50 { spawn "swayosd-client" "--output-volume" "raise"; }
+          Super+Alt+WheelScrollDown cooldown-ms=50 { spawn "swayosd-client" "--output-volume" "lower"; }
 
           // Suggested binds for running programs: terminal, app launcher, screen locker.
           Mod+T hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
@@ -507,8 +467,6 @@
           Mod+E hotkey-overlay-title="Run an Application: thunar" { spawn "thunar"; }
           Mod+M hotkey-overlay-title="System Monitor: Mission Center" { spawn "missioncenter"; }
           Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
-          Mod+N hotkey-overlay-title="Notification Center: swaync" { spawn "swaync-client" "-t"; }
-
           // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
           // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
           // For example, this is a standard bind to toggle the screen reader (orca).

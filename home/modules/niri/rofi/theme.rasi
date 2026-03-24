@@ -1,5 +1,5 @@
 // Rofi theme — colors from the wavy wallpaper
-// Clock injected via textbox-clock with hardcoded text in launcher script
+// Clock injected via textbox-clock in launcher script
 
 * {
     bg:          #0d0e1f;
@@ -68,13 +68,13 @@ entry {
 
 listview {
     background-color: @transparent;
-    columns:          3;
-    lines:            4;
+    columns:          4;
+    lines:            3;
     spacing:          10px;
     cycle:            true;
-    dynamic:          true;
+    dynamic:          false;
     scrollbar:        false;
-    fixed-height:     false;
+    fixed-height:     true;
 }
 
 element {
@@ -111,7 +111,9 @@ element selected.urgent {
 
 element-icon {
     size:             48px;
-    background-color: @transparent;
+    min-width:        48px;
+    min-height:       48px;
+    background-color: @bg-alt;
     horizontal-align: 0.5;
     margin:           0px 0px 8px 0px;
 }

@@ -11,5 +11,7 @@
     ./git.nix
     ./alacritty.nix
     ./rofi.nix
+    ./battery.nix
+    ./vibepanel.nix
   ];
 }

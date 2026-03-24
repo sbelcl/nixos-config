@@ -5,58 +5,7 @@
 
   # ── Launcher ──────────────────────────────────────────────────────────────
   rofi-launcher = pkgs.writeShellScriptBin "rofi-launcher" ''
-    # Clock
-    TIME=$(date '+%H:%M  ·  %A, %B %-d')
-
-    # Battery (BAT1)
-    BAT_PATH=/sys/class/power_supply/BAT1
-    if [ -f "$BAT_PATH/capacity" ]; then
-      BAT_CAP=$(cat "$BAT_PATH/capacity")
-      BAT_STATUS=$(cat "$BAT_PATH/status")
-      if [ "$BAT_STATUS" = "Charging" ]; then
-        BAT_ICON="󰂄"
-      elif [ "$BAT_CAP" -ge 80 ]; then
-        BAT_ICON="󰁹"
-      elif [ "$BAT_CAP" -ge 50 ]; then
-        BAT_ICON="󰁾"
-      elif [ "$BAT_CAP" -ge 20 ]; then
-        BAT_ICON="󰁼"
-      else
-        BAT_ICON="󰁺"
-      fi
-      BAT="$BAT_ICON $BAT_CAP%"
-    else
-      BAT="󰁹 AC"
-    fi
-
-    # WiFi
-    WIFI=$(nmcli -t -f active,ssid dev wifi 2>/dev/null | grep '^yes:' | cut -d: -f2-)
-    if [ -n "$WIFI" ]; then
-      WIFI="󰤨  $WIFI"
-    else
-      WIFI="󰤭  Offline"
-    fi
-
-    # Volume
-    VOL_RAW=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null)
-    VOL_PCT=$(echo "$VOL_RAW" | awk '{printf "%d", $2*100}')
-    if echo "$VOL_RAW" | grep -q MUTED; then
-      VOL="󰝟  Muted"
-    else
-      VOL="󰕾  $VOL_PCT%"
-    fi
-
-    # Brightness
-    BRIGHT_CUR=$(brightnessctl get 2>/dev/null)
-    BRIGHT_MAX=$(brightnessctl max 2>/dev/null)
-    if [ -n "$BRIGHT_CUR" ] && [ -n "$BRIGHT_MAX" ] && [ "$BRIGHT_MAX" -gt 0 ]; then
-      BRIGHT_PCT=$(( BRIGHT_CUR * 100 / BRIGHT_MAX ))
-      BRIGHT="󰃠  $BRIGHT_PCT%"
-    else
-      BRIGHT="󰃠  N/A"
-    fi
-
-    STATUS="$BAT    $WIFI    $VOL    $BRIGHT"
+    TIME=$(date '+%H:%M  ·  %A, %-d %B')
 
     TMPTHEME=$(mktemp /tmp/rofi-XXXXXX.rasi)
     trap "rm -f '$TMPTHEME'" EXIT
@@ -68,18 +17,10 @@ textbox-clock {
     text-color:       white;
     background-color: #0d0e1f;
     horizontal-align: 0.5;
-    padding:          0px 0px 6px 0px;
-}
-textbox-status {
-    content:          "$STATUS";
-    font:             "JetBrainsMono Nerd Font 13";
-    text-color:       #7878a8;
-    background-color: #0d0e1f;
-    horizontal-align: 0.5;
     padding:          0px 0px 20px 0px;
 }
 mainbox {
-    children: [ textbox-clock, textbox-status, inputbar, listview ];
+    children: [ textbox-clock, inputbar, listview ];
 }
 EOF
     exec rofi -show drun -theme "$TMPTHEME"
@@ -129,14 +70,15 @@ in {
     terminal = "${pkgs.alacritty}/bin/alacritty";
 
     extraConfig = {
-      modi                = "drun";
-      show-icons          = true;
-      icon-theme          = "Papirus";
-      drun-display-format = "{name}";
-      display-drun        = "  ";
-      disable-history     = false;
-      hide-scrollbar      = true;
-      steal-focus         = true;
+      modi                   = "drun";
+      show-icons             = true;
+      icon-theme             = "Papirus";
+      drun-display-format    = "{name}";
+      display-drun           = "  ";
+      disable-history        = false;
+      hide-scrollbar         = true;
+      steal-focus            = true;
+      drun-use-desktop-cache = true;
     };
 
     theme = ./niri/rofi/theme.rasi;
