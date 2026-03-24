@@ -54,18 +54,6 @@ EOF
     done
   '';
 
-  # ── Scratchpad terminal (spawn or focus) ──────────────────────────────────
-  scratchpad = pkgs.writeShellScriptBin "scratchpad" ''
-    WIN_ID=$(niri msg windows 2>/dev/null \
-      | ${pkgs.jq}/bin/jq -r '.[] | select(.app_id == "scratchpad") | .id' \
-      | head -1)
-    if [ -n "$WIN_ID" ]; then
-      niri msg action focus-window --id "$WIN_ID"
-    else
-      alacritty --class scratchpad &
-    fi
-  '';
-
   # ── Wallpaper cycler ───────────────────────────────────────────────────────
   wallpaper-next = pkgs.writeShellScriptBin "wallpaper-next" ''
     DIR="$HOME/Slike/Wallpapers"
@@ -114,7 +102,7 @@ EOF
   '';
 
 in {
-  home.packages = [rofi-launcher rofi-power rofi-clipboard scratchpad wallpaper-next];
+  home.packages = [rofi-launcher rofi-power rofi-clipboard wallpaper-next];
 
   programs.rofi = {
     enable  = true;
