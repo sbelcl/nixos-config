@@ -411,6 +411,20 @@
           open-floating true
       }
 
+      // Loupe image viewer — always floating
+      window-rule {
+          match app-id="org.gnome.Loupe"
+          open-floating true
+      }
+
+      // Scratchpad terminal — floating, fixed size, centered
+      window-rule {
+          match app-id="scratchpad"
+          open-floating true
+          default-column-width { fixed 960; }
+          default-window-height { fixed 580; }
+      }
+
       // Open the Firefox picture-in-picture player as floating by default.
       window-rule {
           // This app-id regular expression will work for both:
@@ -467,6 +481,8 @@
           Mod+E hotkey-overlay-title="Run an Application: thunar" { spawn "thunar"; }
           Mod+M hotkey-overlay-title="System Monitor: Mission Center" { spawn "missioncenter"; }
           Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
+          Super+grave hotkey-overlay-title="Scratchpad terminal" { spawn "scratchpad"; }
+          Super+Shift+W hotkey-overlay-title="Next wallpaper" { spawn "wallpaper-next"; }
           // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
           // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
           // For example, this is a standard bind to toggle the screen reader (orca).
@@ -700,10 +716,14 @@
           Ctrl+Print { screenshot-screen; }
           Alt+Print { screenshot-window; }
           // Region screenshot → annotate with swappy
-          Mod+Print { spawn "sh" "-c" "grim -g \"$(slurp)\" - | swappy -f -"; }
+          Mod+Print { spawn-sh "grim -g \"$(slurp)\" - | swappy -f -"; }
+          // Region screenshot → clipboard directly (no annotation)
+          Mod+Shift+Print { spawn-sh "grim -g \"$(slurp)\" - | wl-copy -t image/png"; }
+          // OCR — extract text from region → clipboard
+          Mod+Ctrl+Print { spawn-sh "grim -g \"$(slurp)\" - | tesseract stdin stdout 2>/dev/null | wl-copy"; }
 
-          // Clipboard history picker (cliphist + rofi)
-          Mod+Shift+C { spawn-sh "cliphist list | rofi -dmenu -p '󰅇 Clipboard' | cliphist decode | wl-copy"; }
+          // Clipboard history picker
+          Mod+Shift+C { spawn "rofi-clipboard"; }
 
           // Applications such as remote-desktop clients and software KVM switches may
           // request that niri stops processing the keyboard shortcuts defined here

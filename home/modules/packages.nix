@@ -55,6 +55,7 @@
     jq
     htop
     tree
+    tesseract   # OCR — extract text from screen regions (Mod+Ctrl+Print)
     # Archive management
     file-roller
     p7zip

@@ -26,6 +26,58 @@ EOF
     exec rofi -show drun -theme "$TMPTHEME"
   '';
 
+  # ── Clipboard picker ──────────────────────────────────────────────────────
+  rofi-clipboard = pkgs.writeShellScriptBin "rofi-clipboard" ''
+    # Loop so Alt+Delete removes an entry and re-shows the list
+    while true; do
+      ENTRIES=$(cliphist list)
+      [ -z "$ENTRIES" ] && exit 0
+
+      PICK=$(echo "$ENTRIES" | rofi -dmenu \
+        -p "󰅇" \
+        -kb-custom-1 "Alt+Delete" \
+        -theme-str '
+          window   { width: 680px; }
+          listview { lines: 12; columns: 1; dynamic: false; scrollbar: false; }
+          element  { orientation: horizontal; spacing: 10px; }
+          element-icon { size: 0px; }
+        ')
+      EXIT=$?
+
+      [ -z "$PICK" ] && exit 0
+
+      case $EXIT in
+        0)  echo "$PICK" | cliphist decode | wl-copy; exit 0 ;;
+        10) echo "$PICK" | cliphist delete ;;
+        *)  exit 0 ;;
+      esac
+    done
+  '';
+
+  # ── Scratchpad terminal (spawn or focus) ──────────────────────────────────
+  scratchpad = pkgs.writeShellScriptBin "scratchpad" ''
+    WIN_ID=$(niri msg windows 2>/dev/null \
+      | ${pkgs.jq}/bin/jq -r '.[] | select(.app_id == "scratchpad") | .id' \
+      | head -1)
+    if [ -n "$WIN_ID" ]; then
+      niri msg action focus-window --id "$WIN_ID"
+    else
+      alacritty --class scratchpad &
+    fi
+  '';
+
+  # ── Wallpaper cycler ───────────────────────────────────────────────────────
+  wallpaper-next = pkgs.writeShellScriptBin "wallpaper-next" ''
+    DIR="$HOME/Slike/Wallpapers"
+    if [ ! -d "$DIR" ] || [ -z "$(ls "$DIR"/*.{jpg,jpeg,png,webp} 2>/dev/null)" ]; then
+      exit 0
+    fi
+    NEXT=$(ls "$DIR"/*.{jpg,jpeg,png,webp} 2>/dev/null | shuf -n1)
+    pkill swaybg 2>/dev/null; sleep 0.1
+    ${pkgs.swaybg}/bin/swaybg -i "$NEXT" -m fill &
+    echo "$NEXT" > /tmp/current-wallpaper
+  '';
+
   # ── Power menu ────────────────────────────────────────────────────────────
   rofi-power = pkgs.writeShellScriptBin "rofi-power" ''
     CHOICE=$(printf "󰌾  Lock\n󰍃  Logout\n󰜉  Reboot\n⏻  Shutdown" \
@@ -62,7 +114,7 @@ EOF
   '';
 
 in {
-  home.packages = [rofi-launcher rofi-power];
+  home.packages = [rofi-launcher rofi-power rofi-clipboard scratchpad wallpaper-next];
 
   programs.rofi = {
     enable  = true;

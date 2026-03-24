@@ -13,5 +13,7 @@
     ./rofi.nix
     ./battery.nix
     ./vibepanel.nix
+    ./mpv.nix
+    ./thunar.nix
   ];
 }

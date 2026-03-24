@@ -51,6 +51,12 @@ in {
       --color-state-warning:       #f97316;
       --color-state-urgent:        #ec4899;
     }
+
+    popover > contents,
+    .vp-surface-popover {
+      background-color: #0d0e1f;
+      opacity: 1;
+    }
   '';
 
   systemd.user.services.vibepanel = {
