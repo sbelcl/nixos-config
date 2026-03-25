@@ -85,6 +85,7 @@
     filezilla
     putty
     dig
+    gnome-calculator
     # Audio & video
     vlc
     audacity
