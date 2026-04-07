@@ -141,8 +141,7 @@
                   // localectl set-x11-keymap.
               }
 
-              // Enable numlock on startup, omitting this setting disables it.
-              numlock
+              // numlock — omitted so it doesn't force-override the toggle state
           }
 
           // Next sections include libinput settings.
@@ -357,9 +356,6 @@
       // which may be more convenient to use.
       // See the binds section below for more spawn examples.
 
-      // Pre-warm rofi drun cache so Super+Space opens instantly
-      spawn-at-startup "sh" "-c" "sleep 5 && rofi -drun-use-desktop-cache -drun-reload-desktop-cache &"
-
       // To run a shell command (with variables, pipes, etc.), use spawn-sh-at-startup:
       // spawn-sh-at-startup "qs -c ~/source/qs/MyAwesomeShell"
 
@@ -498,10 +494,7 @@
           XF86MonBrightnessUp   allow-when-locked=true { spawn "swayosd-client" "--brightness" "raise"; }
           XF86MonBrightnessDown allow-when-locked=true { spawn "swayosd-client" "--brightness" "lower"; }
 
-          // Lock key OSD indicators (small delay lets kernel finish toggling the LED)
-          Caps_Lock   allow-when-locked=true { spawn-sh "sleep 0.1 && swayosd-client --caps-lock-led input0::capslock"; }
-          Num_Lock    allow-when-locked=true { spawn-sh "sleep 0.1 && swayosd-client --num-lock-led input0::numlock"; }
-          Scroll_Lock allow-when-locked=true { spawn-sh "sleep 0.1 && swayosd-client --scroll-lock-led input0::scrolllock"; }
+          // Lock key OSD is handled by swayosd-libinput-backend — no binds needed here
 
           // Open/close the Overview: a zoomed-out view of workspaces and windows.
           // You can also move the mouse into the top-left hot corner,

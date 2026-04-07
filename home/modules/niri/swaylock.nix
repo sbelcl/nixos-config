@@ -82,4 +82,19 @@ in {
     topMargin = 0.85;
     stylePath = ./swayosd-style.css;
   };
+
+  # Watch lock keys via libinput and show OSD without intercepting the keys
+  systemd.user.services.swayosd-libinput-backend = {
+    Unit = {
+      Description = "SwayOSD libinput backend for lock key OSD";
+      After       = ["graphical-session.target"];
+      PartOf      = ["graphical-session.target"];
+      ConditionEnvironment = "NIRI_SOCKET";
+    };
+    Service = {
+      ExecStart = "${pkgs.swayosd}/bin/swayosd-libinput-backend";
+      Restart   = "on-failure";
+    };
+    Install.WantedBy = ["graphical-session.target"];
+  };
 }

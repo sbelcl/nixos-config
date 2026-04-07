@@ -6,8 +6,23 @@
   pkgs,
   ...
 }: {
-  services.printing.enable = true;
-  services.printing.drivers = [pkgs.hplip]; # Replace or extend with your printer drivers
+  services.printing = {
+    enable = true;
+    drivers = [
+      pkgs.hplip      # general HP support
+      pkgs.foo2zjs    # HP LaserJet 1010/1018/1020 (GDI printers)
+    ];
+  };
+
+  # samba client for connecting to Windows shared printers (smb://)
+  environment.systemPackages = [pkgs.samba];
+
+  environment.etc."samba/smb.conf".text = ''
+    [global]
+    workgroup = WORKGROUP
+    client min protocol = NT1
+  '';
+
 
   # For network printer discovery (mDNS)
   services.avahi = {

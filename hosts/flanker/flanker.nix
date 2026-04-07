@@ -39,6 +39,13 @@
   # NetworkManager-wait-online blocks boot for 4.5s — not needed on a desktop.
   systemd.services.NetworkManager-wait-online.enable = false;
 
+  # Games drive — 500GB XFS, mounted at /mnt/games
+  fileSystems."/mnt/games" = {
+    device  = "UUID=eb52e42f-65c7-4dee-8476-8087cb6e4dbe";
+    fsType  = "xfs";
+    options = [ "defaults" "nofail" ];
+  };
+
   # Docker doesn't need to wait for network-online to start.
   systemd.services.docker.wants = [];
   systemd.services.docker.after = ["network.target"];
@@ -55,6 +62,7 @@
     wget
     curl
     git
+    xfsprogs   # XFS filesystem tools (mkfs.xfs, xfs_repair, etc.)
   ];
 
   # Some programs need SUID wrappers, can be configured further or are

@@ -16,8 +16,12 @@
     # 🔹 IPv6 privacy: don’t leak MAC address in IP
     tempAddresses = "enabled";
 
-    # 🔹 DNS (override ISP if you want)
-    nameservers = ["77.88.8.88" "77.88.8.2"];
+    # Ignore DNS pushed by router via DHCP — use Quad9 DoT from resolved instead
+    nameservers = [];
+    networkmanager.connectionConfig = {
+      "ipv4.ignore-auto-dns" = "true";
+      "ipv6.ignore-auto-dns" = "true";
+    };
 
     # 🔹 Firewall
     firewall = {
@@ -27,8 +31,8 @@
       allowPing = false; # optional, nice for diagnostics
       logRefusedConnections = true; # log dropped packets
 
-      # Open only what you need
-      allowedTCPPorts = [22]; # SSH (if you ever need it)
+      # No incoming SSH — outbound connections work without open ports
+      allowedTCPPorts = [];
       allowedUDPPorts = [67 68 5353]; # DHCP client + mDNS for printers/lan
     };
   };
@@ -39,9 +43,20 @@
     nssmdns4 = true;
   };
 
-  # Use systemd-resolved for DNS — faster, caches results, avoids dbus errors
-  # from avahi/cups trying to reach org.freedesktop.resolve1
-  services.resolved.enable = true;
+  # DNS over TLS via systemd-resolved — encrypts queries, ISP can't see domains
+  services.resolved = {
+    enable = true;
+    settings.Resolve = {
+      DNSSEC = "allow-downgrade";
+      DNSOverTLS = "opportunistic";
+      Domains = ["~."];
+      DNS = [
+        "9.9.9.9#dns.quad9.net"
+        "149.112.112.112#dns.quad9.net"
+        "2620:fe::fe#dns.quad9.net"
+      ];
+    };
+  };
 
   # 🔹 (Optional) Fail2ban if you expose SSH
   # services.fail2ban.enable = true;

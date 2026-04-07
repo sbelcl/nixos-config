@@ -57,6 +57,7 @@
     tree
     tesseract   # OCR — extract text from screen regions (Mod+Ctrl+Print)
     wev         # Wayland event viewer — identify key names
+    nmap        # network scanner
     # Archive management
     file-roller
     p7zip

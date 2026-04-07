@@ -52,10 +52,18 @@ in {
       --color-state-urgent:        #ec4899;
     }
 
+    /* Quick settings / clock popovers */
     popover > contents,
     .vp-surface-popover {
       background-color: #0d0e1f;
       opacity: 1;
+    }
+
+    /* Notification toast windows */
+    .notification,
+    .toast,
+    .app-notification {
+      background-color: #0d0e1f;
     }
   '';
 
