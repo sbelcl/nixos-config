@@ -1,9 +1,9 @@
 #
 # ~/.nixos/modules/software/ollama.nix
 #
-{...}: {
+{pkgs, ...}: {
   services.ollama = {
     enable = true;
-    acceleration = "cuda";   # NVIDIA GPU inference
+    package = pkgs.ollama-cuda;   # NVIDIA GPU inference
   };
 }
