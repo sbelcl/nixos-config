@@ -15,5 +15,6 @@
     ./packages.nix
     ./plasma.nix
     ./hyprland.nix
+    ./ollama.nix
   ];
 }
