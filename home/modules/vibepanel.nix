@@ -6,7 +6,7 @@
   inputs,
   ...
 }: let
-  vp = inputs.vibepanel.packages.${pkgs.system}.default;
+  vp = inputs.vibepanel.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in {
   home.packages = [vp];
 

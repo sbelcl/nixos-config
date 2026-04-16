@@ -9,8 +9,8 @@
 {pkgs, lib, ...}: {
 
   home.packages = with pkgs; [
-    xfce.thunar-archive-plugin   # right-click archive support
-    xfce.thunar-volman            # auto-mount removable drives
+    thunar-archive-plugin         # right-click archive support
+    thunar-volman                 # auto-mount removable drives
     tumbler                       # D-Bus thumbnail service
     ffmpegthumbnailer             # video thumbnails for tumbler
     libgsf                        # office doc thumbnails
