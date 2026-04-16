@@ -5,6 +5,7 @@
 #
 {
   pkgs,
+  config,
   inputs,
   ...
 }: {
@@ -79,6 +80,7 @@
     obs-studio
     kdePackages.kdenlive
     nvtopPackages.nvidia
+    ddcutil # DDC/CI monitor brightness control
   ];
 
   # ==========================================================================
@@ -100,10 +102,6 @@
   };
 
   # ==========================================================================
-  # System
-  # ==========================================================================
-
-  # ==========================================================================
   # ComfyUI — image & video generation (RTX 3080 Ti, 12GB VRAM)
   # Access at http://localhost:8188
   # Models stored on bulk storage HDD to save NVMe space
@@ -115,6 +113,18 @@
     port          = 8188;
     dataPath      = "/mnt/storage/comfyui";
   };
+
+  # ==========================================================================
+  # System
+  # ==========================================================================
+
+  # DDC/CI monitor brightness control
+  # ddcci-backlight creates a /sys/class/backlight device from DDC/CI
+  # which lets standard tools (vibepanel, brightnessctl) control brightness
+  hardware.i2c.enable = true;
+  users.users.imnos.extraGroups = [ "i2c" ];
+  boot.extraModulePackages = with config.boot.kernelPackages; [ ddcci-driver ];
+  boot.kernelModules = [ "ddcci" "ddcci-backlight" ];
 
   system.stateVersion = "25.11";
 }

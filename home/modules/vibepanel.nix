@@ -20,7 +20,7 @@ in {
     [widgets]
     left   = ["workspaces", "window_title"]
     center = ["clock"]
-    right  = ["custom-power", "quick_settings", "battery", "tray", "notifications"]
+    right  = ["custom-power", "brightness", "quick_settings", "battery", "tray", "notifications"]
     border_radius = 40
     background_opacity = 0.6
 
