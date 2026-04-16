@@ -83,18 +83,18 @@
   # Storage
   # ==========================================================================
 
-  # Games NVMe drive (NTFS) — permanent mount for Steam library
+  # Bulk storage HDD — downloads, media, backups
+  fileSystems."/mnt/storage" = {
+    device = "/dev/disk/by-uuid/d7370172-9b2e-4b90-933f-2183d5a02540";
+    fsType = "ext4";
+    options = [ "nofail" "x-systemd.automount" ];
+  };
+
+  # Games NVMe drive (XFS) — permanent mount for Steam library
   fileSystems."/mnt/games" = {
-    device = "/dev/disk/by-uuid/1AE8D3F9E8D3D0DD";
-    fsType = "ntfs3"; # kernel NTFS driver, better performance than ntfs-3g
-    options = [
-      "uid=1000"       # imnos
-      "gid=100"        # users
-      "umask=0022"
-      "acl"            # enable POSIX ACL support (needed for Wine/MO2)
-      "nofail"         # don't block boot if drive is missing
-      "x-systemd.automount"  # mount on first access, not at boot
-    ];
+    device = "/dev/disk/by-uuid/89606cba-0dcc-4fb6-ae26-fc419a66e048";
+    fsType = "xfs";
+    options = [ "nofail" "x-systemd.automount" ];
   };
 
   # ==========================================================================

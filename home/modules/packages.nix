@@ -32,6 +32,7 @@
     qview
     blender
     imagemagick
+    sweethome3d.application
     # Upscayl wrapped to disable Electron GPU process (crashes with NVIDIA
     # due to glibc tpp thread-priority assertion). ncnn/Vulkan still works.
     (symlinkJoin {
@@ -62,6 +63,8 @@
     file-roller
     p7zip
     unrar
+    zip
+    unzip
     # Disk & hardware
     gparted
     smartmontools
