@@ -1,7 +1,10 @@
 {
   description = "NixOS configuration for flanker and fulcrum";
 
-  inputs = {nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";};
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    comfyui-nix.url  = "github:utensils/comfyui-nix";
+  };
 
   outputs = {
     self,

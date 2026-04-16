@@ -5,12 +5,14 @@
 #
 {
   pkgs,
+  inputs,
   ...
 }: {
   imports = [
     ./hardware
     ../../modules/software
     ../../modules/settings
+    inputs.comfyui-nix.nixosModules.default
   ];
 
   # Hostname
@@ -100,6 +102,19 @@
   # ==========================================================================
   # System
   # ==========================================================================
+
+  # ==========================================================================
+  # ComfyUI — image & video generation (RTX 3080 Ti, 12GB VRAM)
+  # Access at http://localhost:8188
+  # Models stored on bulk storage HDD to save NVMe space
+  # ==========================================================================
+  services.comfyui = {
+    enable        = true;
+    gpuSupport    = "cuda";
+    enableManager = true;   # ComfyUI Manager for installing custom nodes
+    port          = 8188;
+    dataPath      = "/mnt/storage/comfyui";
+  };
 
   system.stateVersion = "25.11";
 }
