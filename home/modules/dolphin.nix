@@ -10,5 +10,6 @@
     kdePackages.kdegraphics-thumbnailers  # image/SVG thumbnails
     kdePackages.ffmpegthumbs     # video thumbnails
     kdePackages.ark              # archive manager (integrates with Dolphin)
+    kdePackages.okular           # PDF & document viewer
   ];
 }

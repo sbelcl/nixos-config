@@ -24,29 +24,39 @@
       "application/xhtml+xml"   = "yandex-browser-beta.desktop";
       # File manager
       "inode/directory"          = "org.kde.dolphin.desktop";
-      # Images
-      "image/jpeg"               = "qview.desktop";
-      "image/png"                = "qview.desktop";
-      "image/gif"                = "qview.desktop";
-      "image/webp"               = "qview.desktop";
-      "image/svg+xml"            = "qview.desktop";
-      "image/tiff"               = "qview.desktop";
-      "image/bmp"                = "qview.desktop";
-      # Video
-      "video/mp4"                = "vlc.desktop";
-      "video/mkv"                = "vlc.desktop";
-      "video/x-matroska"         = "vlc.desktop";
-      "video/webm"               = "vlc.desktop";
-      "video/avi"                = "vlc.desktop";
-      "video/mpeg"               = "vlc.desktop";
-      # Audio
-      "audio/mpeg"               = "vlc.desktop";
-      "audio/ogg"                = "vlc.desktop";
-      "audio/flac"               = "vlc.desktop";
-      "audio/wav"                = "vlc.desktop";
-      "audio/x-wav"              = "vlc.desktop";
-      # PDF & documents
-      "application/pdf"          = "firefox.desktop";
+      # Images → Loupe
+      "image/jpeg"               = "org.gnome.Loupe.desktop";
+      "image/png"                = "org.gnome.Loupe.desktop";
+      "image/gif"                = "org.gnome.Loupe.desktop";
+      "image/webp"               = "org.gnome.Loupe.desktop";
+      "image/svg+xml"            = "org.gnome.Loupe.desktop";
+      "image/tiff"               = "org.gnome.Loupe.desktop";
+      "image/bmp"                = "org.gnome.Loupe.desktop";
+      "image/heic"               = "org.gnome.Loupe.desktop";
+      "image/avif"               = "org.gnome.Loupe.desktop";
+      "image/jxl"                = "org.gnome.Loupe.desktop";
+      # Video → mpv
+      "video/mp4"                = "mpv.desktop";
+      "video/mkv"                = "mpv.desktop";
+      "video/x-matroska"         = "mpv.desktop";
+      "video/webm"               = "mpv.desktop";
+      "video/avi"                = "mpv.desktop";
+      "video/x-msvideo"          = "mpv.desktop";
+      "video/quicktime"          = "mpv.desktop";
+      "video/x-flv"              = "mpv.desktop";
+      "video/mpeg"               = "mpv.desktop";
+      "video/ogg"                = "mpv.desktop";
+      # Audio → mpv
+      "audio/mpeg"               = "mpv.desktop";
+      "audio/mp4"                = "mpv.desktop";
+      "audio/ogg"                = "mpv.desktop";
+      "audio/flac"               = "mpv.desktop";
+      "audio/wav"                = "mpv.desktop";
+      "audio/x-wav"              = "mpv.desktop";
+      "audio/aac"                = "mpv.desktop";
+      "audio/opus"               = "mpv.desktop";
+      # PDF → Okular
+      "application/pdf"          = "org.kde.okular.desktop";
       # Archives
       "application/zip"          = "org.kde.ark.desktop";
       "application/x-tar"        = "org.kde.ark.desktop";

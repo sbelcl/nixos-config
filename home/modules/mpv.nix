@@ -8,43 +8,6 @@
     pkgs.yt-dlp   # streaming (used by mpv)
   ];
 
-  xdg.mimeApps.defaultApplications = let
-    loupe = "org.gnome.Loupe.desktop";
-    mpv   = "mpv.desktop";
-  in {
-    # Images → loupe
-    "image/jpeg"    = loupe;
-    "image/png"     = loupe;
-    "image/gif"     = loupe;
-    "image/webp"    = loupe;
-    "image/tiff"    = loupe;
-    "image/bmp"     = loupe;
-    "image/svg+xml" = loupe;
-    "image/heic"    = loupe;
-    "image/avif"    = loupe;
-    "image/jxl"     = loupe;
-    # Video → mpv
-    "video/mp4"         = mpv;
-    "video/mkv"         = mpv;
-    "video/x-matroska"  = mpv;
-    "video/webm"        = mpv;
-    "video/avi"         = mpv;
-    "video/x-msvideo"   = mpv;
-    "video/quicktime"   = mpv;
-    "video/x-flv"       = mpv;
-    "video/mpeg"        = mpv;
-    "video/ogg"         = mpv;
-    # Audio → mpv
-    "audio/mpeg"        = mpv;
-    "audio/mp4"         = mpv;
-    "audio/flac"        = mpv;
-    "audio/ogg"         = mpv;
-    "audio/wav"         = mpv;
-    "audio/x-wav"       = mpv;
-    "audio/aac"         = mpv;
-    "audio/opus"        = mpv;
-  };
-
   programs.mpv = {
     enable  = true;
     scripts = with pkgs.mpvScripts; [
