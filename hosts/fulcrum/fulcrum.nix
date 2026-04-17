@@ -125,6 +125,12 @@
   users.users.imnos.extraGroups = [ "i2c" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [ ddcci-driver ];
   boot.kernelModules = [ "ddcci" "ddcci-backlight" ];
+  # Probe the monitor on i2c-4 after modules load so ddcci-backlight
+  # creates /sys/class/backlight/ddcci4 (needed by vibepanel brightness widget)
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="i2c-dev", KERNEL=="i2c-4", \
+      RUN+="${pkgs.bash}/bin/sh -c 'echo ddcci 0x37 > /sys/bus/i2c/devices/i2c-4/new_device'"
+  '';
 
   # ==========================================================================
   # NFS — share /mnt/storage with flanker
