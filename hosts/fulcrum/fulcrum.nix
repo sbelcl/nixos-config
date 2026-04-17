@@ -111,7 +111,7 @@
     gpuSupport    = "cuda";
     enableManager = true;   # ComfyUI Manager for installing custom nodes
     port          = 8188;
-    dataPath      = "/mnt/storage/comfyui";
+    dataDir       = "/mnt/storage/comfyui";
   };
 
   # ==========================================================================
