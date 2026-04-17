@@ -44,8 +44,7 @@
     device  = "192.168.43.152:/mnt/storage";
     fsType  = "nfs";
     options = [ "nofail" "x-systemd.automount" "x-systemd.idle-timeout=600"
-                "soft" "timeo=30" "retrans=2" ];
-    # soft+timeo: fail fast (3s) when fulcrum is offline instead of hanging
+                "nfsvers=4" "soft" "timeo=30" "retrans=2" ];
   };
 
   # Games drive — 500GB XFS, mounted at /mnt/games

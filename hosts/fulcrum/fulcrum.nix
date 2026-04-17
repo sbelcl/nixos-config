@@ -133,8 +133,8 @@
   services.nfs.server.exports = ''
     /mnt/storage  192.168.43.0/24(rw,sync,no_subtree_check,all_squash,anonuid=1000,anongid=100)
   '';
-  networking.firewall.allowedTCPPorts = [ 2049 ];
-  networking.firewall.allowedUDPPorts = [ 2049 ];
+  networking.firewall.allowedTCPPorts = [ 111 2049 ];  # portmapper + NFS
+  networking.firewall.allowedUDPPorts = [ 111 2049 ];
 
   system.stateVersion = "25.11";
 }
