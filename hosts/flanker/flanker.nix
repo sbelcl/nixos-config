@@ -39,6 +39,13 @@
   # NetworkManager-wait-online blocks boot for 4.5s — not needed on a desktop.
   systemd.services.NetworkManager-wait-online.enable = false;
 
+  # Fulcrum's bulk storage — NFS share, mounted at /mnt/storage
+  fileSystems."/mnt/storage" = {
+    device  = "192.168.43.152:/mnt/storage";
+    fsType  = "nfs";
+    options = [ "nofail" "x-systemd.automount" "x-systemd.idle-timeout=600" ];
+  };
+
   # Games drive — 500GB XFS, mounted at /mnt/games
   fileSystems."/mnt/games" = {
     device  = "UUID=eb52e42f-65c7-4dee-8476-8087cb6e4dbe";
