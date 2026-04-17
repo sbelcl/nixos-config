@@ -126,5 +126,15 @@
   boot.extraModulePackages = with config.boot.kernelPackages; [ ddcci-driver ];
   boot.kernelModules = [ "ddcci" "ddcci-backlight" ];
 
+  # ==========================================================================
+  # NFS — share /mnt/storage with flanker
+  # ==========================================================================
+  services.nfs.server.enable = true;
+  services.nfs.server.exports = ''
+    /mnt/storage  192.168.43.0/24(rw,sync,no_subtree_check,all_squash,anonuid=1000,anongid=100)
+  '';
+  networking.firewall.allowedTCPPorts = [ 2049 ];
+  networking.firewall.allowedUDPPorts = [ 2049 ];
+
   system.stateVersion = "25.11";
 }
