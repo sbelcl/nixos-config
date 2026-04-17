@@ -471,7 +471,7 @@
           // Suggested binds for running programs: terminal, app launcher, screen locker.
           Mod+T hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
           Mod+D hotkey-overlay-title="Run an Application: rofi" { spawn "rofi-launcher"; }
-          Mod+E hotkey-overlay-title="Run an Application: thunar" { spawn "thunar"; }
+          Mod+E hotkey-overlay-title="Open Files: dolphin" { spawn "dolphin"; }
           Mod+M hotkey-overlay-title="System Monitor: Mission Center" { spawn "missioncenter"; }
           Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
           XF86Calculator { spawn "gnome-calculator"; }

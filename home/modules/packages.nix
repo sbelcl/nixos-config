@@ -14,6 +14,7 @@
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
+      # Browser
       "text/html"                = "yandex-browser-beta.desktop";
       "x-scheme-handler/http"   = "yandex-browser-beta.desktop";
       "x-scheme-handler/https"  = "yandex-browser-beta.desktop";
@@ -21,6 +22,37 @@
       "x-scheme-handler/about"  = "yandex-browser-beta.desktop";
       "x-scheme-handler/unknown"= "yandex-browser-beta.desktop";
       "application/xhtml+xml"   = "yandex-browser-beta.desktop";
+      # File manager
+      "inode/directory"          = "org.kde.dolphin.desktop";
+      # Images
+      "image/jpeg"               = "qview.desktop";
+      "image/png"                = "qview.desktop";
+      "image/gif"                = "qview.desktop";
+      "image/webp"               = "qview.desktop";
+      "image/svg+xml"            = "qview.desktop";
+      "image/tiff"               = "qview.desktop";
+      "image/bmp"                = "qview.desktop";
+      # Video
+      "video/mp4"                = "vlc.desktop";
+      "video/mkv"                = "vlc.desktop";
+      "video/x-matroska"         = "vlc.desktop";
+      "video/webm"               = "vlc.desktop";
+      "video/avi"                = "vlc.desktop";
+      "video/mpeg"               = "vlc.desktop";
+      # Audio
+      "audio/mpeg"               = "vlc.desktop";
+      "audio/ogg"                = "vlc.desktop";
+      "audio/flac"               = "vlc.desktop";
+      "audio/wav"                = "vlc.desktop";
+      "audio/x-wav"              = "vlc.desktop";
+      # PDF & documents
+      "application/pdf"          = "firefox.desktop";
+      # Archives
+      "application/zip"          = "org.kde.ark.desktop";
+      "application/x-tar"        = "org.kde.ark.desktop";
+      "application/x-7z-compressed" = "org.kde.ark.desktop";
+      "application/x-rar"        = "org.kde.ark.desktop";
+      "application/gzip"         = "org.kde.ark.desktop";
     };
   };
 
@@ -59,8 +91,7 @@
     tesseract   # OCR — extract text from screen regions (Mod+Ctrl+Print)
     wev         # Wayland event viewer — identify key names
     nmap        # network scanner
-    # Archive management
-    file-roller
+    # Archive management (ark is in dolphin.nix)
     p7zip
     unrar
     zip
