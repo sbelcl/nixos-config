@@ -3,9 +3,9 @@
 #
 # Dolphin file manager with thumbnail and KIO support
 #
-{ pkgs, ... }: {
+{ pkgs, lib, ... }: {
   # Rebuild KDE service cache after each activation so Dolphin picks up MIME changes
-  home.activation.kbuildsycoca = pkgs.lib.hm.dag.entryAfter ["writeBoundary"] ''
+  home.activation.kbuildsycoca = lib.hm.dag.entryAfter ["writeBoundary"] ''
     ${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental 2>/dev/null || true
   '';
 
