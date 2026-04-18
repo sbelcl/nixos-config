@@ -4,6 +4,18 @@
 # Dolphin file manager with thumbnail and KIO support
 #
 { pkgs, lib, ... }: {
+  # kbuildsycoca6 needs applications.menu to find desktop files.
+  # Without it, it builds an empty database and Dolphin shows no apps.
+  xdg.configFile."menus/applications.menu".text = ''
+    <!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
+    "http://www.freedesktop.org/standards/menu-spec/menu-1.0.dtd">
+    <Menu>
+      <Name>Applications</Name>
+      <DefaultAppDirs/>
+      <DefaultDirectoryDirs/>
+    </Menu>
+  '';
+
   # Rebuild KDE service cache at session start so Dolphin finds all apps.
   # Must run inside the user session (needs real XDG_DATA_DIRS + XDG_RUNTIME_DIR).
   systemd.user.services.kbuildsycoca = {
