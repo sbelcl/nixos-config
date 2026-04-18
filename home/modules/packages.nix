@@ -101,6 +101,7 @@
     tesseract   # OCR — extract text from screen regions (Mod+Ctrl+Print)
     wev         # Wayland event viewer — identify key names
     nmap        # network scanner
+    poppler_utils # PDF tools (pdftotext, pdfimages, etc.)
     # Archive management (ark is in dolphin.nix)
     p7zip
     unrar
