@@ -7,6 +7,7 @@
   # Rebuild KDE service cache after each activation so Dolphin picks up MIME changes
   home.activation.kbuildsycoca = lib.hm.dag.entryAfter ["writeBoundary"] ''
     export XDG_RUNTIME_DIR=$(mktemp -d)
+    export XDG_DATA_DIRS="$HOME/.nix-profile/share:/etc/profiles/per-user/$USER/share:/run/current-system/sw/share"
     ${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental 2>/dev/null || true
     rm -rf "$XDG_RUNTIME_DIR"
   '';
