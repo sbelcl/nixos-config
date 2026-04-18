@@ -4,13 +4,20 @@
 # Dolphin file manager with thumbnail and KIO support
 #
 { pkgs, lib, ... }: {
-  # Rebuild KDE service cache after each activation so Dolphin picks up MIME changes
-  home.activation.kbuildsycoca = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    export XDG_RUNTIME_DIR=$(mktemp -d)
-    export XDG_DATA_DIRS="$HOME/.nix-profile/share:/etc/profiles/per-user/$USER/share:/run/current-system/sw/share"
-    ${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental 2>/dev/null || true
-    rm -rf "$XDG_RUNTIME_DIR"
-  '';
+  # Rebuild KDE service cache at session start so Dolphin finds all apps.
+  # Must run inside the user session (needs real XDG_DATA_DIRS + XDG_RUNTIME_DIR).
+  systemd.user.services.kbuildsycoca = {
+    Unit = {
+      Description = "Rebuild KDE service cache";
+      After = ["graphical-session.target"];
+      PartOf = ["graphical-session.target"];
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.kdePackages.kservice}/bin/kbuildsycoca6 --noincremental";
+    };
+    Install.WantedBy = ["graphical-session.target"];
+  };
 
   home.packages = with pkgs; [
     kdePackages.dolphin
