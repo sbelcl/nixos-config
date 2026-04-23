@@ -4,6 +4,7 @@
 {pkgs, ...}: {
   services.ollama = {
     enable = true;
-    package = pkgs.ollama-cuda;   # NVIDIA GPU inference
+    # Temporarily use CPU-only Ollama while ollama-cuda fails to build on unstable.
+    package = pkgs.ollama;
   };
 }

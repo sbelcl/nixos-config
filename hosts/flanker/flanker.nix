@@ -83,5 +83,9 @@
 
   # List services that you want to enable:
 
+  # Lower swappiness — with 16GB RAM the kernel shouldn't be swapping under
+  # browser load. Default 60 causes unnecessary swap pressure on memory spikes.
+  boot.kernel.sysctl."vm.swappiness" = 10;
+
   system.stateVersion = "25.05"; # Did you read the comment?
 }

@@ -6,7 +6,9 @@
   pkgs,
   lib,
   ...
-}: {
+}: let
+  kimi-cli = pkgs.callPackage ../pkgs/kimi-cli.nix {};
+in {
   # Enable firefox
   programs.firefox.enable = true;
 
@@ -101,6 +103,7 @@
     tesseract   # OCR — extract text from screen regions (Mod+Ctrl+Print)
     wev         # Wayland event viewer — identify key names
     nmap        # network scanner
+    psmisc      # killall, fuser, pstree
     poppler-utils # PDF tools (pdftotext, pdfimages, etc.)
     # Archive management (ark is in dolphin.nix)
     p7zip
@@ -117,6 +120,7 @@
     dos2unix
     claude-code
     gemini-cli
+    kimi-cli
     kiro
     codex
     python315
