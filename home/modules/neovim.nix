@@ -3,6 +3,8 @@
     enable = true;
     vimAlias = true;
     viAlias = true;
+    withRuby = true;
+    withPython3 = true;
     extraConfig = ''
       set number relativenumber
       set syntax

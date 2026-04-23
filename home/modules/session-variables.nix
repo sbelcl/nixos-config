@@ -20,6 +20,8 @@
     MOZ_ENABLE_WAYLAND = "1";
   };
 
+  xdg.userDirs.setSessionVariables = true;
+
   # Propagate cursor into the systemd user environment (picked up by Niri and Wayland apps)
   systemd.user.sessionVariables = {
     XCURSOR_THEME = "Bibata-Modern-Classic";

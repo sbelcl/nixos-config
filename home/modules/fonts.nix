@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{config, pkgs, ...}: {
   fonts.fontconfig = {
     enable = true;
     antialiasing = true;
@@ -31,6 +31,7 @@
       package = pkgs.bibata-cursors;
       size = 24;
     };
+    gtk4.theme = config.gtk.theme;
   };
 
   # Apply the same cursor in Wayland sessions

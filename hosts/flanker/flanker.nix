@@ -5,6 +5,7 @@
 #
 {
   config,
+  lib,
   pkgs,
   ...
 }: {
@@ -31,6 +32,9 @@
   # Blacklist ucsi_ccg — causes i2c timeout errors on ASUS laptops with NVIDIA.
   # The USB-C controller fails to probe cleanly, blacklisting prevents the hang.
   boot.blacklistedKernelModules = [ "ucsi_ccg" ];
+
+  # Ollama is disabled on flanker; keep the shared module intact for fulcrum.
+  services.ollama.enable = lib.mkForce false;
 
   # pre-shutdown.service is generated empty by NixOS when no shutdown scripts
   # are registered; give it a no-op so systemd doesn't log an error.
