@@ -43,6 +43,8 @@ vm-result
 
 # Claude Code internals
 .claude/
+.codex
+.codex/
 SUGGESTIONS-IMPROVEMENTS.md
 
 # STALKER GAMMA install tool (one-time use, not part of NixOS config)
