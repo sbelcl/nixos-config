@@ -139,6 +139,7 @@ in {
     # Audio & video
     vlc
     audacity
+    stremio-linux-shell
     # Social media
     discord
     telegram-desktop
