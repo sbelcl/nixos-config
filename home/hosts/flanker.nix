@@ -15,7 +15,7 @@
   # DRI_PRIME=1 selects the second GPU (AMD Renoir) as the render device.
   # Workspace 3 is work-specific and only relevant on flanker (laptop used for work).
   # Thunderbird and Chrome are not installed on fulcrum so no point having rules there.
-  wayland.windowManager.hyprland.settings.windowrule = [
+  wayland.windowManager.hyprland.settings.windowrulev2 = [
     "workspace 3 silent, class:^(thunderbird)$"
     "workspace 3 silent, class:^(google-chrome)$"
   ];

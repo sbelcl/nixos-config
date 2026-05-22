@@ -80,7 +80,7 @@
       # Gaming rules are applied to steam_app_* which covers all Steam games
       # (both native and Proton). Launchers (steam, lutris, heroic) stay tiled
       # on ws4; game windows go fullscreen automatically.
-      windowrule = [
+      windowrulev2 = [
         # Workspace assignments
         "workspace 1 silent, class:^(yandex-browser-beta|firefox)$"
         "workspace 2 silent, class:^(Alacritty)$"
