@@ -129,6 +129,18 @@
   };
 
   # ==========================================================================
+  # Bluetooth — fulcrum has no Bluetooth hardware.
+  # The shared bluetooth.nix enables hardware.bluetooth, which installs a D-Bus
+  # activation file for org.bluez.  Without hardware, bluetoothd exits
+  # immediately, but D-Bus still waits service_start_timeout=25s for the name
+  # to appear — causing HyprPanel (AstalBluetooth) to hang 25s on every login.
+  # Force the option off here so the activation file is never installed.
+  # ==========================================================================
+  hardware.bluetooth.enable = lib.mkForce false;
+  hardware.bluetooth.powerOnBoot = lib.mkForce false;
+  services.blueman.enable = lib.mkForce false;
+
+  # ==========================================================================
   # System
   # ==========================================================================
 

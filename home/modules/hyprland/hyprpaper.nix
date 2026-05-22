@@ -13,7 +13,7 @@ in {
     };
   };
 
-  # Only run in Hyprland sessions
-  systemd.user.services.hyprpaper.Unit.ConditionEnvironment =
-    lib.mkForce "HYPRLAND_INSTANCE_SIGNATURE";
+  # Launch via Hyprland exec-once (not systemd) so it starts after monitors are registered.
+  # Disable the auto-generated systemd service.
+  systemd.user.services.hyprpaper.Install.WantedBy = lib.mkForce [];
 }

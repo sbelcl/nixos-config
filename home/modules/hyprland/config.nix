@@ -29,7 +29,7 @@
         "col.active_border" = "rgba(7fc8ffee) rgba(22d4e0ee) 45deg";
         "col.inactive_border" = "rgba(3c3c6eaa)";
         layout = "dwindle";
-        allow_tearing = false;
+        allow_tearing = true;   # tearing opt-in per window via "immediate" rule
       };
 
       decoration = {
@@ -67,6 +67,42 @@
         preserve_split = true;
       };
 
+      # Workspace names and per-workspace settings
+      workspace = [
+        "1, name:web"
+        "2, name:term"
+        "3, name:work"
+        "4, name:game, gapsin:0, gapsout:0"   # no gaps — games are fullscreen
+      ];
+
+      # ── Window rules ────────────────────────────────────────────────────────
+      # "silent" = don't auto-switch to the target workspace when the app opens.
+      # Gaming rules are applied to steam_app_* which covers all Steam games
+      # (both native and Proton). Launchers (steam, lutris, heroic) stay tiled
+      # on ws4; game windows go fullscreen automatically.
+      windowrule = [
+        # Workspace assignments
+        "workspace 1 silent, class:^(yandex-browser-beta|firefox)$"
+        "workspace 2 silent, class:^(Alacritty)$"
+        "workspace 4 silent, class:^(steam|net\\.lutris\\.Lutris|heroic)$"
+        "workspace 4 silent, class:^(steam_app_)"         # Steam/Proton game windows
+
+        # Gaming quality-of-life
+        "fullscreen,        class:^(steam_app_)"           # games go fullscreen
+        "immediate,         class:^(steam_app_)"           # allow tearing (see allow_tearing)
+        "idleinhibit always,class:^(steam_app_)"           # no screensaver mid-game
+        "noblur,            class:^(steam_app_)"           # no blur compositor overhead
+        "noshadow,          class:^(steam_app_)"           # no shadow compositor overhead
+
+        # Steam dialogs and overlays float so they don't break tiling on ws4
+        "float,  class:^(steam)$, title:^(Steam - News|Steam Guard|Friends List)"
+        "center, class:^(steam)$, title:^(Steam - News|Steam Guard|Friends List)"
+      ];
+
+      exec-once = [
+        "hyprpaper"
+      ];
+
       misc = {
         force_default_wallpaper = 0;
         disable_hyprland_logo = true;
@@ -80,11 +116,6 @@
           natural_scroll = true;
           disable_while_typing = true;
         };
-      };
-
-      gestures = {
-        workspace_swipe = true;
-        workspace_swipe_fingers = 3;
       };
 
       bind = [
@@ -173,11 +204,6 @@
         "$mainMod, mouse:273, resizewindow"
       ];
 
-      windowrulev2 = [
-        "suppressevent maximize, class:.*"
-        # Ignore spurious unmanaged XWayland windows
-        "nofocus, class:^$, title:^$, xwayland:1, floating:1, fullscreen:0, pinned:0"
-      ];
     };
   };
 }
