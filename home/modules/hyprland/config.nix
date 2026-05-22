@@ -214,7 +214,7 @@
           workspace    = 4 silent
           fullscreen   = true
           immediate    = true       # allow tearing (requires allow_tearing = true)
-          idleinhibit  = always     # no screensaver / lock mid-game
+          idle_inhibit = always     # no screensaver / lock mid-game
       }
 
       # Steam popup dialogs (news, guard, friends) float over the tiled layout
