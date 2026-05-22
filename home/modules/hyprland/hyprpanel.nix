@@ -4,7 +4,23 @@
 { pkgs, inputs, ... }: let
   hp = inputs.hyprpanel.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in {
-  home.packages = [ hp pkgs.hyprlauncher ];
+  home.packages = [ hp ];
+
+  # hyprlauncher — Hyprland-native app launcher.
+  # Run as a daemon (-d) so it's pre-loaded and appears instantly on keypress.
+  # Styling is not available in v0.1.5 (only window_size is exposed).
+  services.hyprlauncher = {
+    enable = true;
+    settings = {
+      general.grab_focus = true;
+      cache.enabled = true;
+      ui.window_size = "560 380";
+      finders = {
+        desktop_icons = true;
+        math_prefix = "=";
+      };
+    };
+  };
 
   # Start HyprPanel only in Hyprland sessions.
   # HyprPanel is an AGS-based bar + notification centre — it replaces
