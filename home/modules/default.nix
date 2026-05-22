@@ -12,6 +12,7 @@
     ./git.nix
     ./alacritty.nix
     ./rofi.nix
+    ./fuzzel.nix
     ./battery.nix
     ./vibepanel.nix
     ./mpv.nix

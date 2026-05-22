@@ -59,7 +59,7 @@
     niri
     swaybg
     # mako replaced by swaync (services.swaync below)
-    fuzzel             # app launcher
+    # fuzzel is in home/modules/fuzzel.nix (shared with Hyprland)
     wlr-randr          # display management (wlroots)
     xwayland-satellite # XWayland bridge for Niri
     cliphist           # clipboard history
@@ -438,8 +438,8 @@
           // shows a list of important hotkeys.
           Mod+Shift+Slash { show-hotkey-overlay; }
 
-          // Dashboard / app launcher (rofi with clock message)
-          Super+Space hotkey-overlay-title="Dashboard: rofi" { spawn "rofi-launcher"; }
+          // App launcher
+          Super+Space hotkey-overlay-title="App launcher: fuzzel" { spawn "fuzzel"; }
           Super+Shift+Q hotkey-overlay-title="Power menu" { spawn "rofi-power"; }
 
           // Volume scroll: Super+Alt+Scroll (Super+Scroll is taken by workspaces)
@@ -448,7 +448,7 @@
 
           // Suggested binds for running programs: terminal, app launcher, screen locker.
           Mod+T hotkey-overlay-title="Open a Terminal: alacritty" { spawn "alacritty"; }
-          Mod+D hotkey-overlay-title="Run an Application: rofi" { spawn "rofi-launcher"; }
+          Mod+D hotkey-overlay-title="Run an Application: fuzzel" { spawn "fuzzel"; }
           Mod+E hotkey-overlay-title="Open Files: dolphin" { spawn "dolphin"; }
           Mod+M hotkey-overlay-title="System Monitor: Mission Center" { spawn "missioncenter"; }
           Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
