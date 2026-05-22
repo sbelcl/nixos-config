@@ -75,29 +75,6 @@
         "4, name:game, gapsin:0, gapsout:0"   # no gaps — games are fullscreen
       ];
 
-      # ── Window rules ────────────────────────────────────────────────────────
-      # "silent" = don't auto-switch to the target workspace when the app opens.
-      # Gaming rules are applied to steam_app_* which covers all Steam games
-      # (both native and Proton). Launchers (steam, lutris, heroic) stay tiled
-      # on ws4; game windows go fullscreen automatically.
-      windowrulev2 = [
-        # Workspace assignments
-        "workspace 1 silent, class:^(yandex-browser-beta|firefox)$"
-        "workspace 2 silent, class:^(Alacritty)$"
-        "workspace 4 silent, class:^(steam|net\\.lutris\\.Lutris|heroic)$"
-        "workspace 4 silent, class:^(steam_app_)"         # Steam/Proton game windows
-
-        # Gaming quality-of-life
-        "fullscreen,        class:^(steam_app_)"           # games go fullscreen
-        "immediate,         class:^(steam_app_)"           # allow tearing (see allow_tearing)
-        "idleinhibit always,class:^(steam_app_)"           # no screensaver mid-game
-        "noblur,            class:^(steam_app_)"           # no blur compositor overhead
-        "noshadow,          class:^(steam_app_)"           # no shadow compositor overhead
-
-        # Steam dialogs and overlays float so they don't break tiling on ws4
-        "float,  class:^(steam)$, title:^(Steam - News|Steam Guard|Friends List)"
-        "center, class:^(steam)$, title:^(Steam - News|Steam Guard|Friends List)"
-      ];
 
       exec-once = [
         "hyprpaper"
@@ -205,5 +182,68 @@
       ];
 
     };
+
+    # Window rules use the 0.45+ block syntax — not serialisable through the
+    # settings attrset, so written as raw extraConfig.
+    # "silent" on workspace assignments = don't auto-switch when the app opens.
+    extraConfig = ''
+      # ── Workspace assignments ──────────────────────────────────────────────
+      windowrule {
+          name = ws1-browser
+          match:class = yandex-browser-beta|firefox
+          workspace = 1 silent
+      }
+
+      windowrule {
+          name = ws2-terminal
+          match:class = Alacritty
+          workspace = 2 silent
+      }
+
+      windowrule {
+          name = ws4-launchers
+          match:class = steam|net\.lutris\.Lutris|heroic
+          workspace = 4 silent
+      }
+
+      # Steam/Proton game windows: workspace + all gaming tweaks in one block
+      windowrule {
+          name = ws4-games
+          match:class = steam_app_
+
+          workspace    = 4 silent
+          fullscreen   = true
+          immediate    = true       # allow tearing (requires allow_tearing = true)
+          idleinhibit  = always     # no screensaver / lock mid-game
+      }
+
+      # Steam popup dialogs (news, guard, friends) float over the tiled layout
+      windowrule {
+          name = steam-dialogs
+          match:class = steam
+          match:title = Steam - News|Steam Guard|Friends List
+
+          float  = true
+          center = 1
+      }
+
+      # ── Global sanity rules ────────────────────────────────────────────────
+      windowrule {
+          name = suppress-maximize-events
+          match:class = .*
+          suppress_event = maximize
+      }
+
+      windowrule {
+          name = fix-xwayland-drags
+          match:class      = ^$
+          match:title      = ^$
+          match:xwayland   = true
+          match:float      = true
+          match:fullscreen = false
+          match:pin        = false
+          no_focus = true
+      }
+    '';
   };
 }

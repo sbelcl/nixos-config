@@ -13,12 +13,20 @@
   # NVIDIA dGPU (renderD128). The laptop display is wired to the AMD GPU, so
   # rendering on NVIDIA requires a cross-adapter blit every frame → jank.
   # DRI_PRIME=1 selects the second GPU (AMD Renoir) as the render device.
-  # Workspace 3 is work-specific and only relevant on flanker (laptop used for work).
-  # Thunderbird and Chrome are not installed on fulcrum so no point having rules there.
-  wayland.windowManager.hyprland.settings.windowrulev2 = [
-    "workspace 3 silent, class:^(thunderbird)$"
-    "workspace 3 silent, class:^(google-chrome)$"
-  ];
+  # Workspace 3 is work-specific — Thunderbird and Chrome are only on flanker.
+  wayland.windowManager.hyprland.extraConfig = ''
+    windowrule {
+        name = ws3-thunderbird
+        match:class = thunderbird
+        workspace = 3 silent
+    }
+
+    windowrule {
+        name = ws3-chrome
+        match:class = google-chrome
+        workspace = 3 silent
+    }
+  '';
 
   xdg.desktopEntries.yandex-browser-beta = {
     name       = "Yandex Browser (beta)";
