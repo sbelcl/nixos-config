@@ -15,6 +15,9 @@ with lib; {
   };
 
   config = mkIf config.desktop.hyprland.enable {
+    # Required for hyprlock to authenticate via PAM
+    security.pam.services.hyprlock = {};
+
     programs.hyprland = {
       enable = true;
       # xwayland.enable = true; # enabled by default

@@ -16,6 +16,11 @@
     };
 
     vibepanel.url = "github:prankstr/vibepanel";
+
+    hyprpanel = {
+      url = "github:Jas-SinghFSU/HyprPanel";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {

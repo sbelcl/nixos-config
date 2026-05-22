@@ -5,6 +5,7 @@
 #
 {
   pkgs,
+  lib,
   config,
   inputs,
   ...
@@ -112,6 +113,19 @@
     enableManager = true;   # ComfyUI Manager for installing custom nodes
     port          = 8188;
     dataDir       = "/mnt/storage/comfyui";
+  };
+
+  # Remove comfyui from the boot critical path — without this override,
+  # comfyui's WantedBy=multi-user.target + Requires=mnt-storage.mount forces
+  # the storage fsck to run before graphical.target, adding ~12s to boot.
+  # Instead, a timer starts it 30s after boot (storage mount is done by then).
+  systemd.services.comfyui.wantedBy = lib.mkForce [];
+  systemd.timers.comfyui = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "30s";
+      Unit = "comfyui.service";
+    };
   };
 
   # ==========================================================================

@@ -17,8 +17,9 @@
     # Required for Wayland compositors
     modesetting.enable = true;
 
-    # Power management - less critical on desktop, but still useful
-    powerManagement.enable = false;
+    # Power management — saves GPU memory to disk on suspend/hibernate.
+    # Required for reliable wake from sleep on Wayland (RTX 3080 Ti).
+    powerManagement.enable = true;
 
     # NVIDIA settings GUI
     nvidiaSettings = true;
@@ -57,4 +58,15 @@
 
   # Enable GameMode for gaming performance
   programs.gamemode.enable = true;
+
+  # NVIDIA suspend/session fix for large VRAM (12 GB RTX 3080 Ti).
+  # NVreg_PreserveVideoMemoryAllocations — keeps VRAM state across suspend and
+  # session boundaries; without it, SDDM gets a dirty GPU after a game exits at
+  # logout, causing a black screen.
+  # NVreg_TemporaryFilePath — powerManagement.enable dumps VRAM to /tmp (tmpfs)
+  # by default, which is too small for 12 GB. Redirect to /var/tmp (disk).
+  boot.extraModprobeConfig = ''
+    options nvidia NVreg_PreserveVideoMemoryAllocations=1
+    options nvidia NVreg_TemporaryFilePath=/var/tmp
+  '';
 }

@@ -15,7 +15,8 @@
       Description = "Polkit GNOME authentication agent";
       After = [ "graphical-session.target" ];
       PartOf = [ "graphical-session.target" ];
-      ConditionEnvironment = "NIRI_SOCKET";
+      # Run in Niri OR Hyprland (Plasma has its own polkit agent)
+      ConditionEnvironment = [ "|NIRI_SOCKET" "|HYPRLAND_INSTANCE_SIGNATURE" ];
     };
     Service = {
       ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
@@ -37,7 +38,8 @@
     notify = true;
     tray = "auto";
   };
-  systemd.user.services.udiskie.Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";
+  systemd.user.services.udiskie.Unit.ConditionEnvironment =
+    lib.mkForce [ "|NIRI_SOCKET" "|HYPRLAND_INSTANCE_SIGNATURE" ];
 
   # Night light — reduce blue light after sunset (Ljubljana ~46°N 14°E)
   services.gammastep = {
@@ -50,7 +52,8 @@
       night = 3500;
     };
   };
-  systemd.user.services.gammastep.Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";
+  systemd.user.services.gammastep.Unit.ConditionEnvironment =
+    lib.mkForce [ "|NIRI_SOCKET" "|HYPRLAND_INSTANCE_SIGNATURE" ];
   # Niri session packages — only relevant when running Niri
   home.packages = with pkgs; [
     niri

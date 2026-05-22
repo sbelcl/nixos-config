@@ -14,6 +14,11 @@
 
   programs.niri.enable = true;
 
+  # Required for swaylock to authenticate via PAM.
+  # home-manager's programs.swaylock only manages the config file;
+  # the PAM service (/etc/pam.d/swaylock) must be created at system level.
+  security.pam.services.swaylock = {};
+
   xdg.portal = {
     enable = true;
     # wlr portal handles screen capture/sharing on wlroots compositors (Niri)

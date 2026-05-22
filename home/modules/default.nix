@@ -1,6 +1,7 @@
 {...}: {
   imports = [
     ./niri/niri.nix
+    ./hyprland/hyprland.nix
     ./fonts.nix
     ./packages.nix
     ./neovim.nix

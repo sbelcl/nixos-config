@@ -61,8 +61,13 @@ EOF
       exit 0
     fi
     NEXT=$(ls "$DIR"/*.{jpg,jpeg,png,webp} 2>/dev/null | shuf -n1)
-    pkill swaybg 2>/dev/null; sleep 0.1
-    ${pkgs.swaybg}/bin/swaybg -i "$NEXT" -m fill &
+    if [ -n "$NIRI_SOCKET" ]; then
+      pkill swaybg 2>/dev/null; sleep 0.1
+      ${pkgs.swaybg}/bin/swaybg -i "$NEXT" -m fill &
+    elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
+      hyprctl hyprpaper preload "$NEXT"
+      hyprctl hyprpaper wallpaper ",$NEXT"
+    fi
     echo "$NEXT" > /tmp/current-wallpaper
   '';
 
@@ -94,8 +99,14 @@ EOF
              ')
 
     case "$CHOICE" in
-      *Lock)     swaylock ;;
-      *Logout)   niri msg action quit ;;
+      *Lock)
+        if   [ -n "$NIRI_SOCKET" ];                    then swaylock
+        elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ];    then hyprlock
+        fi ;;
+      *Logout)
+        if   [ -n "$NIRI_SOCKET" ];                    then niri msg action quit
+        elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ];    then hyprctl dispatch exit
+        fi ;;
       *Reboot)   systemctl reboot ;;
       *Shutdown) systemctl poweroff ;;
     esac

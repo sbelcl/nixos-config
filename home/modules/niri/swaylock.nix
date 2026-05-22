@@ -66,7 +66,8 @@ in {
   systemd.user.services.swayidle.Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";
 
   systemd.user.services.swayosd = {
-    Unit.ConditionEnvironment = lib.mkForce "NIRI_SOCKET";
+    # swayosd works on any Wayland compositor — run in Niri and Hyprland
+    Unit.ConditionEnvironment = lib.mkForce [ "|NIRI_SOCKET" "|HYPRLAND_INSTANCE_SIGNATURE" ];
     Service = {
       Environment = [
         "XDG_DATA_DIRS=${pkgs.papirus-icon-theme}/share:${pkgs.adwaita-icon-theme}/share:/run/current-system/sw/share:%h/.local/share"
