@@ -4,7 +4,7 @@
 { pkgs, inputs, ... }: let
   hp = inputs.hyprpanel.packages.${pkgs.stdenv.hostPlatform.system}.default;
 in {
-  home.packages = [ hp ];
+  home.packages = [ hp pkgs.hyprlauncher ];
 
   # Start HyprPanel only in Hyprland sessions.
   # HyprPanel is an AGS-based bar + notification centre — it replaces

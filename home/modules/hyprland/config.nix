@@ -100,7 +100,7 @@
         "$mainMod, Return,  exec, alacritty"
         "$mainMod, T,       exec, alacritty"
         "$mainMod, E,       exec, dolphin"
-        "SUPER,    SPACE,   exec, rofi-launcher"
+        "SUPER,    SPACE,   exec, hyprlauncher"
         "$mainMod SHIFT, Q, exec, rofi-power"
         "$mainMod, M,       exec, missioncenter"
 
