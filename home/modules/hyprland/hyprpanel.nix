@@ -1,42 +1,22 @@
 #
 # ~/.nixos/home/modules/hyprland/hyprpanel.nix
 #
-{ pkgs, inputs, ... }: let
-  hp = inputs.hyprpanel.packages.${pkgs.stdenv.hostPlatform.system}.default;
-in {
-  home.packages = [ hp ];
+{ pkgs, inputs, lib, config, ... }: {
 
-  # hyprlauncher — Hyprland-native app launcher.
-  # Run as a daemon (-d) so it's pre-loaded and appears instantly on keypress.
-  # Styling is not available in v0.1.5 (only window_size is exposed).
-  services.hyprlauncher = {
-    enable = true;
-    settings = {
-      general.grab_focus = true;
-      cache.enabled = true;
-      ui.window_size = "560 380";
-      finders = {
-        desktop_icons = true;
-        math_prefix = "=";
-      };
-    };
+  options.hyprpanel.package = lib.mkOption {
+    type        = lib.types.package;
+    default     = inputs.hyprpanel.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    description = "HyprPanel package to use. Override per-host to apply patches.";
   };
 
-  # Start HyprPanel only in Hyprland sessions.
-  # HyprPanel is an AGS-based bar + notification centre — it replaces
-  # both a bar (waybar) and a notification daemon (swaync) for Hyprland.
-  systemd.user.services.hyprpanel = {
-    Unit = {
-      Description = "HyprPanel bar and notification daemon";
-      After = [ "graphical-session.target" ];
-      PartOf = [ "graphical-session.target" ];
-      ConditionEnvironment = "HYPRLAND_INSTANCE_SIGNATURE";
-    };
-    Service = {
-      ExecStart = "${hp}/bin/hyprpanel";
-      Restart = "on-failure";
-      RestartSec = 2;
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
+  config = let
+    hp = config.hyprpanel.package;
+  in {
+    home.packages = [ hp ];
+
+    # HyprPanel is launched directly from Hyprland's exec-once (config.nix)
+    # rather than via a systemd service.  Launching it from exec-once avoids
+    # the ~15-second systemd activation delay caused by waiting for
+    # HYPRLAND_INSTANCE_SIGNATURE to propagate into the user session.
   };
 }

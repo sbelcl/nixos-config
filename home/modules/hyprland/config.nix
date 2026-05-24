@@ -78,6 +78,8 @@
 
       exec-once = [
         "hyprpaper"
+        "hyprpanel"    # launch directly — avoids systemd env-propagation delay
+        "hypridle"     # idle daemon — lock at 5 min, monitors off at 10 min
       ];
 
       misc = {
@@ -100,7 +102,7 @@
         "$mainMod, Return,  exec, alacritty"
         "$mainMod, T,       exec, alacritty"
         "$mainMod, E,       exec, dolphin"
-        "SUPER,    SPACE,   exec, hyprlauncher"
+        "SUPER,    SPACE,   exec, fuzzel"
         "$mainMod SHIFT, Q, exec, rofi-power"
         "$mainMod, M,       exec, missioncenter"
 

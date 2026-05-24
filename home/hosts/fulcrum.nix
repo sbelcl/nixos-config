@@ -3,7 +3,7 @@
 #
 # Fulcrum-specific home overrides (gaming rig)
 #
-{pkgs, ...}: {
+{ pkgs, ... }: {
   programs.zsh.shellAliases = {
     updsys = "sudo nixos-rebuild switch --flake ~/.nixos#fulcrum";
     updhome = "home-manager switch --flake ~/.nixos/home#imnos@fulcrum";

@@ -148,16 +148,13 @@
   # ddcci-backlight creates a /sys/class/backlight device from DDC/CI
   # which lets standard tools (vibepanel, brightnessctl) control brightness
   hardware.i2c.enable = true;
-  users.users.imnos.extraGroups = [ "i2c" ];
+  users.users.imnos.extraGroups = [ "i2c" "video" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [ ddcci-driver ];
   boot.kernelModules = [ "ddcci" "ddcci-backlight" ];
-  # DDC/CI backlight — two chained udev rules:
-  # Rule 1: when i2c-4 bus appears, register the ddcci i2c client at 0x37
-  # Rule 2: when that client (4-0037) appears, bind the ddcci driver
-  #         → ddcci-backlight then creates /sys/class/backlight/ddcci4
+  # DDC/CI backlight — bind ddcci driver to the ASUS VG34VQL3A (4-0037).
+  # The i2c client already exists when udev sees the device; we just need to
+  # bind the ddcci driver so ddcci-backlight creates /sys/class/backlight/ddcci4.
   services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="i2c-dev", KERNEL=="i2c-4", \
-      RUN+="${pkgs.bash}/bin/sh -c 'echo ddcci 0x37 > /sys/bus/i2c/devices/i2c-4/new_device'"
     ACTION=="add", SUBSYSTEM=="i2c", KERNEL=="4-0037", \
       RUN+="${pkgs.bash}/bin/sh -c 'echo 4-0037 > /sys/bus/i2c/drivers/ddcci/bind'"
   '';

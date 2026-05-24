@@ -27,7 +27,7 @@
     };
   };
 
-  # Only run in Hyprland sessions
-  systemd.user.services.hypridle.Unit.ConditionEnvironment =
-    lib.mkForce "HYPRLAND_INSTANCE_SIGNATURE";
+  # Disable the systemd auto-start — hypridle is launched from exec-once in
+  # config.nix so it starts immediately without the env-propagation delay.
+  systemd.user.services.hypridle.Install.WantedBy = lib.mkForce [];
 }
