@@ -8,7 +8,7 @@ in {
     enable = true;
     settings = {
       preload = [ "${wallpaper}" ];
-      wallpaper = [ ",${wallpaper}" ];  # empty monitor = all outputs
+      wallpaper = [ "*,${wallpaper}" ];  # * = all outputs (empty string not supported in v0.8+)
       splash = false;
     };
   };

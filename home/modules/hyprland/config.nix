@@ -20,6 +20,11 @@
       env = [
         "XCURSOR_SIZE,24"
         "HYPRCURSOR_SIZE,24"
+        # NVIDIA: disable hardware cursor planes — avoids a ~15 s DRM init
+        # timeout that delays the first frame (and thus all exec-once apps).
+        "WLR_NO_HARDWARE_CURSORS,1"
+        "LIBVA_DRIVER_NAME,nvidia"
+        "NVD_BACKEND,direct"
       ];
 
       general = {
