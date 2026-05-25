@@ -82,7 +82,8 @@
 
 
       exec-once = [
-        "hyprpaper"
+        "swww-daemon"                                    # wallpaper daemon
+        "swww img ~/.config/background"                  # set initial wallpaper
         "hyprpanel"    # launch directly — avoids systemd env-propagation delay
         "hypridle"     # idle daemon — lock at 5 min, monitors off at 10 min
       ];
