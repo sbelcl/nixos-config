@@ -28,21 +28,7 @@
     }
   '';
 
-  xdg.desktopEntries.yandex-browser-beta = {
-    name       = "Yandex Browser (beta)";
-    genericName = "Web Browser";
-    # DRI_PRIME=1      → use AMD iGPU (renderD129) — display is wired to AMD
-    # --ozone-platform=wayland → native Wayland instead of XWayland (huge perf win)
-    exec       = "env DRI_PRIME=1 yandex-browser-beta --ozone-platform=wayland %U";
-    icon       = "yandex-browser-beta";
-    categories = [ "Network" "WebBrowser" ];
-    mimeType   = [
-      "application/pdf" "application/rdf+xml" "application/rss+xml"
-      "application/xhtml+xml" "application/xhtml_xml" "application/xml"
-      "image/gif" "image/jpeg" "image/png" "image/webp"
-      "text/html" "text/xml"
-      "x-scheme-handler/http" "x-scheme-handler/https"
-    ];
-    startupNotify = true;
-  };
+  # Yandex Browser .desktop override moved to home/modules/yandex.nix
+  # (DRI_PRIME=1 and --ozone-platform=wayland removed — they cause
+  # transparent rendering under Hyprland with NVIDIA)
 }

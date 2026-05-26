@@ -12,6 +12,12 @@
     };
   };
 
+  qt = {
+    enable = true;
+    platformTheme.name = "kde";
+    style.name = "breeze";
+  };
+
   gtk = {
     enable = true;
     font = {
@@ -42,7 +48,19 @@
     gtk.enable = true;
   };
 
+  # Force KDE/Qt apps (Dolphin, Okular, Ark…) to use the dark Breeze palette
+  xdg.configFile."kdeglobals".text = ''
+    [General]
+    ColorScheme=BreezeDark
+
+    [KDE]
+    LookAndFeelPackage=org.kde.breezedark.desktop
+  '';
+
   home.packages = with pkgs; [
+    # Qt/KDE theming
+    kdePackages.breeze
+    kdePackages.breeze-icons
     # UI & system fonts
     inter                           # clean modern UI font
     noto-fonts

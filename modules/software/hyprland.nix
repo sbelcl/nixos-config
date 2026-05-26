@@ -44,11 +44,10 @@ with lib; {
       dunst
 
       # Launcher
-      wofi
       fuzzel
 
-      # Bar
-      waybar
+      # Blue light filter
+      hyprsunset
 
       # Screenshot
       grim

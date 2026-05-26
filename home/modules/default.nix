@@ -17,5 +17,6 @@
     ./vibepanel.nix
     ./mpv.nix
     ./dolphin.nix
+    ./taskwarrior.nix
   ];
 }

@@ -18,6 +18,9 @@
 
     # Native Wayland for Firefox
     MOZ_ENABLE_WAYLAND = "1";
+
+    # VA-API driver for hardware video decode (NVIDIA)
+    LIBVA_DRIVER_NAME = "nvidia";
   };
 
   xdg.userDirs.setSessionVariables = true;

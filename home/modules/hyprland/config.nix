@@ -1,7 +1,11 @@
 #
 # ~/.nixos/home/modules/hyprland/config.nix
 #
-{ ... }: {
+{ pkgs, inputs, ... }: {
+  home.packages = [
+    inputs.snappy-switcher.packages.${pkgs.stdenv.hostPlatform.system}.default
+  ];
+
   wayland.windowManager.hyprland = {
     enable = true;
 
@@ -25,6 +29,11 @@
         "WLR_NO_HARDWARE_CURSORS,1"
         "LIBVA_DRIVER_NAME,nvidia"
         "NVD_BACKEND,direct"
+        # Ensure GPU vars are available to all Hyprland children (fuzzel, etc.)
+        "GBM_BACKEND,nvidia-drm"
+        "__GLX_VENDOR_LIBRARY_NAME,nvidia"
+        "NIXOS_OZONE_WL,1"
+        "ELECTRON_OZONE_PLATFORM_HINT,auto"
       ];
 
       general = {
@@ -33,8 +42,14 @@
         border_size = 2;
         "col.active_border" = "rgba(7fc8ffee) rgba(22d4e0ee) 45deg";
         "col.inactive_border" = "rgba(3c3c6eaa)";
-        layout = "dwindle";
+        layout = "scrolling";
         allow_tearing = true;   # tearing opt-in per window via "immediate" rule
+      };
+
+      scrolling = {
+        column_width = 1.0;     # each column = full screen width
+        fullscreen_on_one_column = true;
+        focus_fit_method = 1;   # fit (not center) when focusing
       };
 
       decoration = {
@@ -72,20 +87,25 @@
         preserve_split = true;
       };
 
+      # Keep dwindle config as fallback for per-workspace overrides
+
       # Workspace names and per-workspace settings
       workspace = [
         "1, name:web"
-        "2, name:term"
+        "2, name:term, layout:dwindle"
         "3, name:work"
         "4, name:game, gapsin:0, gapsout:0"   # no gaps — games are fullscreen
       ];
 
 
       exec-once = [
-        "swww-daemon"                                    # wallpaper daemon
-        "swww img ~/.config/background"                  # set initial wallpaper
+        "awww-daemon"                                    # wallpaper daemon
+        "awww img ~/.config/background"                  # set initial wallpaper
         "hyprpanel"    # launch directly — avoids systemd env-propagation delay
         "hypridle"     # idle daemon — lock at 5 min, monitors off at 10 min
+        "snappy-switcher --daemon"                       # animated Alt+Tab switcher
+        "hyprsunset -t 4500"                             # blue light filter (4500K)
+        "hyprlock"                                       # lock screen on boot
       ];
 
       misc = {
@@ -115,9 +135,7 @@
         # ── Window management ───────────────────────────────────────────────
         "$mainMod, Q,       killactive,"
         "$mainMod, V,       togglefloating,"
-        "$mainMod, F,       fullscreen, 0"
-        "$mainMod, P,       pseudo,"          # dwindle pseudotile
-        "$mainMod, J,       togglesplit,"     # dwindle split direction
+        "$mainMod, F,       fullscreen, 1"
 
         # ── Lock ────────────────────────────────────────────────────────────
         "$mainMod, L,       exec, hyprlock"
@@ -128,11 +146,21 @@
         "$mainMod, up,      movefocus, u"
         "$mainMod, down,    movefocus, d"
 
+        # ── Alt+Tab switcher (snappy-switcher) ──────────────────────────────
+        "ALT, Tab,       exec, snappy-switcher next"
+        "ALT SHIFT, Tab, exec, snappy-switcher prev"
+
         # ── Move windows ────────────────────────────────────────────────────
         "$mainMod SHIFT, left,  movewindow, l"
         "$mainMod SHIFT, right, movewindow, r"
         "$mainMod SHIFT, up,    movewindow, u"
         "$mainMod SHIFT, down,  movewindow, d"
+
+        # ── Scrolling layout ────────────────────────────────────────────────
+        "$mainMod, comma,        layoutmsg, swapcol l"
+        "$mainMod, period,       layoutmsg, swapcol r"
+        "$mainMod, bracketleft,  layoutmsg, colresize -conf"
+        "$mainMod, bracketright, layoutmsg, colresize +conf"
 
         # ── Workspaces ──────────────────────────────────────────────────────
         "$mainMod, 1, workspace, 1"

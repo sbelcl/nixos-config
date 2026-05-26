@@ -17,7 +17,14 @@
     autosuggestion.enable = true;
     autocd = true;
     syntaxHighlighting.enable = true;
-    initContent = ''eval "$(starship init zsh)"'';
+    initContent = ''
+      eval "$(starship init zsh)"
+
+      # Auto-start Hyprland on TTY1 (flanker auto-login)
+      if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+        exec start-hyprland
+      fi
+    '';
     setOptions = [
       "APPEND_HISTORY"
       "HIST_IGNORE_ALL_DUPS"
@@ -72,6 +79,13 @@
     # publicShare = "$HOME/Javno";
     # templates   = "$HOME/Predloge";
   };
+
+  # English symlinks → Slovenian XDG dirs (HyprPanel uses English names)
+  home.file."Downloads".source  = config.lib.file.mkOutOfStoreSymlink "/home/imnos/Prenosi";
+  home.file."Documents".source  = config.lib.file.mkOutOfStoreSymlink "/home/imnos/Dokumenti";
+  home.file."Videos".source     = config.lib.file.mkOutOfStoreSymlink "/home/imnos/Videi";
+  home.file."Pictures".source   = config.lib.file.mkOutOfStoreSymlink "/home/imnos/Slike";
+  home.file."Projects".source   = config.lib.file.mkOutOfStoreSymlink "/home/imnos/Projekti";
 
   # (ni nujno) Če želiš imeti tudi orodje na voljo:
   home.packages = [pkgs.xdg-user-dirs];

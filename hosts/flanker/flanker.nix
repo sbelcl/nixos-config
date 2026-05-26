@@ -71,6 +71,8 @@
     curl
     git
     xfsprogs   # XFS filesystem tools (mkfs.xfs, xfs_repair, etc.)
+    wine
+    winetricks
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -86,6 +88,20 @@
   # Lower swappiness — with 16GB RAM the kernel shouldn't be swapping under
   # browser load. Default 60 causes unnecessary swap pressure on memory spikes.
   boot.kernel.sysctl."vm.swappiness" = 10;
+
+  # Hyprland — the only WM on flanker (auto-login, no greeter)
+  desktop.hyprland.enable = true;
+
+  # Disable greetd — boot straight to TTY auto-login → Hyprland
+  displayManager.greetd.enable = false;
+
+  # Auto-login user on TTY1 (zsh profile starts Hyprland automatically)
+  services.getty.autologinUser = "imnos";
+
+  # GNOME Keyring — unlock on hyprlock auth (the primary login point)
+  services.gnome.gnome-keyring.enable = true;
+  security.pam.services.login.enableGnomeKeyring = true;
+  security.pam.services.hyprlock.enableGnomeKeyring = true;
 
   system.stateVersion = "25.05"; # Did you read the comment?
 }

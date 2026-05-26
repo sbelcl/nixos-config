@@ -47,6 +47,8 @@ with lib; {
 
     environment.systemPackages = with pkgs; [
       libvdpau
+      nvidia-vaapi-driver
+      libva-utils
       mesa-demos
       vulkan-loader
       vulkan-tools

@@ -105,6 +105,8 @@ in {
     nmap        # network scanner
     psmisc      # killall, fuser, pstree
     poppler-utils # PDF tools (pdftotext, pdfimages, etc.)
+    taskwarrior3  # CLI task manager
+    taskwarrior-tui # terminal UI for taskwarrior
     # Archive management (ark is in dolphin.nix)
     p7zip
     unrar
@@ -115,6 +117,7 @@ in {
     smartmontools
     nvtopPackages.nvidia
     # Programming
+    odin
     nodejs_20
     godot
     dos2unix

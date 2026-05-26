@@ -12,7 +12,7 @@
 { pkgs, ... }: let
   wallpaper = ../../../assets/wallpapers/default.png;
 in {
-  home.packages = [ pkgs.swww ];
+  home.packages = [ pkgs.awww ];
 
   # Symlink the default wallpaper to ~/.config/background so HyprPanel's
   # wallpaper-cycling feature knows where to find the current wallpaper.
