@@ -20,8 +20,12 @@
     Service = {
       ExecStart = "${pkgs.yandex-disk}/bin/yandex-disk start --no-daemon";
       Restart   = "on-failure";
-      RestartSec = "5s";
+      RestartSec = "10s";
     };
+    # Stop retrying after 3 failures in 60 s — prevents crash-loop when
+    # `yandex-disk setup` hasn't been run yet (missing 'dir' config).
+    Unit.StartLimitIntervalSec = 60;
+    Unit.StartLimitBurst = 3;
     Install.WantedBy = ["default.target"];
   };
 }
