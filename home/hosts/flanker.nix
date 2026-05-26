@@ -14,6 +14,10 @@
   # rendering on NVIDIA requires a cross-adapter blit every frame → jank.
   # DRI_PRIME=1 selects the second GPU (AMD Renoir) as the render device.
   # Workspace 3 is work-specific — Thunderbird and Chrome are only on flanker.
+  # Lock screen immediately on Hyprland start — flanker uses auto-login (no
+  # greeter), so hyprlock is the only authentication gate after boot.
+  wayland.windowManager.hyprland.settings.exec-once = [ "hyprlock" ];
+
   wayland.windowManager.hyprland.extraConfig = ''
     windowrule {
         name = ws3-thunderbird

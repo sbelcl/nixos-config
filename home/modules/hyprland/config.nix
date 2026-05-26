@@ -105,7 +105,8 @@
         "hypridle"     # idle daemon — lock at 5 min, monitors off at 10 min
         "snappy-switcher --daemon"                       # animated Alt+Tab switcher
         "hyprsunset -t 4500"                             # blue light filter (4500K)
-        "hyprlock"                                       # lock screen on boot
+        # hyprlock on boot is flanker-only (auto-login, no greeter).
+        # On fulcrum, SDDM already authenticates — no lock needed at startup.
       ];
 
       misc = {
