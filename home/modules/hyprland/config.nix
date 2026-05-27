@@ -8,6 +8,7 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
+    configType = "hyprlang";   # keep legacy format (avoid lua migration)
 
     # Export Hyprland env vars into the systemd user session so that
     # ConditionEnvironment = HYPRLAND_INSTANCE_SIGNATURE gates work.
@@ -83,11 +84,8 @@
       };
 
       dwindle = {
-        pseudotile = true;
         preserve_split = true;
       };
-
-      # Keep dwindle config as fallback for per-workspace overrides
 
       # Workspace names and per-workspace settings
       workspace = [
@@ -259,6 +257,16 @@
           name = steam-dialogs
           match:class = steam
           match:title = Steam - News|Steam Guard|Friends List
+
+          float  = true
+          center = 1
+      }
+
+      # ── Thunderbird compose window — float over the tiled layout ───────────
+      windowrule {
+          name = thunderbird-compose
+          match:class = thunderbird
+          match:title = Sestavi:
 
           float  = true
           center = 1

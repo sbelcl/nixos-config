@@ -9,12 +9,10 @@
   services.upower.enable = true;
   services.power-profiles-daemon.enable = true;
 
-  # Suspend on lid close, hibernate after longer inactivity on battery
+  # Suspend on lid close; idle suspend handled by hypridle (Wayland-aware)
   services.logind.settings.Login = {
     HandleLidSwitch = "suspend";
     HandleLidSwitchExternalPower = "lock";
     HandlePowerKey = "suspend";
-    IdleAction = "suspend";
-    IdleActionSec = "30min";
   };
 }

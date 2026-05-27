@@ -6,11 +6,10 @@
   pkgs,
   lib,
   ...
-}: let
-  kimi-cli = pkgs.callPackage ../pkgs/kimi-cli.nix {};
-in {
+}: {
   # Enable firefox
   programs.firefox.enable = true;
+  programs.firefox.configPath = ".mozilla/firefox";
 
   # Persistent default app associations
   xdg.mimeApps = {
@@ -118,13 +117,12 @@ in {
     nvtopPackages.nvidia
     # Programming
     odin
-    nodejs_20
+    nodejs_22
     godot
     dos2unix
     claude-code
     gemini-cli
-    kimi-cli
-    kiro
+kiro
     codex
     python315
     # LibreOffice

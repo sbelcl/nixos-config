@@ -23,7 +23,7 @@ with lib; {
       # xwayland.enable = true; # enabled by default
     };
 
-    services.seatd.enable = true;
+    # logind handles seat management (seatd can't survive VT switches)
 
     # XDG portal for Hyprland
     xdg.portal = {

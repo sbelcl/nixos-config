@@ -23,6 +23,11 @@
           on-timeout = "hyprctl dispatch dpms off";
           on-resume = "hyprctl dispatch dpms on";
         }
+        {
+          # Suspend after 20 min — only on battery
+          timeout = 1200;
+          on-timeout = "cat /sys/class/power_supply/BAT1/status | grep -q Discharging && systemctl suspend";
+        }
       ];
     };
   };
