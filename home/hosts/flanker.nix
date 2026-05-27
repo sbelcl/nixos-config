@@ -22,7 +22,16 @@
     windowrule {
         name = ws3-thunderbird
         match:class = thunderbird
+        match:title = r:^(?!Sestavi:)
         workspace = 3 silent
+    }
+
+    windowrule {
+        name = thunderbird-compose
+        match:class = thunderbird
+        match:title = Sestavi:
+        float  = true
+        center = 1
     }
 
     windowrule {

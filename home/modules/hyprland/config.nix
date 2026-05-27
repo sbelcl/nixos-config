@@ -103,6 +103,8 @@
         "hypridle"     # idle daemon — lock at 5 min, monitors off at 10 min
         "snappy-switcher --daemon"                       # animated Alt+Tab switcher
         "hyprsunset -t 4500"                             # blue light filter (4500K)
+        "alacritty --class scratchterm"
+        "alacritty --class scratchtask -e taskwarrior-tui"
         # hyprlock on boot is flanker-only (auto-login, no greeter).
         # On fulcrum, SDDM already authenticates — no lock needed at startup.
       ];
@@ -125,7 +127,6 @@
       bind = [
         # ── Apps ────────────────────────────────────────────────────────────
         "$mainMod, Return,  exec, alacritty"
-        "$mainMod, T,       exec, alacritty"
         "$mainMod, E,       exec, dolphin"
         "SUPER,    SPACE,   exec, fuzzel"
         "$mainMod SHIFT, Q, exec, rofi-power"
@@ -185,6 +186,8 @@
         "$mainMod SHIFT, 0, movetoworkspace, 10"
 
         # ── Scratchpad ──────────────────────────────────────────────────────
+        ", cedilla,       togglespecialworkspace, term"
+        "$mainMod, T,     togglespecialworkspace, tasks"
         "$mainMod,       S, togglespecialworkspace, magic"
         "$mainMod SHIFT, S, movetoworkspace, special:magic"
 
@@ -262,12 +265,30 @@
           center = 1
       }
 
-      # ── Thunderbird compose window — float over the tiled layout ───────────
+      # ── Scratchpad terminal — drop-down style ──────────────────────────────
       windowrule {
-          name = thunderbird-compose
-          match:class = thunderbird
-          match:title = Sestavi:
+          name = scratchpad-term
+          match:class = scratchterm
+          float     = true
+          size      = 80% 60%
+          center    = 1
+          workspace = special:term silent
+      }
 
+      # ── Scratchpad taskwarrior — quick task list ───────────────────────────
+      windowrule {
+          name = scratchpad-tasks
+          match:class = scratchtask
+          float     = true
+          size      = 70% 50%
+          center    = 1
+          workspace = special:tasks silent
+      }
+
+      # ── Calculator — float centered ─────────────────────────────────────────
+      windowrule {
+          name = calculator-float
+          match:class = org.gnome.Calculator
           float  = true
           center = 1
       }
