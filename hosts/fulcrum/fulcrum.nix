@@ -151,12 +151,14 @@
   users.users.imnos.extraGroups = [ "i2c" "video" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [ ddcci-driver ];
   boot.kernelModules = [ "ddcci" "ddcci-backlight" ];
-  # DDC/CI backlight — bind ddcci driver to the ASUS VG34VQL3A (4-0037).
-  # The i2c client already exists when udev sees the device; we just need to
-  # bind the ddcci driver so ddcci-backlight creates /sys/class/backlight/ddcci4.
+  # DDC/CI backlight — create i2c client for the ASUS VG34VQL3A on the NVIDIA
+  # display bus (i2c-4). NVIDIA GPU adapters don't auto-enumerate DDC clients,
+  # so we create one at the standard DDC address (0x37).  The ddcci driver then
+  # auto-binds to the new client and ddcci-backlight exposes
+  # /sys/class/backlight/ddcci4 for brightness control.
   services.udev.extraRules = ''
-    ACTION=="add", SUBSYSTEM=="i2c", KERNEL=="4-0037", \
-      RUN+="${pkgs.bash}/bin/sh -c 'echo 4-0037 > /sys/bus/i2c/drivers/ddcci/bind'"
+    ACTION=="add", SUBSYSTEM=="i2c-adapter", KERNEL=="i2c-4", \
+      RUN+="${pkgs.bash}/bin/sh -c 'echo ddcci 0x37 > /sys/bus/i2c/devices/%k/new_device'"
   '';
 
   # ==========================================================================
