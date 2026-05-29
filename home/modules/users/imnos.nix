@@ -52,14 +52,14 @@
         error_symbol = "[❯](bold red)";
       };
       directory = {
-        style = "cyan";
+        style = "bold #d4797a";
       };
       git_branch = {
         symbol = "🌱 ";
-        style = "bold purple";
+        style = "bold #c45454";
       };
       git_status = {
-        style = "red";
+        style = "#ff4444";
       };
     };
   };

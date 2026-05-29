@@ -41,8 +41,8 @@
         gaps_in = 4;
         gaps_out = 8;
         border_size = 2;
-        "col.active_border" = "rgba(7fc8ffee) rgba(22d4e0ee) 45deg";
-        "col.inactive_border" = "rgba(3c3c6eaa)";
+        "col.active_border" = "rgba(c45454ee) rgba(d4797aee) 45deg";
+        "col.inactive_border" = "rgba(4a2020aa)";
         layout = "scrolling";
         allow_tearing = true;   # tearing opt-in per window via "immediate" rule
       };
@@ -64,7 +64,7 @@
           enabled = true;
           range = 4;
           render_power = 3;
-          color = "rgba(1a1a2eee)";
+          color = "rgba(1a0808ee)";
         };
       };
 

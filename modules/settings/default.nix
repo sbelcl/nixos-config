@@ -10,7 +10,6 @@
     ./audio.nix
     ./bluetooth.nix
     ./env.nix
-    ./greetd.nix
     ./locales.nix
     ./maintenance.nix
     ./networking.nix

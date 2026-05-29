@@ -34,7 +34,7 @@ in {
 
     [theme]
     mode   = "dark"
-    accent = "#7fc8ff"
+    accent = "#c45454"
 
     [theme.icons]
     theme  = "gtk"
@@ -46,16 +46,16 @@ in {
 
   xdg.configFile."vibepanel/style.css".text = ''
     :root {
-      --color-foreground:          #f0f0f8;
-      --color-accent-primary:      #7fc8ff;
+      --color-foreground:          #e8d5d5;
+      --color-accent-primary:      #c45454;
       --color-state-warning:       #f97316;
-      --color-state-urgent:        #ec4899;
+      --color-state-urgent:        #ff4444;
     }
 
     /* Quick settings / clock popovers */
     popover > contents,
     .vp-surface-popover {
-      background-color: #0d0e1f;
+      background-color: #1a0a0a;
       opacity: 1;
     }
 
@@ -63,7 +63,7 @@ in {
     .notification,
     .toast,
     .app-notification {
-      background-color: #0d0e1f;
+      background-color: #1a0a0a;
     }
   '';
 

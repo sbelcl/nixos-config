@@ -14,8 +14,8 @@
 textbox-clock {
     content:          "$TIME";
     font:             "Sans Bold 36";
-    text-color:       white;
-    background-color: #0d0e1f;
+    text-color:       #e8d5d5;
+    background-color: #1a0a0a;
     horizontal-align: 0.5;
     padding:          0px 0px 20px 0px;
 }
@@ -77,24 +77,24 @@ EOF
       | rofi -dmenu \
              -p "  " \
              -theme-str '
-               window   { width: 280px; border: 4px solid; border-color: #7fc8ff;
-                           border-radius: 16px; background-color: #0d0e1f; }
+               window   { width: 280px; border: 4px solid; border-color: #c45454;
+                           border-radius: 16px; background-color: #1a0a0a; }
                mainbox  { padding: 16px; }
-               inputbar { background-color: #13152e; border-radius: 10px;
-                           border: 1px solid; border-color: rgba(127,200,255,0.3);
+               inputbar { background-color: #2a1215; border-radius: 10px;
+                           border: 1px solid; border-color: rgba(196,84,84,0.3);
                            padding: 10px 14px; margin: 0px 0px 12px 0px;
                            children: [prompt]; }
-               prompt   { background-color: transparent; text-color: #7fc8ff;
+               prompt   { background-color: transparent; text-color: #c45454;
                            font: "Sans Bold 16"; }
-               entry    { background-color: transparent; text-color: #f0f0f8; }
+               entry    { background-color: transparent; text-color: #e8d5d5; }
                listview { background-color: transparent; lines: 4;
                            scrollbar: false; spacing: 6px; }
-               element  { background-color: #13152e; border-radius: 10px;
+               element  { background-color: #2a1215; border-radius: 10px;
                            border: 1px solid; border-color: rgba(255,255,255,0.05);
                            padding: 12px 16px; cursor: pointer; }
-               element selected.normal { background-color: #1a1d3d;
-                           border-color: #7fc8ff; }
-               element-text { background-color: transparent; text-color: #f0f0f8;
+               element selected.normal { background-color: #3d1e1e;
+                           border-color: #c45454; }
+               element-text { background-color: transparent; text-color: #e8d5d5;
                            font: "JetBrainsMono Nerd Font 14"; }
              ')
 

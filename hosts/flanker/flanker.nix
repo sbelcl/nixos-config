@@ -92,9 +92,6 @@
   # Hyprland — the only WM on flanker (auto-login, no greeter)
   desktop.hyprland.enable = true;
 
-  # Disable greetd — boot straight to TTY auto-login → Hyprland
-  displayManager.greetd.enable = false;
-
   # Auto-login user on TTY1 (zsh profile starts Hyprland automatically)
   services.getty.autologinUser = "imnos";
 

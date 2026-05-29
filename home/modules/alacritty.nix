@@ -8,7 +8,7 @@
     settings = {
       window = {
         padding = { x = 16; y = 14; };
-        opacity = 0.92;
+        opacity = 0.88;
         blur = true;
         decorations = "None";         # no title bar — Niri handles window chrome
         dynamic_title = true;
@@ -34,55 +34,55 @@
         multiplier = 3;
       };
 
-      # Dark theme — matches swayosd/swaync palette
+      # Binary Red theme
       colors = {
         primary = {
-          background = "#0e0e0e";
-          foreground = "#d8d8d8";
-          dim_foreground = "#888888";
-          bright_foreground = "#ffffff";
+          background = "#1a0a0a";
+          foreground = "#e8d5d5";
+          dim_foreground = "#887070";
+          bright_foreground = "#fff0f0";
         };
         cursor = {
-          text   = "#0e0e0e";
-          cursor = "#7fc8ff";
+          text   = "#1a0a0a";
+          cursor = "#c45454";
         };
         vi_mode_cursor = {
-          text   = "#0e0e0e";
-          cursor = "#a8d8f0";
+          text   = "#1a0a0a";
+          cursor = "#d4797a";
         };
         selection = {
           text       = "CellForeground";
-          background = "#2a3d52";
+          background = "#3d1e1e";
         };
         normal = {
-          black   = "#1c1c1c";
-          red     = "#dc5050";
-          green   = "#7ec76f";
-          yellow  = "#d4b96a";
-          blue    = "#5bafd6";
-          magenta = "#9d7cd8";
-          cyan    = "#4fc1c9";
-          white   = "#c0c0c0";
+          black   = "#1c0e0e";
+          red     = "#c45454";
+          green   = "#7e9a6f";
+          yellow  = "#d4a86a";
+          blue    = "#7a8aa0";
+          magenta = "#9d6088";
+          cyan    = "#8a7070";
+          white   = "#c0b0b0";
         };
         bright = {
-          black   = "#444444";
-          red     = "#ff7070";
-          green   = "#9edf8f";
-          yellow  = "#f0d080";
-          blue    = "#7fc8ff";
-          magenta = "#bb99ff";
-          cyan    = "#6fe0e8";
-          white   = "#e8e8e8";
+          black   = "#4a2828";
+          red     = "#d4797a";
+          green   = "#9eaf8f";
+          yellow  = "#f0c080";
+          blue    = "#9aaccc";
+          magenta = "#bb80a0";
+          cyan    = "#a08888";
+          white   = "#e8d8d8";
         };
         dim = {
-          black   = "#111111";
+          black   = "#110808";
           red     = "#a03838";
-          green   = "#5a9a50";
-          yellow  = "#a08840";
-          blue    = "#3d7fa0";
-          magenta = "#6a50a0";
-          cyan    = "#308890";
-          white   = "#808080";
+          green   = "#5a7a50";
+          yellow  = "#a08040";
+          blue    = "#506878";
+          magenta = "#6a4060";
+          cyan    = "#605050";
+          white   = "#807070";
         };
       };
 

@@ -37,9 +37,6 @@
   # Display Manager and Desktop Environments
   # ==========================================================================
 
-  # Disable greetd (flanker-specific auto-login to Niri)
-  displayManager.greetd.enable = false;
-
   # SDDM — lets user choose between Plasma, Hyprland, Xmonad, Niri at login
   services.displayManager.sddm = {
     enable = true;

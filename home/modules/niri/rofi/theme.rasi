@@ -1,15 +1,15 @@
-// Rofi theme — colors from the wavy wallpaper
+// Rofi theme — Binary Red palette
 // Clock injected via textbox-clock in launcher script
 
 * {
-    bg:          #0d0e1f;
-    bg-alt:      #13152e;
-    bg-hover:    #1a1d3d;
-    fg:          #f0f0f8;
-    fg-dim:      #7878a8;
-    cyan:        #22d4e0;
-    niri-active: #7fc8ff;
-    pink:        #ec4899;
+    bg:          #1a0a0a;
+    bg-alt:      #2a1215;
+    bg-hover:    #3d1e1e;
+    fg:          #e8d5d5;
+    fg-dim:      #887070;
+    cyan:        #d4797a;
+    niri-active: #c45454;
+    pink:        #ff4444;
     transparent: rgba(0,0,0,0);
 
     background-color: transparent;
@@ -42,7 +42,7 @@ inputbar {
     background-color: @bg-alt;
     border-radius:    12px;
     border:           1px solid;
-    border-color:     rgba(127, 200, 255, 0.3);
+    border-color:     rgba(196, 84, 84, 0.3);
     padding:          14px 18px;
     margin:           0px 0px 20px 0px;
     children:         [ prompt, entry ];
