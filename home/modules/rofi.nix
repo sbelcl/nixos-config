@@ -47,7 +47,15 @@ EOF
       [ -z "$PICK" ] && exit 0
 
       case $EXIT in
-        0)  echo "$PICK" | cliphist decode | wl-copy; exit 0 ;;
+        0)  echo "$PICK" | cliphist decode | wl-copy
+            sleep 0.1
+            CLASS=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.class')
+            if [ "$CLASS" = "Alacritty" ] || [ "$CLASS" = "scratchterm" ] || [ "$CLASS" = "scratchtask" ]; then
+              ${pkgs.wtype}/bin/wtype -M ctrl -M shift v -m shift -m ctrl
+            else
+              ${pkgs.wtype}/bin/wtype -M ctrl v -m ctrl
+            fi
+            exit 0 ;;
         10) echo "$PICK" | cliphist delete ;;
         *)  exit 0 ;;
       esac

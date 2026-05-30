@@ -48,13 +48,59 @@
     gtk.enable = true;
   };
 
-  # Force KDE/Qt apps (Dolphin, Okular, Ark…) to use the dark Breeze palette
+  # Force KDE/Qt apps (Dolphin, Okular, Ark…) to use the Binary Red palette
   xdg.configFile."kdeglobals".text = ''
     [General]
-    ColorScheme=BreezeDark
+    ColorScheme=BinaryRed
 
     [KDE]
     LookAndFeelPackage=org.kde.breezedark.desktop
+
+    [Colors:Window]
+    BackgroundNormal=26,10,10
+    ForegroundNormal=232,213,213
+    BackgroundAlternate=42,18,21
+    ForegroundInactive=136,112,112
+    DecorationFocus=196,84,84
+    DecorationHover=212,121,122
+
+    [Colors:View]
+    BackgroundNormal=26,10,10
+    BackgroundAlternate=42,18,21
+    ForegroundNormal=232,213,213
+    ForegroundInactive=136,112,112
+    DecorationFocus=196,84,84
+    DecorationHover=212,121,122
+
+    [Colors:Button]
+    BackgroundNormal=42,18,21
+    ForegroundNormal=232,213,213
+    DecorationFocus=196,84,84
+    DecorationHover=212,121,122
+
+    [Colors:Selection]
+    BackgroundNormal=196,84,84
+    ForegroundNormal=26,10,10
+    BackgroundAlternate=212,121,122
+
+    [Colors:Tooltip]
+    BackgroundNormal=42,18,21
+    ForegroundNormal=232,213,213
+
+    [Colors:Complementary]
+    BackgroundNormal=26,10,10
+    ForegroundNormal=232,213,213
+
+    [Colors:Header]
+    BackgroundNormal=26,10,10
+    ForegroundNormal=232,213,213
+
+    [WM]
+    activeBackground=26,10,10
+    activeForeground=232,213,213
+    inactiveBackground=26,10,10
+    inactiveForeground=136,112,112
+    activeBlend=196,84,84
   '';
 
   home.packages = with pkgs; [

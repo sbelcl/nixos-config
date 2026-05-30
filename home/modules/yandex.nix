@@ -67,7 +67,7 @@ in {
       Wants       = ["network-online.target"];
     };
     Service = {
-      ExecStart = "${pkgs.yandex-disk}/bin/yandex-disk start --no-daemon";
+      ExecStart = "${pkgs.yandex-disk}/bin/yandex-disk start --no-daemon --config=%h/.config/yandex-disk/config.cfg --dir=%h/Yandex.Disk";
       Restart   = "on-failure";
       RestartSec = "10s";
     };

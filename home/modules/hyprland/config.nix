@@ -79,7 +79,7 @@
           "windowsOut, 1, 5, easeIn, popin 80%"
           "border,     1, 10, default"
           "fade,       1, 7, default"
-          "workspaces, 1, 6, easeOut"
+          "workspaces, 1, 6, easeOut, fade"
         ];
       };
 
@@ -134,7 +134,7 @@
 
         # ── Window management ───────────────────────────────────────────────
         "$mainMod, Q,       killactive,"
-        "$mainMod, V,       togglefloating,"
+        # "$mainMod, V,       togglefloating,"
         "$mainMod, F,       fullscreen, 1"
 
         # ── Lock ────────────────────────────────────────────────────────────
@@ -198,7 +198,7 @@
         "$mainMod, Print, exec, grim - | wl-copy"
 
         # ── Clipboard ───────────────────────────────────────────────────────
-        "$mainMod, C, exec, rofi-clipboard"
+        "$mainMod, V, exec, rofi-clipboard"
 
         # ── Wallpaper ───────────────────────────────────────────────────────
         "$mainMod SHIFT, W, exec, wallpaper-next"
