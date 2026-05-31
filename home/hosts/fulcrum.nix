@@ -3,7 +3,7 @@
 #
 # Fulcrum-specific home overrides (gaming rig)
 #
-{ pkgs, ... }: {
+{ pkgs, lib, ... }: {
   programs.zsh.shellAliases = {
     updsys = "sudo nixos-rebuild switch --flake ~/.nixos#fulcrum";
     updhome = "home-manager switch --flake ~/.nixos/home#imnos@fulcrum";
@@ -17,8 +17,8 @@
 
   # Match Hyprland borders to HyprPanel's matugen monochrome palette
   wayland.windowManager.hyprland.settings.general = {
-    "col.active_border"   = "rgba(e2e2e2ee) rgba(ffffffff) 45deg";
-    "col.inactive_border" = "rgba(39393988)";
+    "col.active_border"   = lib.mkForce "rgba(e2e2e2ee) rgba(ffffffff) 45deg";
+    "col.inactive_border" = lib.mkForce "rgba(39393988)";
   };
 
 }
