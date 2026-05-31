@@ -43,34 +43,34 @@
       background = "#393939";
     };
     normal = {
-      black   = "#131313";
-      red     = "#919191";
-      green   = "#a0a0a0";
-      yellow  = "#b4b4b4";
-      blue    = "#c6c6c6";
-      magenta = "#919191";
-      cyan    = "#b4b4b4";
+      black   = "#303030";
+      red     = "#c06060";
+      green   = "#70a080";
+      yellow  = "#c0a060";
+      blue    = "#7090b0";
+      magenta = "#9070a0";
+      cyan    = "#60a0a8";
       white   = "#e2e2e2";
     };
     bright = {
-      black   = "#393939";
-      red     = "#b4b4b4";
-      green   = "#c0c0c0";
-      yellow  = "#cccccc";
-      blue    = "#d8d8d8";
-      magenta = "#b4b4b4";
-      cyan    = "#d8d8d8";
+      black   = "#505050";
+      red     = "#d08080";
+      green   = "#90c0a0";
+      yellow  = "#d4b880";
+      blue    = "#90b0d0";
+      magenta = "#b090c0";
+      cyan    = "#80c0c8";
       white   = "#ffffff";
     };
     dim = {
-      black   = "#0a0a0a";
-      red     = "#606060";
-      green   = "#707070";
-      yellow  = "#808080";
-      blue    = "#919191";
-      magenta = "#606060";
-      cyan    = "#808080";
-      white   = "#b4b4b4";
+      black   = "#1a1a1a";
+      red     = "#804040";
+      green   = "#4a6e58";
+      yellow  = "#806840";
+      blue    = "#486078";
+      magenta = "#604870";
+      cyan    = "#406870";
+      white   = "#919191";
     };
   };
 
