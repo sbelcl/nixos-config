@@ -15,4 +15,10 @@
     btop
   ];
 
+  # Match Hyprland borders to HyprPanel's matugen monochrome palette
+  wayland.windowManager.hyprland.settings.general = {
+    "col.active_border"   = "rgba(e2e2e2ee) rgba(ffffffff) 45deg";
+    "col.inactive_border" = "rgba(39393988)";
+  };
+
 }
