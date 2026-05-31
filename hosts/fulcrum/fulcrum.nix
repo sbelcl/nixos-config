@@ -125,6 +125,9 @@
     };
   };
 
+  # Store Ollama models on bulk HDD to save NVMe space
+  services.ollama.home = "/mnt/storage/ollama";
+
   # ==========================================================================
   # Bluetooth — fulcrum has no Bluetooth hardware.
   # The shared bluetooth.nix enables hardware.bluetooth, which installs a D-Bus

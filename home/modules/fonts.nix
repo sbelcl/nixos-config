@@ -48,7 +48,9 @@
     gtk.enable = true;
   };
 
-  # Force KDE/Qt apps (Dolphin, Okular, Ark…) to use the Binary Red palette
+  # Force KDE/Qt apps (Dolphin, Okular, Ark…) to use the Binary Red palette.
+  # Full color definitions are required — just naming the scheme causes Qt to
+  # fall back to a light palette for alternating rows (white background bug).
   xdg.configFile."kdeglobals".text = ''
     [General]
     ColorScheme=BinaryRed

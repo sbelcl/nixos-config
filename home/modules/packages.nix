@@ -122,7 +122,7 @@
     dos2unix
     claude-code
     gemini-cli
-kiro
+    kiro
     codex
     python315
     # LibreOffice
@@ -144,6 +144,7 @@ kiro
     # Social media
     discord
     telegram-desktop
+    antimicrox
   ];
 
   nixpkgs.config.allowUnfree = true;
