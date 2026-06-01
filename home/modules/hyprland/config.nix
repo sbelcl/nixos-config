@@ -41,8 +41,8 @@
         gaps_in = 4;
         gaps_out = 8;
         border_size = 2;
-        "col.active_border" = "rgba(7fc8ffee) rgba(22d4e0ee) 45deg";
-        "col.inactive_border" = "rgba(3c3c6eaa)";
+        "col.active_border" = "rgba(e2e2e2ee) rgba(ffffffff) 45deg";
+        "col.inactive_border" = "rgba(39393988)";
         layout = "scrolling";
         allow_tearing = true;   # tearing opt-in per window via "immediate" rule
       };

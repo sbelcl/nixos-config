@@ -44,11 +44,11 @@
         };
         cursor = {
           text   = "#1a0a0a";
-          cursor = "#c45454";
+          cursor = "#e2e2e2";
         };
         vi_mode_cursor = {
           text   = "#1a0a0a";
-          cursor = "#d4797a";
+          cursor = "#ffffff";
         };
         selection = {
           text       = "CellForeground";
