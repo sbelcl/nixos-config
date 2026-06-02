@@ -5,24 +5,25 @@
 
   # ── Launcher ──────────────────────────────────────────────────────────────
   rofi-launcher = pkgs.writeShellScriptBin "rofi-launcher" ''
+    source ~/.config/theme/colors.sh 2>/dev/null || { BG="#1a0a0a"; FG="#e8d5d5"; }
     TIME=$(date '+%H:%M  ·  %A, %-d %B')
 
     TMPTHEME=$(mktemp /tmp/rofi-XXXXXX.rasi)
     trap "rm -f '$TMPTHEME'" EXIT
-    cat > "$TMPTHEME" << EOF
+    cat > "$TMPTHEME" << RASI_EOF
 @import "$HOME/.local/share/rofi/themes/theme.rasi"
 textbox-clock {
     content:          "$TIME";
     font:             "Sans Bold 36";
-    text-color:       #e8d5d5;
-    background-color: #1a0a0a;
+    text-color:       ''${FG};
+    background-color: ''${BG};
     horizontal-align: 0.5;
     padding:          0px 0px 20px 0px;
 }
 mainbox {
     children: [ textbox-clock, inputbar, listview ];
 }
-EOF
+RASI_EOF
     exec rofi -show drun -theme "$TMPTHEME"
   '';
 
@@ -77,34 +78,37 @@ EOF
       hyprctl hyprpaper wallpaper ",$NEXT"
     fi
     echo "$NEXT" > /tmp/current-wallpaper
+    # Regenerate color schemes for all apps after wallpaper change
+    matugen image "$NEXT" 2>/dev/null &
   '';
 
   # ── Power menu ────────────────────────────────────────────────────────────
   rofi-power = pkgs.writeShellScriptBin "rofi-power" ''
+    source ~/.config/theme/colors.sh 2>/dev/null || { BG="#1a0a0a"; FG="#e8d5d5"; ACCENT="#c45454"; BG_ALT="#2a1215"; BG_SEL="#3d1e1e"; }
     CHOICE=$(printf "󰌾  Lock\n󰍃  Logout\n󰜉  Reboot\n⏻  Shutdown" \
       | rofi -dmenu \
              -p "  " \
-             -theme-str '
-               window   { width: 280px; border: 4px solid; border-color: #c45454;
-                           border-radius: 16px; background-color: #1a0a0a; }
+             -theme-str "
+               window   { width: 280px; border: 4px solid; border-color: ''${ACCENT};
+                           border-radius: 16px; background-color: ''${BG}; }
                mainbox  { padding: 16px; }
-               inputbar { background-color: #2a1215; border-radius: 10px;
-                           border: 1px solid; border-color: rgba(196,84,84,0.3);
+               inputbar { background-color: ''${BG_ALT}; border-radius: 10px;
+                           border: 1px solid; border-color: ''${ACCENT};
                            padding: 10px 14px; margin: 0px 0px 12px 0px;
                            children: [prompt]; }
-               prompt   { background-color: transparent; text-color: #c45454;
-                           font: "Sans Bold 16"; }
-               entry    { background-color: transparent; text-color: #e8d5d5; }
+               prompt   { background-color: transparent; text-color: ''${ACCENT};
+                           font: \"Sans Bold 16\"; }
+               entry    { background-color: transparent; text-color: ''${FG}; }
                listview { background-color: transparent; lines: 4;
                            scrollbar: false; spacing: 6px; }
-               element  { background-color: #2a1215; border-radius: 10px;
+               element  { background-color: ''${BG_ALT}; border-radius: 10px;
                            border: 1px solid; border-color: rgba(255,255,255,0.05);
                            padding: 12px 16px; cursor: pointer; }
-               element selected.normal { background-color: #3d1e1e;
-                           border-color: #c45454; }
-               element-text { background-color: transparent; text-color: #e8d5d5;
-                           font: "JetBrainsMono Nerd Font 14"; }
-             ')
+               element selected.normal { background-color: ''${BG_SEL};
+                           border-color: ''${ACCENT}; }
+               element-text { background-color: transparent; text-color: ''${FG};
+                           font: \"JetBrainsMono Nerd Font 14\"; }
+             ")
 
     case "$CHOICE" in
       *Lock)

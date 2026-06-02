@@ -18,5 +18,6 @@
     ./mpv.nix
     ./dolphin.nix
     ./taskwarrior.nix
+    ./matugen.nix
   ];
 }
