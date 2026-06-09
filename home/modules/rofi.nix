@@ -78,8 +78,15 @@ RASI_EOF
       hyprctl hyprpaper wallpaper ",$NEXT"
     fi
     echo "$NEXT" > /tmp/current-wallpaper
-    # Regenerate color schemes for all apps after wallpaper change
-    matugen image "$NEXT" 2>/dev/null &
+    # matugen image is broken in v4.0.0 (ENOTTY bug in non-tty context).
+    # Extract dominant color with ImageMagick and use color hex mode instead.
+    (
+      R=$(${pkgs.imagemagick}/bin/magick "$NEXT" -resize 1x1\! -format "%[fx:int(255*u.r)]" info: 2>/dev/null)
+      G=$(${pkgs.imagemagick}/bin/magick "$NEXT" -resize 1x1\! -format "%[fx:int(255*u.g)]" info: 2>/dev/null)
+      B=$(${pkgs.imagemagick}/bin/magick "$NEXT" -resize 1x1\! -format "%[fx:int(255*u.b)]" info: 2>/dev/null)
+      HEX=$(printf "#%02x%02x%02x" "''${R:-128}" "''${G:-128}" "''${B:-128}")
+      matugen color hex "$HEX" 2>/dev/null
+    ) &
   '';
 
   # ── Power menu ────────────────────────────────────────────────────────────

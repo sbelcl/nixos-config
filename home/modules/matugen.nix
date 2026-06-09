@@ -12,6 +12,8 @@
   # ── Matugen config ──────────────────────────────────────────────────────────
 
   xdg.configFile."matugen/config.toml".text = ''
+    [config]
+
     [templates.kdeglobals]
     input_path  = "~/.config/matugen/templates/kdeglobals.ini"
     output_path = "~/.config/kdeglobals"
@@ -48,36 +50,36 @@
     LookAndFeelPackage=org.kde.breezedark.desktop
 
     [Colors:View]
-    BackgroundNormal={{colors.background.default.rgb.r}},{{colors.background.default.rgb.g}},{{colors.background.default.rgb.b}}
-    BackgroundAlternate={{colors.surface_variant.default.rgb.r}},{{colors.surface_variant.default.rgb.g}},{{colors.surface_variant.default.rgb.b}}
-    ForegroundNormal={{colors.on_surface.default.rgb.r}},{{colors.on_surface.default.rgb.g}},{{colors.on_surface.default.rgb.b}}
-    ForegroundInactive={{colors.on_surface_variant.default.rgb.r}},{{colors.on_surface_variant.default.rgb.g}},{{colors.on_surface_variant.default.rgb.b}}
-    ForegroundActive={{colors.primary.default.rgb.r}},{{colors.primary.default.rgb.g}},{{colors.primary.default.rgb.b}}
-    ForegroundLink={{colors.secondary.default.rgb.r}},{{colors.secondary.default.rgb.g}},{{colors.secondary.default.rgb.b}}
-    ForegroundNegative={{colors.error.default.rgb.r}},{{colors.error.default.rgb.g}},{{colors.error.default.rgb.b}}
-    ForegroundNeutral={{colors.tertiary.default.rgb.r}},{{colors.tertiary.default.rgb.g}},{{colors.tertiary.default.rgb.b}}
-    ForegroundPositive={{colors.tertiary_container.default.rgb.r}},{{colors.tertiary_container.default.rgb.g}},{{colors.tertiary_container.default.rgb.b}}
-    ForegroundVisited={{colors.outline.default.rgb.r}},{{colors.outline.default.rgb.g}},{{colors.outline.default.rgb.b}}
-    DecorationFocus={{colors.primary.default.rgb.r}},{{colors.primary.default.rgb.g}},{{colors.primary.default.rgb.b}}
-    DecorationHover={{colors.primary.default.rgb.r}},{{colors.primary.default.rgb.g}},{{colors.primary.default.rgb.b}}
+    BackgroundNormal={{colors.background.default.red}},{{colors.background.default.green}},{{colors.background.default.blue}}
+    BackgroundAlternate={{colors.surface_variant.default.red}},{{colors.surface_variant.default.green}},{{colors.surface_variant.default.blue}}
+    ForegroundNormal={{colors.on_surface.default.red}},{{colors.on_surface.default.green}},{{colors.on_surface.default.blue}}
+    ForegroundInactive={{colors.on_surface_variant.default.red}},{{colors.on_surface_variant.default.green}},{{colors.on_surface_variant.default.blue}}
+    ForegroundActive={{colors.primary.default.red}},{{colors.primary.default.green}},{{colors.primary.default.blue}}
+    ForegroundLink={{colors.secondary.default.red}},{{colors.secondary.default.green}},{{colors.secondary.default.blue}}
+    ForegroundNegative={{colors.error.default.red}},{{colors.error.default.green}},{{colors.error.default.blue}}
+    ForegroundNeutral={{colors.tertiary.default.red}},{{colors.tertiary.default.green}},{{colors.tertiary.default.blue}}
+    ForegroundPositive={{colors.tertiary_container.default.red}},{{colors.tertiary_container.default.green}},{{colors.tertiary_container.default.blue}}
+    ForegroundVisited={{colors.outline.default.red}},{{colors.outline.default.green}},{{colors.outline.default.blue}}
+    DecorationFocus={{colors.primary.default.red}},{{colors.primary.default.green}},{{colors.primary.default.blue}}
+    DecorationHover={{colors.primary.default.red}},{{colors.primary.default.green}},{{colors.primary.default.blue}}
 
     [Colors:Window]
-    BackgroundNormal={{colors.surface.default.rgb.r}},{{colors.surface.default.rgb.g}},{{colors.surface.default.rgb.b}}
-    BackgroundAlternate={{colors.surface.default.rgb.r}},{{colors.surface.default.rgb.g}},{{colors.surface.default.rgb.b}}
-    ForegroundNormal={{colors.on_surface.default.rgb.r}},{{colors.on_surface.default.rgb.g}},{{colors.on_surface.default.rgb.b}}
+    BackgroundNormal={{colors.surface.default.red}},{{colors.surface.default.green}},{{colors.surface.default.blue}}
+    BackgroundAlternate={{colors.surface.default.red}},{{colors.surface.default.green}},{{colors.surface.default.blue}}
+    ForegroundNormal={{colors.on_surface.default.red}},{{colors.on_surface.default.green}},{{colors.on_surface.default.blue}}
 
     [Colors:Button]
-    BackgroundNormal={{colors.surface_variant.default.rgb.r}},{{colors.surface_variant.default.rgb.g}},{{colors.surface_variant.default.rgb.b}}
-    BackgroundAlternate={{colors.surface_variant.default.rgb.r}},{{colors.surface_variant.default.rgb.g}},{{colors.surface_variant.default.rgb.b}}
-    ForegroundNormal={{colors.on_surface.default.rgb.r}},{{colors.on_surface.default.rgb.g}},{{colors.on_surface.default.rgb.b}}
+    BackgroundNormal={{colors.surface_variant.default.red}},{{colors.surface_variant.default.green}},{{colors.surface_variant.default.blue}}
+    BackgroundAlternate={{colors.surface_variant.default.red}},{{colors.surface_variant.default.green}},{{colors.surface_variant.default.blue}}
+    ForegroundNormal={{colors.on_surface.default.red}},{{colors.on_surface.default.green}},{{colors.on_surface.default.blue}}
 
     [Colors:Selection]
-    BackgroundNormal={{colors.primary.default.rgb.r}},{{colors.primary.default.rgb.g}},{{colors.primary.default.rgb.b}}
-    ForegroundNormal={{colors.on_primary.default.rgb.r}},{{colors.on_primary.default.rgb.g}},{{colors.on_primary.default.rgb.b}}
+    BackgroundNormal={{colors.primary.default.red}},{{colors.primary.default.green}},{{colors.primary.default.blue}}
+    ForegroundNormal={{colors.on_primary.default.red}},{{colors.on_primary.default.green}},{{colors.on_primary.default.blue}}
 
     [Colors:Tooltip]
-    BackgroundNormal={{colors.surface_variant.default.rgb.r}},{{colors.surface_variant.default.rgb.g}},{{colors.surface_variant.default.rgb.b}}
-    ForegroundNormal={{colors.on_surface_variant.default.rgb.r}},{{colors.on_surface_variant.default.rgb.g}},{{colors.on_surface_variant.default.rgb.b}}
+    BackgroundNormal={{colors.surface_variant.default.red}},{{colors.surface_variant.default.green}},{{colors.surface_variant.default.blue}}
+    ForegroundNormal={{colors.on_surface_variant.default.red}},{{colors.on_surface_variant.default.green}},{{colors.on_surface_variant.default.blue}}
   '';
 
   xdg.configFile."matugen/templates/alacritty-colors.toml".text = ''
