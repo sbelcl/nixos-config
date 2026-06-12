@@ -22,6 +22,7 @@
       "scanner"
       "lp"
       "docker"
+      "libvirtd"
     ];
   };
 

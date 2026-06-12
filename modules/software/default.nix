@@ -12,6 +12,7 @@
     ./thunar.nix
     ./steam.nix
     ./docker.nix
+    ./libvirt.nix
     ./packages.nix
     ./plasma.nix
     ./hyprland.nix
