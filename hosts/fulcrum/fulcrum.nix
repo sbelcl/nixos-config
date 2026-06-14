@@ -33,6 +33,12 @@
   # Enable experimental features
   nix.settings.experimental-features = ["nix-command" "flakes"];
 
+  # Override shared max-jobs (4) — fulcrum runs on phone hotspot at home,
+  # so we serialize package builds to one at a time. Parallel downloads
+  # swamp the hotspot DNS and cause 'Could not resolve host' failures.
+  # cores=6 from maintenance.nix is unchanged.
+  nix.settings.max-jobs = lib.mkForce 1;
+
   # ==========================================================================
   # Display Manager and Desktop Environments
   # ==========================================================================
