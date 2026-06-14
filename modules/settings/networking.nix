@@ -60,4 +60,13 @@
 
   # 🔹 (Optional) Fail2ban if you expose SSH
   # services.fail2ban.enable = true;
+
+  # Prefer IPv4 in getaddrinfo. ISP IPv6 routing is broken to several
+  # Fastly POPs (incl. cache.nixos.org), causing nix-daemon downloads to
+  # stall for 5 minutes per connection. Reverts to normal behavior
+  # automatically if IPv6 starts working — Linux will still use IPv6 when
+  # there is no IPv4 address.
+  environment.etc."gai.conf".text = ''
+    precedence ::ffff:0:0/96  100
+  '';
 }
