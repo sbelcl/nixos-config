@@ -52,7 +52,7 @@
   systemd.services.nix-daemon.serviceConfig = {
     Nice = lib.mkForce 19;
     IOSchedulingClass = lib.mkForce "idle";
-    IOSchedulingPriority = 7;
+    IOSchedulingPriority = lib.mkForce 7;
     CPUWeight = 20;
     IOWeight = 20;
     MemoryHigh = "20G";
