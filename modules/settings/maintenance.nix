@@ -4,6 +4,7 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: {
   # openldap 2.6.13 has a flaky syncreplication test (test017) that fails
@@ -49,8 +50,8 @@
   # the WM and apps stay snappy. MemoryHigh/MemoryMax push the kernel to
   # throttle the daemon's cgroup before any process gets OOM-killed.
   systemd.services.nix-daemon.serviceConfig = {
-    Nice = 19;
-    IOSchedulingClass = "idle";
+    Nice = lib.mkForce 19;
+    IOSchedulingClass = lib.mkForce "idle";
     IOSchedulingPriority = 7;
     CPUWeight = 20;
     IOWeight = 20;
