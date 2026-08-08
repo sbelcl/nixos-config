@@ -1,7 +1,7 @@
 #
 # ~/.nixos/hosts/fulcrum/fulcrum.nix
 #
-# Gaming rig — SDDM + Plasma (primary DE), Xmonad, Niri
+# Gaming rig — SDDM + Plasma (Wayland), NVIDIA
 #
 {
   pkgs,
@@ -43,13 +43,13 @@
   # Display Manager and Desktop Environments
   # ==========================================================================
 
-  # SDDM — lets user choose between Plasma, Xmonad, Niri at login
+  # SDDM (Wayland greeter) — Plasma is the only session offered on this rig.
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
   };
 
-  # KDE Plasma 6 — primary desktop, best for gaming (VRR/HDR/tearing on NVIDIA)
+  # KDE Plasma 6 — the only desktop, best for gaming (VRR/HDR/tearing on NVIDIA)
   services.desktopManager.plasma6.enable = true;
 
   # Trim Plasma defaults we don't use.  akonadi/kdepim spawns a MariaDB-backed
@@ -74,16 +74,13 @@
   # firewall, which the package alone doesn't do.
   programs.kdeconnect.enable = true;
 
-  # Xmonad
-  services.xserver = {
-    enable = true;
-    windowManager.xmonad = {
-      enable = true;
-      enableContribAndExtras = true;
-    };
-  };
+  # Keep the X server available for XWayland (X11 games/apps under Plasma) and
+  # for SDDM. Xmonad has been removed.
+  services.xserver.enable = true;
 
-  # Niri is enabled unconditionally via modules/software/niri.nix
+  # Niri is enabled by the shared modules/software/niri.nix; force it off here
+  # so this rig only ever offers Plasma.
+  programs.niri.enable = lib.mkForce false;
 
   # ==========================================================================
   # Gaming
