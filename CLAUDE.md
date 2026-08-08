@@ -7,7 +7,7 @@ Multi-host NixOS flake for imnos. Two machines: **fulcrum** (desktop) and **flan
 ```
 ~/.nixos/                          ← system flake
 ├── hosts/
-│   ├── fulcrum/fulcrum.nix        # Gaming desktop — RTX 3080 Ti, KDE Plasma + Niri
+│   ├── fulcrum/fulcrum.nix        # Gaming desktop — RTX 3080 Ti, KDE Plasma only
 │   └── flanker/flanker.nix        # Laptop — hybrid NVIDIA+AMD, Niri WM only
 └── modules/
     ├── software/                  # Shared system packages/services
@@ -52,7 +52,7 @@ Always `git pull` on the other machine after pushing changes.
 ## Key Facts
 
 ### fulcrum (desktop)
-- RTX 3080 Ti · KDE Plasma + Niri (selectable at login)
+- RTX 3080 Ti · KDE Plasma (Wayland) **only** — gaming rig with gamescope "Gaming Mode" SDDM session (HDR/VRR path). No Hyprland/Xmonad/Niri here.
 - `/mnt/storage` — ext4 HDD, automounted
 - `/mnt/games` — XFS NVMe, automounted
 - ComfyUI at `http://127.0.0.1:8188` (CUDA, models in `/mnt/storage/comfyui/`)
@@ -64,9 +64,12 @@ Always `git pull` on the other machine after pushing changes.
 - `/mnt/games` — local XFS NVMe
 
 ### Both machines
-- **WM**: Niri · **Panel**: vibepanel · **Terminal**: Alacritty (`Mod+T`) · **Launcher**: Rofi (`Super+Space`) · **Files**: Dolphin (`Mod+E`)
-- **Browser**: Yandex Browser (custom flake, GStreamer + Chrome 144 codecs)
+- **Terminal**: Alacritty · **Files**: Dolphin · **Browser**: Yandex Browser (custom flake, GStreamer + Chrome 144 codecs)
 - **Default apps**: images→qview, video/audio→VLC, archives→Ark, PDF→Firefox
+
+### flanker-only (Niri stack)
+- **WM**: Niri · **Panel**: vibepanel · **Launcher**: Rofi
+- **Keybinds**: Terminal `Mod+T` · Launcher `Super+Space` · Files `Mod+E` (all defined in `home/modules/niri/niri.nix`)
 
 ## Debugging
 
