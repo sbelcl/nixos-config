@@ -1,7 +1,7 @@
 #
 # ~/.nixos/hosts/fulcrum/fulcrum.nix
 #
-# Gaming rig — SDDM + Plasma, Hyprland, Xmonad, Niri
+# Gaming rig — SDDM + Plasma (primary DE), Xmonad, Niri
 #
 {
   pkgs,
@@ -43,13 +43,13 @@
   # Display Manager and Desktop Environments
   # ==========================================================================
 
-  # SDDM — lets user choose between Plasma, Hyprland, Xmonad, Niri at login
+  # SDDM — lets user choose between Plasma, Xmonad, Niri at login
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
   };
 
-  # KDE Plasma 6
+  # KDE Plasma 6 — primary desktop, best for gaming (VRR/HDR/tearing on NVIDIA)
   services.desktopManager.plasma6.enable = true;
 
   # Trim Plasma defaults we don't use.  akonadi/kdepim spawns a MariaDB-backed
@@ -74,9 +74,6 @@
   # firewall, which the package alone doesn't do.
   programs.kdeconnect.enable = true;
 
-  # Hyprland (defined as custom module in modules/software/hyprland.nix)
-  desktop.hyprland.enable = true;
-
   # Xmonad
   services.xserver = {
     enable = true;
@@ -94,6 +91,16 @@
 
   # Steam hardware support (controllers, etc.)
   hardware.steam-hardware.enable = true;
+
+  # Steam "Gaming Mode" session (Deck-style) via gamescope — a dedicated SDDM
+  # session that runs games in their own micro-compositor. Best path for HDR +
+  # VRR on the ASUS VG34VQL3A: enter this session and enable HDR, or use the
+  # per-game launch option:
+  #   gamescope -f --hdr-enabled --adaptive-sync -- %command%
+  programs.steam.gamescopeSession.enable = true;
+
+  # Let gamescope raise its scheduling priority (CAP_SYS_NICE) for smoother frames.
+  programs.gamescope.capSysNice = true;
 
   # Gaming packages (not in home config)
   environment.systemPackages = with pkgs; [
