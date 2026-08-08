@@ -14,7 +14,6 @@
     ./docker.nix
     ./libvirt.nix
     ./packages.nix
-    ./plasma.nix
     ./hyprland.nix
     ./ollama.nix
   ];

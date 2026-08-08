@@ -145,6 +145,8 @@
     discord
     telegram-desktop
     antimicrox
+    # Other tools
+    obsidian
   ];
 
   nixpkgs.config.allowUnfree = true;

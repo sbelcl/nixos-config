@@ -52,6 +52,28 @@
   # KDE Plasma 6
   services.desktopManager.plasma6.enable = true;
 
+  # Trim Plasma defaults we don't use.  akonadi/kdepim spawns a MariaDB-backed
+  # PIM server and resource agents on login; the rest are apps superseded by
+  # Nix-managed alternatives (mpv for audio, nix-env for software, etc.) or
+  # things we never launch.
+  environment.plasma6.excludePackages = with pkgs.kdePackages; [
+    akonadi
+    kdepim-runtime
+    elisa            # audio routed to mpv
+    discover         # software management is via Nix
+    khelpcenter
+    krdp             # don't run an RDP server by default
+    qrca
+    kmag
+    kmousetool
+    kmouth
+  ];
+
+  # KDE Connect — phone integration (notifications, SMS, file send, clipboard).
+  # programs.kdeconnect opens the discovery TCP/UDP ports 1714-1764 in the
+  # firewall, which the package alone doesn't do.
+  programs.kdeconnect.enable = true;
+
   # Hyprland (defined as custom module in modules/software/hyprland.nix)
   desktop.hyprland.enable = true;
 
@@ -83,6 +105,8 @@
     unrar # required by gamma-launcher to extract STALKER GAMMA mod archives
     obs-studio
     kdePackages.kdenlive
+    kdePackages.filelight       # disk usage treemap — /mnt/storage & /mnt/games
+    kdePackages.isoimagewriter  # write Linux ISOs to USB
     nvtopPackages.nvidia
     ddcutil # DDC/CI monitor brightness control
   ];
