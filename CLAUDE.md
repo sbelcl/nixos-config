@@ -17,13 +17,16 @@ Multi-host NixOS flake for imnos. Two machines in this repo: **fulcrum** (deskto
 ├── modules/
 │   ├── default.nix                # Shared home modules (DE/WM-agnostic)
 │   ├── packages.nix               # User packages + MIME associations
-│   ├── hyprland/                  # Hyprland stack — imported per-host from home/hosts/flanker.nix
-│   ├── dolphin.nix                # File manager + thumbnails
-│   ├── alacritty.nix              # Terminal
-│   └── rofi.nix                   # App launcher
+│   ├── hyprland/                  # Hyprland stack — flanker-only import
+│   ├── rofi.nix                   # App launcher — flanker-only (Plasma uses KRunner)
+│   ├── fuzzel.nix                 # Wayland launcher — flanker-only
+│   ├── battery.nix                # UPower alerts — flanker-only (laptop)
+│   ├── matugen.nix                # Wallpaper→theme sync — flanker-only (HyprPanel trigger)
+│   ├── dolphin.nix                # File manager + thumbnails (shared)
+│   └── alacritty.nix              # Terminal (shared)
 └── hosts/
     ├── fulcrum.nix                # Fulcrum-specific home overrides
-    └── flanker.nix                # Flanker home + imports Hyprland stack
+    └── flanker.nix                # Flanker home + imports the flanker-only modules
 ```
 
 ## Apply Changes
@@ -68,8 +71,10 @@ Always `git pull` on the other machine after pushing changes.
 
 ### flanker-only (Hyprland stack)
 - **WM**: Hyprland · **Panel**: HyprPanel · **Lock**: hyprlock · **Launcher**: Rofi / fuzzel
-- **Session services** (gated on `HYPRLAND_INSTANCE_SIGNATURE`): cliphist, polkit-gnome, udiskie, gammastep — in `home/modules/hyprland/services.nix`
+- **Session services** (gated on `HYPRLAND_INSTANCE_SIGNATURE`): cliphist, polkit-gnome, udiskie, gammastep — in `home/modules/hyprland/services.nix`; battery alerts (`home/modules/battery.nix`) use the same gate
+- **Theme sync**: matugen watches wallpaper changes via HyprPanel and rewrites Alacritty/Rofi/fuzzel/kdeglobals color files
 - **Keybinds**: `home/modules/hyprland/config.nix`
+- **Imports** (in `home/hosts/flanker.nix`): `hyprland/hyprland.nix`, `rofi.nix`, `fuzzel.nix`, `battery.nix`, `matugen.nix`
 
 ## Debugging
 

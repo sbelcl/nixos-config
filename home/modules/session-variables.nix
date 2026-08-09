@@ -25,14 +25,10 @@
 
   xdg.userDirs.setSessionVariables = true;
 
-  # Propagate cursor into the systemd user environment (picked up by Niri and Wayland apps)
+  # Propagate cursor into the systemd user environment (picked up by Wayland apps)
   systemd.user.sessionVariables = {
     XCURSOR_THEME = "Bibata-Modern-Classic";
     XCURSOR_SIZE = "24";
-    # KDE Plasma sets SSH_ASKPASS=ksshaskpass which leaks into Hyprland and
-    # breaks `git push` by intercepting the gh credential helper. Clear it.
-    GIT_ASKPASS = "";
-    SSH_ASKPASS = "";
   };
 
   # Add user bin directory to PATH

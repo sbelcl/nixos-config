@@ -4,9 +4,27 @@
 # Flanker-specific overrides (laptop, Hyprland-only)
 #
 {...}: {
-  # Hyprland stack — flanker is the only host using it. Fulcrum (Plasma) and
-  # tomcat (GNOME, separate repo) must not import this.
-  imports = [ ../modules/hyprland/hyprland.nix ];
+  # Hyprland stack + WM-specific bits — flanker is the only host using these.
+  # Fulcrum (Plasma) and tomcat (GNOME, separate repo) must not import them.
+  imports = [
+    ../modules/hyprland/hyprland.nix
+    ../modules/rofi.nix       # launcher (Plasma uses KRunner)
+    ../modules/fuzzel.nix     # secondary launcher (Wayland-native)
+    ../modules/battery.nix    # UPower alerts + backup timer (laptop only)
+    ../modules/matugen.nix    # wallpaper→color scheme sync (HyprPanel trigger)
+  ];
+
+  # Clear Plasma's ksshaskpass out of the environment — flanker doesn't run
+  # Plasma, but if PATH ever picks up ksshaskpass (e.g. via a nix profile),
+  # having SSH_ASKPASS set would break `git push`'s gh credential helper.
+  home.sessionVariables = {
+    GIT_ASKPASS = "";
+    SSH_ASKPASS = "";
+  };
+  systemd.user.sessionVariables = {
+    GIT_ASKPASS = "";
+    SSH_ASKPASS = "";
+  };
 
   programs.zsh.shellAliases = {
     updsys = "sudo nixos-rebuild switch --flake ~/.nixos#flanker";

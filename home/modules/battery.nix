@@ -16,7 +16,7 @@
       Description     = "Power alert daemon (UPower → libnotify)";
       After           = [ "graphical-session.target" ];
       PartOf          = [ "graphical-session.target" ];
-      ConditionEnvironment = "NIRI_SOCKET";
+      ConditionEnvironment = "HYPRLAND_INSTANCE_SIGNATURE";
     };
     Service = {
       ExecStart   = "${pkgs.poweralertd}/bin/poweralertd";
@@ -30,7 +30,7 @@
   systemd.user.services.battery-check = {
     Unit = {
       Description = "Battery level check — escalating alerts when low";
-      ConditionEnvironment = "NIRI_SOCKET";
+      ConditionEnvironment = "HYPRLAND_INSTANCE_SIGNATURE";
     };
     Service = {
       Type = "oneshot";

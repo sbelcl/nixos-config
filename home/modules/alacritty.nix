@@ -10,7 +10,7 @@
         padding = { x = 16; y = 14; };
         opacity = 0.88;
         blur = true;
-        decorations = "None";         # no title bar — Niri handles window chrome
+        decorations = "None";         # no title bar — WM handles chrome
         dynamic_title = true;
       };
 
