@@ -1,9 +1,13 @@
 #
 # ~/.nixos/home/hosts/flanker.nix
 #
-# Flanker-specific overrides (laptop)
+# Flanker-specific overrides (laptop, Hyprland-only)
 #
 {...}: {
+  # Hyprland stack — flanker is the only host using it. Fulcrum (Plasma) and
+  # tomcat (GNOME, separate repo) must not import this.
+  imports = [ ../modules/hyprland/hyprland.nix ];
+
   programs.zsh.shellAliases = {
     updsys = "sudo nixos-rebuild switch --flake ~/.nixos#flanker";
     updhome = "home-manager switch --flake ~/.nixos/home#imnos@flanker";

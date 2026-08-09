@@ -78,10 +78,6 @@
   # for SDDM. Xmonad has been removed.
   services.xserver.enable = true;
 
-  # Niri is enabled by the shared modules/software/niri.nix; force it off here
-  # so this rig only ever offers Plasma.
-  programs.niri.enable = lib.mkForce false;
-
   # ==========================================================================
   # Gaming
   # ==========================================================================
@@ -180,7 +176,7 @@
 
   # DDC/CI monitor brightness control
   # ddcci-backlight creates a /sys/class/backlight device from DDC/CI
-  # which lets standard tools (vibepanel, brightnessctl) control brightness
+  # which lets standard tools (brightnessctl, etc.) control brightness
   hardware.i2c.enable = true;
   users.users.imnos.extraGroups = [ "i2c" "video" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [ ddcci-driver ];

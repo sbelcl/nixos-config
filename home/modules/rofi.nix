@@ -118,14 +118,8 @@ RASI_EOF
              ")
 
     case "$CHOICE" in
-      *Lock)
-        if   [ -n "$NIRI_SOCKET" ];                    then swaylock
-        elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ];    then hyprlock
-        fi ;;
-      *Logout)
-        if   [ -n "$NIRI_SOCKET" ];                    then niri msg action quit
-        elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ];    then hyprctl dispatch exit
-        fi ;;
+      *Lock)     hyprlock ;;
+      *Logout)   hyprctl dispatch exit ;;
       *Reboot)   systemctl reboot ;;
       *Shutdown) systemctl poweroff ;;
     esac
@@ -151,6 +145,6 @@ in {
       drun-use-desktop-cache = true;
     };
 
-    theme = ./niri/rofi/theme.rasi;
+    theme = ./rofi/theme.rasi;
   };
 }

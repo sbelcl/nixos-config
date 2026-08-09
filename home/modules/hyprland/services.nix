@@ -1,11 +1,12 @@
 #
 # ~/.nixos/home/modules/hyprland/services.nix
 #
-# Per-session services for Hyprland — mirrors what niri/niri.nix does
-# for the Niri session (cliphist, nm-applet).  nm-applet is intentionally
-# omitted here; HyprPanel handles network via AstalNetwork directly.
+# Per-session services for Hyprland. All gated on HYPRLAND_INSTANCE_SIGNATURE
+# so they don't fire under Plasma (fulcrum), which has its own equivalents.
+# nm-applet is intentionally omitted — HyprPanel handles network via
+# AstalNetwork directly.
 #
-{ pkgs, ... }: {
+{ pkgs, lib, ... }: {
   # Clipboard history
   systemd.user.services.cliphist-hyprland = {
     Unit = {
@@ -21,7 +22,48 @@
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  # nm-applet omitted — HyprPanel provides its own network widget via
-  # AstalNetwork (direct NM D-Bus), so a separate tray applet is redundant
-  # and causes GTK assertion spam during Wayland session startup.
+  # Polkit agent — GUI privilege prompts (mounting drives, etc.)
+  systemd.user.services.polkit-gnome = {
+    Unit = {
+      Description = "Polkit GNOME authentication agent";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+      ConditionEnvironment = "HYPRLAND_INSTANCE_SIGNATURE";
+    };
+    Service = {
+      ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+      # Kill any orphan instance (e.g. from a previous rebuild) then wait for
+      # polkitd to clear the registration before we register again.
+      ExecStartPre = [
+        "-${pkgs.procps}/bin/pkill -f polkit-gnome-authentication-agent-1"
+        "${pkgs.coreutils}/bin/sleep 0.5"
+      ];
+      Restart = "no";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
+  # USB auto-mount
+  services.udiskie = {
+    enable = true;
+    automount = true;
+    notify = true;
+    tray = "auto";
+  };
+  systemd.user.services.udiskie.Unit.ConditionEnvironment =
+    lib.mkForce "HYPRLAND_INSTANCE_SIGNATURE";
+
+  # Night light — reduce blue light after sunset (Ljubljana ~46°N 14°E)
+  services.gammastep = {
+    enable = true;
+    provider = "manual";
+    latitude = 46.05;
+    longitude = 14.51;
+    temperature = {
+      day = 6500;
+      night = 3500;
+    };
+  };
+  systemd.user.services.gammastep.Unit.ConditionEnvironment =
+    lib.mkForce "HYPRLAND_INSTANCE_SIGNATURE";
 }

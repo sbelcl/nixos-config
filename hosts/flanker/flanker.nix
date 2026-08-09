@@ -1,7 +1,7 @@
 #
 # ~/.nixos/hosts/flanker/flanker.nix
 #
-# Laptop with hybrid NVIDIA + AMD graphics, Niri WM
+# Laptop with hybrid NVIDIA + AMD graphics — Hyprland only.
 #
 {
   config,

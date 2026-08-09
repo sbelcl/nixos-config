@@ -1,7 +1,10 @@
+#
+# Shared home-manager modules (DE/WM-agnostic).
+# The Hyprland stack is imported per-host from home/hosts/<host>.nix so it
+# doesn't leak into Plasma-only fulcrum.
+#
 {...}: {
   imports = [
-    ./niri/niri.nix
-    ./hyprland/hyprland.nix
     ./fonts.nix
     ./packages.nix
     ./neovim.nix
@@ -14,7 +17,6 @@
     ./rofi.nix
     ./fuzzel.nix
     ./battery.nix
-    ./vibepanel.nix
     ./mpv.nix
     ./dolphin.nix
     ./taskwarrior.nix
