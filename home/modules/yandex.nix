@@ -23,12 +23,14 @@
       wrapProgram $out/bin/yandex-browser-beta \
         --prefix LD_LIBRARY_PATH : "${gstLibPath}"
 
-      # Fix .desktop file: remove DRI_PRIME=1 (conflicts with NVIDIA in
-      # Hyprland) and --ozone-platform=wayland (NIXOS_OZONE_WL handles it)
+      # Fix .desktop file: strip DRI_PRIME=1 — it forces the AMD iGPU on
+      # flanker's hybrid GPU setup, which conflicts with NVIDIA under
+      # Hyprland. Leave --ozone-platform=wayland intact; Yandex's own
+      # launcher only adds it on Alt/Astra Linux and NIXOS_OZONE_WL doesn't
+      # apply here (proprietary .deb, not a NixOS-wrapped chromium).
       for f in $out/share/applications/yandex-browser*.desktop; do
         substituteInPlace "$f" \
-          --replace-quiet "env DRI_PRIME=1 " "" \
-          --replace-quiet " --ozone-platform=wayland" ""
+          --replace-quiet "env DRI_PRIME=1 " ""
       done
     '';
   });
@@ -39,13 +41,20 @@ in {
     pkgs.yandex-disk
   ];
 
-  # Override .desktop file — remove DRI_PRIME=1 and --ozone-platform=wayland
-  # which cause transparent rendering on NVIDIA under Hyprland.
-  # NIXOS_OZONE_WL=1 (set system-wide) handles Wayland detection instead.
+  # Override .desktop file — set the launch flags explicitly:
+  #  --ozone-platform=wayland : Yandex's launcher only adds this on
+  #    Alt/Astra Linux (hardcoded distro check); on NixOS we must pass it
+  #    ourselves or Chromium falls back to X11/XWayland, which on NVIDIA
+  #    proprietary renders transparently under Plasma.
+  #  --use-angle=gl : Chromium 144+ (Yandex 26.6.x) defaults to
+  #    --use-angle=vulkan via ANGLE, which is broken on the NVIDIA
+  #    proprietary driver — the window appears but renders nothing.
+  #    Forcing ANGLE's OpenGL backend keeps hardware accel (video decode,
+  #    WebGL, canvas GPU) while avoiding the Vulkan crash path.
   xdg.desktopEntries.yandex-browser-beta = {
     name = "Yandex Browser (beta)";
     genericName = "Web Browser";
-    exec = "yandex-browser-beta %U";
+    exec = "yandex-browser-beta --ozone-platform=wayland --use-angle=gl %U";
     icon = "yandex-browser-beta";
     categories = ["Network" "WebBrowser"];
     mimeType = [
