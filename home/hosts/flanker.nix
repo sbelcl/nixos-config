@@ -103,4 +103,18 @@
   # Yandex Browser .desktop override moved to home/modules/yandex.nix
   # (DRI_PRIME=1 and --ozone-platform=wayland removed — they cause
   # transparent rendering under Hyprland with NVIDIA)
+
+  # eSpremnica (Pošta Slovenije shipping labels, Wine). Appears in rofi
+  # (drun mode) and fuzzel. startupWMClass matches the Wine window class
+  # so the launcher can attribute the running window back to this entry.
+  xdg.desktopEntries.espremnica = {
+    name           = "eSpremnica";
+    genericName    = "Pošta Slovenije shipping labels";
+    exec           = "wine /home/imnos/.wine/drive_c/eSpremnica/eSpremnica.exe";
+    icon           = "wine";
+    categories     = [ "Office" "Network" ];
+    terminal       = false;
+    startupNotify  = true;
+    startupWMClass = "espremnica.exe";
+  };
 }
