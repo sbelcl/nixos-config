@@ -133,6 +133,10 @@
         "$mainMod, Q,       killactive,"
         # "$mainMod, V,       togglefloating,"
         "$mainMod, F,       fullscreen, 1"
+        # Send focused window off-screen — manual way to hide phantom windows
+        # (e.g. eSpremnica's leftover blank shell after login). Move it back
+        # via a workspace switch, or kill it with $mainMod+Q if unneeded.
+        "$mainMod, H,       movewindowpixel, exact -9999 -9999,activewindow"
 
         # ── Lock ────────────────────────────────────────────────────────────
         "$mainMod, L,       exec, hyprlock"

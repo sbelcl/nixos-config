@@ -89,15 +89,11 @@
         match:title = _frmLogin
         center = 1
     }
-    # Kick the persistent blank shell off-screen. Also hides it during login;
-    # acceptable trade-off per user choice. If login breaks, remove this rule
-    # and bind a "hide focused window" key instead.
-    windowrule {
-        name = espremnica-shell-offscreen
-        match:class = espremnica\.exe
-        match:title = eSpremnica-Pošta Slovenije
-        move = -9999 -9999
-    }
+    # Note: an earlier attempt moved `eSpremnica-Pošta Slovenije` windows to
+    # (-9999,-9999). The app spawns 5-6 windows with that same title (only one
+    # is visible); hiding them all made the app fail to render its login form
+    # and main UI. Use the SUPER+H keybind below to hide the leftover blank
+    # window manually after logging in.
   '';
 
   # Yandex Browser .desktop override moved to home/modules/yandex.nix
@@ -105,16 +101,14 @@
   # transparent rendering under Hyprland with NVIDIA)
 
   # eSpremnica (Pošta Slovenije shipping labels, Wine). Appears in rofi
-  # (drun mode) and fuzzel. startupWMClass matches the Wine window class
-  # so the launcher can attribute the running window back to this entry.
+  # (drun mode) and fuzzel.
   xdg.desktopEntries.espremnica = {
-    name           = "eSpremnica";
-    genericName    = "Pošta Slovenije shipping labels";
-    exec           = "wine /home/imnos/.wine/drive_c/eSpremnica/eSpremnica.exe";
-    icon           = "wine";
-    categories     = [ "Office" "Network" ];
-    terminal       = false;
-    startupNotify  = true;
-    startupWMClass = "espremnica.exe";
+    name          = "eSpremnica";
+    genericName   = "Pošta Slovenije shipping labels";
+    exec          = "wine /home/imnos/.wine/drive_c/eSpremnica/eSpremnica.exe";
+    icon          = "wine";
+    categories    = [ "Office" "Network" ];
+    terminal      = false;
+    startupNotify = true;
   };
 }

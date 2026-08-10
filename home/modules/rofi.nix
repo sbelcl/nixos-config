@@ -51,11 +51,19 @@ RASI_EOF
         0)  echo "$PICK" | cliphist decode | wl-copy
             sleep 0.1
             CLASS=$(hyprctl activewindow -j | ${pkgs.jq}/bin/jq -r '.class')
-            if [ "$CLASS" = "Alacritty" ] || [ "$CLASS" = "scratchterm" ] || [ "$CLASS" = "scratchtask" ]; then
-              ${pkgs.wtype}/bin/wtype -M ctrl -M shift v -m shift -m ctrl
-            else
-              ${pkgs.wtype}/bin/wtype -M ctrl v -m ctrl
-            fi
+            case "$CLASS" in
+              Alacritty|scratchterm|scratchtask)
+                ${pkgs.wtype}/bin/wtype -M ctrl -M shift v -m shift -m ctrl ;;
+              *.exe)
+                # Wine apps: skip auto-paste. Synthetic Ctrl+V from wtype gets
+                # translated through XWayland in a way that some WinForms apps
+                # (e.g. eSpremnica) interpret as ESC → closes the form. Real
+                # Ctrl+V works fine, so leave the entry on the clipboard and
+                # let the user paste manually.
+                : ;;
+              *)
+                ${pkgs.wtype}/bin/wtype -M ctrl v -m ctrl ;;
+            esac
             exit 0 ;;
         10) echo "$PICK" | cliphist delete ;;
         *)  exit 0 ;;
