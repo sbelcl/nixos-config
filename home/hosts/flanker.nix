@@ -68,6 +68,36 @@
         match:class = google-chrome
         workspace = 3 silent
     }
+
+    # ── eSpremnica (Pošta Slovenije shipping labels — Wine/XWayland) ─────
+    # Two top-level windows: the real app UI ("eSpremnica") and a shell
+    # container ("eSpremnica-Pošta Slovenije") that stays blank post-login.
+    windowrule {
+        name = ws3-espremnica
+        match:class = espremnica\.exe
+        workspace = 3 silent
+    }
+    windowrule {
+        name = espremnica-main
+        match:class = espremnica\.exe
+        match:title = ^eSpremnica$
+        center = 1
+    }
+    windowrule {
+        name = espremnica-login
+        match:class = espremnica\.exe
+        match:title = _frmLogin
+        center = 1
+    }
+    # Kick the persistent blank shell off-screen. Also hides it during login;
+    # acceptable trade-off per user choice. If login breaks, remove this rule
+    # and bind a "hide focused window" key instead.
+    windowrule {
+        name = espremnica-shell-offscreen
+        match:class = espremnica\.exe
+        match:title = eSpremnica-Pošta Slovenije
+        move = -9999 -9999
+    }
   '';
 
   # Yandex Browser .desktop override moved to home/modules/yandex.nix

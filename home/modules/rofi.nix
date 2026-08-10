@@ -96,7 +96,7 @@ RASI_EOF
       | rofi -dmenu \
              -p "  " \
              -theme-str "
-               window   { width: 280px; border: 4px solid; border-color: ''${ACCENT};
+               window   { width: 280px; border: 2px solid; border-color: ''${ACCENT};
                            border-radius: 16px; background-color: ''${BG}; }
                mainbox  { padding: 16px; }
                inputbar { background-color: ''${BG_ALT}; border-radius: 10px;
