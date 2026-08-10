@@ -70,7 +70,7 @@ Always `git pull` on the other machine after pushing changes.
 - **Default apps**: images→qview, video/audio→VLC, archives→Ark, PDF→Firefox
 
 ### flanker-only (Hyprland stack)
-- **WM**: Hyprland · **Panel**: HyprPanel · **Lock**: hyprlock · **Launcher**: Rofi / fuzzel
+- **WM**: Hyprland · **Panel**: Wayle · **Lock**: hyprlock · **Launcher**: Rofi / fuzzel
 - **Session services** (gated on `HYPRLAND_INSTANCE_SIGNATURE`): cliphist, polkit-gnome, udiskie, gammastep — in `home/modules/hyprland/services.nix`; battery alerts (`home/modules/battery.nix`) use the same gate
 - **Theme sync**: matugen watches wallpaper changes via HyprPanel and rewrites Alacritty/Rofi/fuzzel/kdeglobals color files
 - **Keybinds**: `home/modules/hyprland/config.nix`

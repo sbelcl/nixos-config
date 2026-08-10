@@ -96,7 +96,7 @@
       exec-once = [
         "awww-daemon"                                    # wallpaper daemon
         "awww img ~/.config/background"                  # set initial wallpaper
-        "hyprpanel"    # launch directly — avoids systemd env-propagation delay
+        "wayle shell"  # panel + notification daemon (Rust/GTK4 successor to HyprPanel)
         "hypridle"     # idle daemon — lock at 5 min, monitors off at 10 min
         "snappy-switcher --daemon"                       # animated Alt+Tab switcher
         "hyprsunset -t 4500"                             # blue light filter (4500K)

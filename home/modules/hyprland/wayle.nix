@@ -7,5 +7,8 @@
 # start from `wayle config default` and tune interactively via `wayle-settings`).
 #
 { pkgs, ... }: {
-  home.packages = [ pkgs.wayle ];
+  home.packages = [
+    pkgs.wayle
+    pkgs.brightnessctl   # backend for Wayle's brightness module + scroll binding
+  ];
 }
