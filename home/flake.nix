@@ -15,13 +15,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprpanel = {
-      url = "github:Jas-SinghFSU/HyprPanel";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # HyprPanel: do NOT follow our nixpkgs — upstream nixpkgs archived
+    # the `hyprpanel` package (renamed to `wayle`) and evaluation throws
+    # if HyprPanel is built against it. Let the flake pin its own nixpkgs.
+    hyprpanel.url = "github:Jas-SinghFSU/HyprPanel";
 
+    # snappy-switcher: pinned — upstream commit 06eb4c5 (v4.0.0) broke its own
+    # substituteInPlace by removing /usr/local from the systemd unit but not
+    # from the derivation. Un-pin once upstream fixes the mismatch.
     snappy-switcher = {
-      url = "github:OpalAayan/snappy-switcher";
+      url = "github:OpalAayan/snappy-switcher/0957cd612fadf80fa95034515cb6fa2c163e497e";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

@@ -8,10 +8,11 @@
   # Fulcrum (Plasma) and tomcat (GNOME, separate repo) must not import them.
   imports = [
     ../modules/hyprland/hyprland.nix
-    ../modules/rofi.nix       # launcher (Plasma uses KRunner)
-    ../modules/fuzzel.nix     # secondary launcher (Wayland-native)
-    ../modules/battery.nix    # UPower alerts + backup timer (laptop only)
-    ../modules/matugen.nix    # wallpaper→color scheme sync (HyprPanel trigger)
+    ../modules/rofi.nix              # launcher (Plasma uses KRunner)
+    ../modules/fuzzel.nix            # secondary launcher (Wayland-native)
+    ../modules/battery.nix           # UPower alerts + backup timer (laptop only)
+    ../modules/matugen.nix           # wallpaper→color scheme sync (HyprPanel trigger)
+    ../modules/nixos-update-check.nix # weekly flake-update + build + notify
   ];
 
   # Clear Plasma's ksshaskpass out of the environment — flanker doesn't run

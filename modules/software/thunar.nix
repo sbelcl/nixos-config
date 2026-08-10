@@ -34,8 +34,8 @@
     unrar # archive formats
     # SMB mounting from Thunar (only needed for actual mounts, not just browsing):
     cifs-utils
-    # Android / MTP support quality-of-life:
-    jmtpfs
+    # Android / MTP support is handled by gvfs (enabled above) — jmtpfs was
+    # dropped from nixpkgs as unmaintained.
   ];
 
   # Better MTP detection (Android phones)
