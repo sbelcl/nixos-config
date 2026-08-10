@@ -13,6 +13,8 @@
 
   xdg.configFile."matugen/config.toml".text = ''
     [config]
+    scheme_type = "scheme-monochrome"
+    contrast    = 0.0
 
     [templates.kdeglobals]
     input_path  = "~/.config/matugen/templates/kdeglobals.ini"

@@ -21,15 +21,12 @@
     # Java applications on non-reparenting window managers
     _JAVA_AWT_WM_NONREPARENTING = "1";
 
-    # NVIDIA Wayland support
-    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-    GBM_BACKEND = "nvidia-drm";
-
-    # NVIDIA VA-API (hardware video decode for Chromium-based browsers)
-    LIBVA_DRIVER_NAME = "nvidia";
-    NVD_BACKEND = "direct";
-
     # wlroots-based compositors (Niri, Hyprland) may need this
     WLR_NO_HARDWARE_CURSORS = "1";
+
+    # NVIDIA-specific env vars (GBM_BACKEND, __GLX_VENDOR_LIBRARY_NAME,
+    # LIBVA_DRIVER_NAME, NVD_BACKEND) are host-scoped — set per-host where the
+    # compositor actually runs on NVIDIA (fulcrum). On flanker the AMD iGPU
+    # drives the compositor; forcing nvidia here pulls in the modules at boot.
   };
 }

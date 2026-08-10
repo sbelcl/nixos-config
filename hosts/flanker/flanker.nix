@@ -6,6 +6,7 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }: {
   imports = [
@@ -17,9 +18,20 @@
   # Hostname
   networking.hostName = "flanker";
 
+  # Local dev domains — point at containers on loopback (Docker/Podman stack).
+  networking.extraHosts = ''
+    127.0.0.1 mcp.test
+    127.0.0.1 pma.test
+    127.0.0.1 mail.test
+    127.0.0.1 digitalnisvet.test
+  '';
+
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  # systemd-boot default is 5s — drop to 1s. Press space/arrow at boot to
+  # interrupt and pick an older generation.
+  boot.loader.timeout = 1;
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -54,9 +66,9 @@
     options = [ "defaults" "nofail" ];
   };
 
-  # Docker doesn't need to wait for network-online to start.
-  systemd.services.docker.wants = [];
-  systemd.services.docker.after = ["network.target"];
+  # Docker: socket-activate instead of starting at boot. First `docker` command
+  # of the session takes ~2s; everything after is the same. Saves ~2.3s off boot.
+  virtualisation.docker.enableOnBoot = false;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -92,8 +104,12 @@
   # Hyprland — the only WM on flanker (auto-login, no greeter)
   desktop.hyprland.enable = true;
 
-  # Auto-login user on TTY1 (zsh profile starts Hyprland automatically)
+  # Auto-login user on TTY1 (zsh profile starts Hyprland automatically).
+  # NixOS only applies this to tty1 — tty2–tty6 still require login.
   services.getty.autologinUser = "imnos";
+
+  # Ollama is not needed on the laptop
+  services.ollama.enable = lib.mkForce false;
 
   # GNOME Keyring — unlock on hyprlock auth (the primary login point)
   services.gnome.gnome-keyring.enable = true;

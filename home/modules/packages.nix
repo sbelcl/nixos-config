@@ -141,6 +141,7 @@
     vlc
     audacity
     stremio-linux-shell
+    guvcview      # webcam/microscope viewer with V4L2 controls
     # Social media
     discord
     telegram-desktop

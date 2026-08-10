@@ -41,6 +41,12 @@
   wayland.windowManager.hyprland.settings.exec-once = [ "hyprlock" ];
 
   wayland.windowManager.hyprland.extraConfig = ''
+    # Pin aquamarine to the NVIDIA DRM node so it doesn't try to init a
+    # secondary multi-GPU renderer on the (non-existent) AMD DRM node —
+    # that failure loops on every frame, burns ~1.5 cores of CPU, and
+    # starves input handling so keyboard key-release events get dropped.
+    env = AQ_DRM_DEVICES, /dev/dri/card1
+
     windowrule {
         name = ws3-thunderbird
         match:class = thunderbird

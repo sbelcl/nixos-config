@@ -15,10 +15,12 @@
   boot = {
     initrd = {
       availableKernelModules = ["xhci_pci" "nvme" "ahci" "usb_storage" "sd_mod"];
-      kernelModules = [];
     };
 
-    kernelModules = ["kvm-amd" "nvidia"];
+    # NVIDIA modules intentionally omitted — flanker uses PRIME offload, so the
+    # AMD iGPU drives the compositor and nvidia* is loaded on demand by udev
+    # when an offloaded app opens /dev/nvidia*. Saves ~9s off boot.
+    kernelModules = ["kvm-amd"];
     extraModulePackages = [];
     kernelParams = ["quiet" "splash" "loglevel=0"];
     consoleLogLevel = 0;

@@ -26,15 +26,12 @@
         "XCURSOR_SIZE,24"
         "HYPRCURSOR_SIZE,24"
         # NVIDIA: disable hardware cursor planes — avoids a ~15 s DRM init
-        # timeout that delays the first frame (and thus all exec-once apps).
+        # timeout that delays the first frame. Harmless on AMD.
         "WLR_NO_HARDWARE_CURSORS,1"
-        "LIBVA_DRIVER_NAME,nvidia"
-        "NVD_BACKEND,direct"
-        # Ensure GPU vars are available to all Hyprland children (fuzzel, etc.)
-        "GBM_BACKEND,nvidia-drm"
-        "__GLX_VENDOR_LIBRARY_NAME,nvidia"
         "NIXOS_OZONE_WL,1"
         "ELECTRON_OZONE_PLATFORM_HINT,auto"
+        # NVIDIA GPU vars (LIBVA_DRIVER_NAME, NVD_BACKEND, GBM_BACKEND,
+        # __GLX_VENDOR_LIBRARY_NAME) are set per-host in home/hosts/fulcrum.nix.
       ];
 
       general = {
@@ -291,6 +288,26 @@
           match:class = org.gnome.Calculator
           float  = true
           center = 1
+      }
+
+      # ── Browser file pickers (Yandex/Chrome XWayland) ──────────────────────
+      # Yandex/Chrome set _NET_WM_WINDOW_TYPE_DIALOG on file pickers, so they
+      # float — but the browser sizes them ~fullscreen and pins to (0,0).
+      # Constrain + center so upload/download dialogs land in the middle.
+      windowrule {
+          name = browser-file-dialog
+          match:class = Yandex-browser-beta|google-chrome
+          match:float = true
+
+          size   = 60% 70%
+          center = 1
+      }
+
+      # ── Dolphin — slight transparency ─────────────────────────────────────────
+      windowrule {
+          name = dolphin-opacity
+          match:class = org.kde.dolphin
+          opacity = 0.9 override 0.85 override
       }
 
       # ── Global sanity rules ────────────────────────────────────────────────
