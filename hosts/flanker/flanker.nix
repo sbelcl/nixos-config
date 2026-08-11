@@ -116,5 +116,19 @@
   security.pam.services.login.enableGnomeKeyring = true;
   security.pam.services.hyprlock.enableGnomeKeyring = true;
 
+  # Share one sudo authentication across processes for 15 minutes. sudo keys
+  # its credential cache to the controlling TTY, falling back to parent PID
+  # when there is none — so every non-TTY caller (Claude Code's Bash tool, each
+  # invocation a fresh parent) re-prompts, even seconds apart. Pairs with the
+  # fuzzel SUDO_ASKPASS helper in home/hosts/flanker.nix.
+  #
+  # Tradeoff: within the window any process running as imnos can use the grant,
+  # not just the one that authenticated. Acceptable on a single-user laptop
+  # where hyprlock is the auth gate; deliberately not applied to fulcrum.
+  security.sudo.extraConfig = ''
+    Defaults timestamp_type=global
+    Defaults timestamp_timeout=15
+  '';
+
   system.stateVersion = "25.05"; # Did you read the comment?
 }
