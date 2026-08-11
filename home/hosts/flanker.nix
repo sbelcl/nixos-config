@@ -3,7 +3,7 @@
 #
 # Flanker-specific overrides (laptop, Hyprland-only)
 #
-{...}: {
+{lib, ...}: {
   # Hyprland stack + WM-specific bits — flanker is the only host using these.
   # Fulcrum (Plasma) and tomcat (GNOME, separate repo) must not import them.
   imports = [
@@ -14,6 +14,18 @@
     ../modules/matugen.nix           # wallpaper→color scheme sync (HyprPanel trigger)
     ../modules/nixos-update-check.nix # weekly flake-update + build + notify
   ];
+
+  # No desktop dir on flanker — Hyprland has no desktop containment, so
+  # ~/Namizje was only ever an empty folder. null drops XDG_DESKTOP_DIR from
+  # user-dirs.dirs entirely. Kept host-local: fulcrum runs Plasma, which does
+  # render desktop icons, so it keeps $HOME/Namizje from the shared module.
+  # Caveat: with the key absent, `xdg-user-dir DESKTOP` reports the spec
+  # fallback $HOME/Desktop — so anything that writes a desktop shortcut would
+  # resurrect an English ~/Desktop. ~/.wine/drive_c/users/imnos/Desktop used to
+  # symlink to ~/Namizje; it's now a real dir inside the prefix so Wine
+  # installers keep their .lnk files there instead.
+  # mkForce: nullOr can't merge a null over the shared module's string value.
+  xdg.userDirs.desktop = lib.mkForce null;
 
   # Clear Plasma's ksshaskpass out of the environment — flanker doesn't run
   # Plasma, but if PATH ever picks up ksshaskpass (e.g. via a nix profile),
