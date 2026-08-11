@@ -2,7 +2,6 @@
 # ~/.nixos/home/modules/settings/users/imnos.nix
 #
 {
-  config,
   pkgs,
   ...
 }: {
@@ -75,17 +74,10 @@
     music = "$HOME/Glasba";
     pictures = "$HOME/Slike";
     videos = "$HOME/Videi";
-    # po želji še:
-    # publicShare = "$HOME/Javno";
-    # templates   = "$HOME/Predloge";
+    publicShare = "$HOME/Javno";
+    templates = "$HOME/Predloge";
+    projects = "$HOME/Projekti";
   };
-
-  # English symlinks → Slovenian XDG dirs (HyprPanel uses English names)
-  home.file."Downloads".source  = config.lib.file.mkOutOfStoreSymlink "/home/imnos/Prenosi";
-  home.file."Documents".source  = config.lib.file.mkOutOfStoreSymlink "/home/imnos/Dokumenti";
-  home.file."Videos".source     = config.lib.file.mkOutOfStoreSymlink "/home/imnos/Videi";
-  home.file."Pictures".source   = config.lib.file.mkOutOfStoreSymlink "/home/imnos/Slike";
-  home.file."Projects".source   = config.lib.file.mkOutOfStoreSymlink "/home/imnos/Projekti";
 
   # (ni nujno) Če želiš imeti tudi orodje na voljo:
   home.packages = [pkgs.xdg-user-dirs];
