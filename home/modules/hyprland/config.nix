@@ -185,6 +185,17 @@
           center = 1;
         }
 
+        # ── ranger on USB mount ────────────────────────────────────────────
+        # Launched by udiskie's event hook (hyprland/services.nix) with this
+        # class so it lands as a float instead of tiling into the workspace.
+        {
+          name = "usb-ranger";
+          match.class = "usb-ranger";
+          float = true;
+          size = "70% 60%";
+          center = 1;
+        }
+
         # ── Browser file pickers (Yandex/Chrome XWayland) ──────────────────
         # Yandex/Chrome set _NET_WM_WINDOW_TYPE_DIALOG on file pickers, so they
         # float — but the browser sizes them ~fullscreen and pins to (0,0).

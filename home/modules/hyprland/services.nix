@@ -6,7 +6,22 @@
 # nm-applet is intentionally omitted — HyprPanel handles network via
 # AstalNetwork directly.
 #
-{ pkgs, lib, ... }: {
+{ pkgs, lib, ... }: let
+  # udiskie fires its event hook for every device event (added, mounted,
+  # removed, ...), so the script filters for device_mounted itself. It runs
+  # ranger in a throwaway Alacritty whose --class is matched by a float rule
+  # in hyprland/config.nix.
+  #
+  # {mount_path} is not in udiskie's documented placeholder list ({event},
+  # {device_presentation}, {id_uuid}) but works: prompt.py builds the format
+  # args with getattr(device, attr), so any device attribute is available, and
+  # udisks2.py defines mount_path.
+  usb-ranger = pkgs.writeShellScriptBin "usb-ranger" ''
+    [ "$1" = "device_mounted" ] || exit 0
+    [ -n "''${2:-}" ] && [ -d "$2" ] || exit 0
+    exec ${pkgs.alacritty}/bin/alacritty --class usb-ranger -e ${pkgs.ranger}/bin/ranger "$2"
+  '';
+in {
   # Clipboard history
   systemd.user.services.cliphist-hyprland = {
     Unit = {
@@ -43,12 +58,14 @@
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  # USB auto-mount
+  # USB auto-mount — pops ranger open on the new mount point
   services.udiskie = {
     enable = true;
     automount = true;
     notify = true;
     tray = "auto";
+    settings.program_options.event_hook =
+      "${usb-ranger}/bin/usb-ranger {event} {mount_path}";
   };
   systemd.user.services.udiskie.Unit.ConditionEnvironment =
     lib.mkForce "HYPRLAND_INSTANCE_SIGNATURE";

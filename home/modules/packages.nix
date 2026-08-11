@@ -148,6 +148,7 @@
     antimicrox
     # Other tools
     obsidian
+    ranger        # TUI file manager; also popped up on USB mount (services.nix)
   ];
 
   nixpkgs.config.allowUnfree = true;
