@@ -154,15 +154,19 @@
     horizontal-pad=20
     vertical-pad=12
     inner-pad=8
-    border-width=2
-    border-radius=10
     icon-theme=Papirus-Dark
     icons-enabled=yes
-    prompt=
+    prompt="> "
     placeholder=Search apps...
     anchor=center
     match-mode=fuzzy
     show-actions=yes
+
+    # border-width/border-radius are not [main] keys — fuzzel warns and skips
+    # them there. They live in [border] as width/radius.
+    [border]
+    width=2
+    radius=10
 
     [colors]
     background={{colors.background.default.hex_stripped}}f5
