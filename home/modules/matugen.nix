@@ -5,8 +5,23 @@
 # current wallpaper whenever HyprPanel calls `matugen image <wallpaper>`.
 # home-manager owns the templates; matugen owns the output files.
 #
-{ pkgs, lib, ... }: {
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}: let
+  # Every template this module owns, keyed by its xdg.configFile path. Each
+  # entry's .source is a store path derived from its text, so hashing the set
+  # of paths yields a value that changes iff some template's content changed.
+  matugenTemplates =
+    lib.filterAttrs (name: _: lib.hasPrefix "matugen/templates/" name) config.xdg.configFile;
 
+  templateStampFile =
+    pkgs.writeText "matugen-templates-stamp"
+    (builtins.hashString "sha256"
+      (lib.concatMapStringsSep "\n" (f: toString f.source) (lib.attrValues matugenTemplates)));
+in {
   home.packages = [ pkgs.matugen ];
 
   # ── Matugen config ──────────────────────────────────────────────────────────
@@ -208,13 +223,26 @@
     ERROR="{{colors.error.default.hex}}"
   '';
 
-  # ── First-run activation ─────────────────────────────────────────────────────
-  # Generate color files once on first updhome (HyprPanel handles subsequent
-  # updates when the wallpaper changes).
-  home.activation.matugenInit = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    if [ ! -f "$HOME/.config/rofi/colors.rasi" ] && [ -f "$HOME/.config/background" ]; then
-      echo "matugen: generating initial color schemes from wallpaper..."
-      $DRY_RUN_CMD ${pkgs.matugen}/bin/matugen image "$HOME/.config/background" 2>/dev/null || true
+  # ── Activation ───────────────────────────────────────────────────────────────
+  # home-manager owns the templates above, but matugen owns their *outputs*, so
+  # editing a template here changes nothing until matugen runs again. Regenerate
+  # on updhome whenever the template set changes (or an output has gone missing,
+  # which also covers first run). A wallpaper change is still handled at runtime
+  # by the panel's matugen hook, not here.
+  #
+  # templateStamp is a pure-eval hash of every template's store path, so it moves
+  # exactly when a template's content does — no hashing at activation time.
+  home.activation.matugenRegen = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    templateStamp="${config.xdg.cacheHome}/matugen-templates.stamp"
+    if [ -f "$HOME/.config/background" ] &&
+       { [ ! -f "${config.xdg.configHome}/rofi/colors.rasi" ] ||
+         ! ${pkgs.diffutils}/bin/cmp -s ${templateStampFile} "$templateStamp"; }; then
+      echo "matugen: regenerating color schemes (templates changed or outputs missing)..."
+      # --prefer is mandatory: this wallpaper yields several candidate source
+      # colors, and matugen aborts rather than pick one when it has no TTY to
+      # ask on — which is always the case during activation.
+      $DRY_RUN_CMD ${pkgs.matugen}/bin/matugen image "$HOME/.config/background" --prefer saturation || true
+      $DRY_RUN_CMD ${pkgs.coreutils}/bin/install -Dm644 ${templateStampFile} "$templateStamp"
     fi
   '';
 }
