@@ -118,35 +118,41 @@ in {
     text       = "CellForeground"
     background = "{{colors.surface_variant.default.hex}}"
 
+    # ANSI slots must be *foreground* roles. Material `*_container` and
+    # `surface_*` roles are background tones by design — using them as text
+    # gave 2.0:1 contrast on every wallpaper (normal.magenta/cyan and
+    # bright.blue/magenta/cyan were all effectively invisible, which is what
+    # made ranger's directory and symlink colors unreadable).
+    #
+    # `primary|secondary|tertiary|error` are ~11:1 and the `*_fixed` /
+    # `on_*_container` family is ~14:1, in dark mode, for every wallpaper in
+    # ~/Slike/Ozadja — checked by computing WCAG contrast for all 22. Keep new
+    # entries inside those two families.
+    #
+    # black/bright.black stay dark on purpose: that is what those slots mean.
     [colors.normal]
-    black   = "{{colors.surface.default.hex}}"
+    black   = "{{colors.surface_variant.default.hex}}"
     red     = "{{colors.error.default.hex}}"
     green   = "{{colors.tertiary.default.hex}}"
     yellow  = "{{colors.secondary.default.hex}}"
     blue    = "{{colors.primary.default.hex}}"
-    magenta = "{{colors.secondary_container.default.hex}}"
-    cyan    = "{{colors.tertiary_container.default.hex}}"
-    white   = "{{colors.on_surface.default.hex}}"
+    magenta = "{{colors.tertiary_fixed_dim.default.hex}}"
+    cyan    = "{{colors.primary_fixed_dim.default.hex}}"
+    white   = "{{colors.on_surface_variant.default.hex}}"
 
     [colors.bright]
-    black   = "{{colors.surface_variant.default.hex}}"
+    black   = "{{colors.outline.default.hex}}"
     red     = "{{colors.on_error_container.default.hex}}"
-    green   = "{{colors.on_tertiary_container.default.hex}}"
-    yellow  = "{{colors.on_secondary_container.default.hex}}"
-    blue    = "{{colors.primary_container.default.hex}}"
-    magenta = "{{colors.tertiary_container.default.hex}}"
-    cyan    = "{{colors.secondary_container.default.hex}}"
-    white   = "{{colors.on_background.default.hex}}"
+    green   = "{{colors.tertiary_fixed.default.hex}}"
+    yellow  = "{{colors.secondary_fixed.default.hex}}"
+    blue    = "{{colors.primary_fixed.default.hex}}"
+    magenta = "{{colors.on_tertiary_container.default.hex}}"
+    cyan    = "{{colors.on_primary_container.default.hex}}"
+    white   = "{{colors.on_surface.default.hex}}"
 
-    [colors.dim]
-    black   = "{{colors.background.default.hex}}"
-    red     = "{{colors.error_container.default.hex}}"
-    green   = "{{colors.tertiary_container.default.hex}}"
-    yellow  = "{{colors.secondary_container.default.hex}}"
-    blue    = "{{colors.primary_container.default.hex}}"
-    magenta = "{{colors.on_tertiary.default.hex}}"
-    cyan    = "{{colors.on_secondary.default.hex}}"
-    white   = "{{colors.outline.default.hex}}"
+    # No [colors.dim]: alacritty derives dim from the normal colors when it is
+    # unset, which is strictly better than the previous hand-mapping — that one
+    # pointed every dim slot at a container role too.
   '';
 
   # Hyprlang variables sourced by hyprlock.conf
