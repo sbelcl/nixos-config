@@ -105,6 +105,17 @@ RASI_EOF
     # ImageMagick 1x1 dominant-color workaround was for the v4.0.0 ENOTTY bug,
     # fixed since — we run 4.1.0.)
     ${pkgs.matugen}/bin/matugen image "$BG" --prefer saturation &
+
+    # Wayle's bar is fully transparent (bar.background-opacity = 0), so its
+    # text sits directly on the wallpaper — a bright wallpaper leaves light
+    # text on light pixels, which is unreadable. Flip Wayle's matugen palette
+    # between light and dark by mean wallpaper luminance. Requires
+    # styling.theme-provider = "matugen" in ~/.config/wayle/config.toml;
+    # the value lands in runtime.toml and Wayle applies it live.
+    LUMA=$(${pkgs.imagemagick}/bin/magick "$BG" -resize '1x1!' -colorspace gray \
+      -format "%[fx:int(255*u)]" info: 2>/dev/null || echo 0)
+    if [ "$LUMA" -gt 128 ]; then LIGHT=true; else LIGHT=false; fi
+    ${pkgs.wayle}/bin/wayle config set styling.matugen-light "$LIGHT" >/dev/null 2>&1 || true
   '';
 
   # ── Power menu ────────────────────────────────────────────────────────────
