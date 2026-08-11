@@ -20,7 +20,10 @@
   environment.etc."samba/smb.conf".text = ''
     [global]
     workgroup = WORKGROUP
-    client min protocol = NT1
+    # SMB2 floor: SMB1/NT1 is removed from Windows 11 and disabled by default
+    # on Windows 10, so allowing it buys no compatibility. Verified STANKO
+    # negotiates fine with `smbclient -m SMB3`.
+    client min protocol = SMB2
   '';
 
 
