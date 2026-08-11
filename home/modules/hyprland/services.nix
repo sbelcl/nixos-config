@@ -9,8 +9,8 @@
 { pkgs, lib, ... }: let
   # udiskie fires its event hook for every device event (added, mounted,
   # removed, ...), so the script filters for device_mounted itself. It runs
-  # ranger in a throwaway Alacritty whose --class is matched by a float rule
-  # in hyprland/config.nix.
+  # ranger in a throwaway Alacritty under the same --class the SUPER+R bind
+  # uses, so one float rule in hyprland/config.nix covers both.
   #
   # {mount_path} is not in udiskie's documented placeholder list ({event},
   # {device_presentation}, {id_uuid}) but works: prompt.py builds the format
@@ -19,7 +19,7 @@
   usb-ranger = pkgs.writeShellScriptBin "usb-ranger" ''
     [ "$1" = "device_mounted" ] || exit 0
     [ -n "''${2:-}" ] && [ -d "$2" ] || exit 0
-    exec ${pkgs.alacritty}/bin/alacritty --class usb-ranger -e ${pkgs.ranger}/bin/ranger "$2"
+    exec ${pkgs.alacritty}/bin/alacritty --class ranger -e ${pkgs.ranger}/bin/ranger "$2"
   '';
 in {
   # Clipboard history

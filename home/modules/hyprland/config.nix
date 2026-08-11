@@ -193,12 +193,12 @@
           center = 1;
         }
 
-        # ── ranger on USB mount ────────────────────────────────────────────
-        # Launched by udiskie's event hook (hyprland/services.nix) with this
-        # class so it lands as a float instead of tiling into the workspace.
+        # ── ranger — float, not tiled ──────────────────────────────────────
+        # Two entry points share this class: the SUPER+R bind, and udiskie's
+        # event hook on USB mount (hyprland/services.nix).
         {
-          name = "usb-ranger";
-          match.class = "usb-ranger";
+          name = "ranger-float";
+          match.class = "ranger";
           float = true;
           size = [ 1344 648 ];  # 70% x 60%
           center = 1;
@@ -277,6 +277,9 @@
       -- ── Apps ────────────────────────────────────────────────────────────
       hl.bind(mod .. " + Return",    hl.dsp.exec_cmd("alacritty"))
       hl.bind(mod .. " + E",         hl.dsp.exec_cmd("dolphin"))
+      -- ranger floats via the ranger-float window rule; same class udiskie
+      -- uses, so a USB mount and this bind look identical.
+      hl.bind(mod .. " + R",         hl.dsp.exec_cmd("alacritty --class ranger -e ranger ~"))
       hl.bind(mod .. " + SPACE",     hl.dsp.exec_cmd("fuzzel"))
       hl.bind(mod .. " + SHIFT + Q", hl.dsp.exec_cmd("rofi-power"))
       hl.bind(mod .. " + M",         hl.dsp.exec_cmd("missioncenter"))
