@@ -37,7 +37,7 @@
     show = true
     left   = ["hyprland-workspaces"]
     center = ["media", "clock"]
-    right  = ["battery", "bluetooth", "network", "microphone", "brightness", "volume", "dashboard"]
+    right  = ["systray", "battery", "bluetooth", "network", "microphone", "brightness", "volume", "dashboard"]
 
     # ── Volume ────────────────────────────────────────────────────────────────────
     [modules.volume]
@@ -103,6 +103,14 @@
     icon-color = "fg-default"
     icon-bg-color = "transparent"
     label-color = "fg-default"
+
+    # ── System tray ──────────────────────────────────────────────────────────
+    # Wayle owns org.kde.StatusNotifierWatcher, so it collects tray items
+    # whether or not the module is in the layout — without it, udiskie's
+    # mount/unmount menu had nowhere to render. Transparent to match the bar.
+    [modules.systray]
+    button-bg-color = "transparent"
+    border-show = false
 
     # ── Theming: follow the wallpaper ────────────────────────────────────────────
     # The bar is fully transparent, so its text sits on the wallpaper. matugen
