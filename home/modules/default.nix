@@ -17,6 +17,7 @@
     ./alacritty.nix
     ./mpv.nix
     ./dolphin.nix
+    ./ranger.nix
     ./taskwarrior.nix
   ];
 }
