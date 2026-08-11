@@ -122,6 +122,14 @@
 
       # Window rules. "silent" on workspace assignments = don't auto-switch
       # when the app opens.
+      #
+      # `size` is absolute pixels, sized for this laptop's 1920x1080 eDP-1.
+      # Percentages are NOT usable here: Hyprland 0.56.1's lua path accepts
+      # "80% 60%", {"80%","60%"}, {0.8,0.6} and "80%w 60%h" through
+      # --verify-config and then silently ignores every one of them — only a
+      # two-number vec2 actually applies. Verified with `hyprctl eval`. These
+      # will be wrong on an external monitor of a different resolution; revisit
+      # if percentages start working upstream.
       window_rule = [
         # ── Workspace assignments ──────────────────────────────────────────
         {
@@ -164,7 +172,7 @@
           name = "scratchpad-term";
           match.class = "scratchterm";
           float = true;
-          size = "80% 60%";
+          size = [ 1536 648 ];  # 80% x 60% of 1920x1080
           center = 1;
           workspace = "special:term silent";
         }
@@ -172,7 +180,7 @@
           name = "scratchpad-tasks";
           match.class = "scratchtask";
           float = true;
-          size = "70% 50%";
+          size = [ 1344 540 ];  # 70% x 50%
           center = 1;
           workspace = "special:tasks silent";
         }
@@ -192,7 +200,7 @@
           name = "usb-ranger";
           match.class = "usb-ranger";
           float = true;
-          size = "70% 60%";
+          size = [ 1344 648 ];  # 70% x 60%
           center = 1;
         }
 
@@ -206,7 +214,7 @@
             class = "Yandex-browser-beta|google-chrome";
             float = true;
           };
-          size = "60% 70%";
+          size = [ 1152 756 ];  # 60% x 70%
           center = 1;
         }
 
