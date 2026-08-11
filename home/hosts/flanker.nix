@@ -3,7 +3,21 @@
 #
 # Flanker-specific overrides (laptop, Hyprland-only)
 #
-{lib, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: let
+  # Graphical sudo password prompt. Non-TTY callers (Claude Code's Bash tool,
+  # scripts spawned from keybinds, systemd user units) can't read a password
+  # from a terminal, so sudo needs a helper that reads one and prints it to
+  # stdout. Per sudo(8), SUDO_ASKPASS is used automatically when no terminal
+  # is available, so plain `sudo` keeps working in Alacritty and grows a
+  # fuzzel prompt everywhere else — no -A flag and no NOPASSWD rule needed.
+  sudo-askpass = pkgs.writeShellScriptBin "sudo-askpass" ''
+    exec ${pkgs.fuzzel}/bin/fuzzel --dmenu --password --prompt-only="''${1:-sudo password: }"
+  '';
+in {
   # Hyprland stack + WM-specific bits — flanker is the only host using these.
   # Fulcrum (Plasma) and tomcat (GNOME, separate repo) must not import them.
   imports = [
@@ -27,12 +41,17 @@
   # mkForce: nullOr can't merge a null over the shared module's string value.
   xdg.userDirs.desktop = lib.mkForce null;
 
+  home.packages = [sudo-askpass];
+
   # Clear Plasma's ksshaskpass out of the environment — flanker doesn't run
   # Plasma, but if PATH ever picks up ksshaskpass (e.g. via a nix profile),
   # having SSH_ASKPASS set would break `git push`'s gh credential helper.
   home.sessionVariables = {
     GIT_ASKPASS = "";
     SSH_ASKPASS = "";
+    # Unrelated to the two above: those are blanked so ksshaskpass can't
+    # hijack git/ssh, whereas sudo has no working fallback without a TTY.
+    SUDO_ASKPASS = "${sudo-askpass}/bin/sudo-askpass";
   };
   systemd.user.sessionVariables = {
     GIT_ASKPASS = "";
