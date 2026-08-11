@@ -67,64 +67,76 @@ in {
   # NVIDIA dGPU (renderD128). The laptop display is wired to the AMD GPU, so
   # rendering on NVIDIA requires a cross-adapter blit every frame → jank.
   # DRI_PRIME=1 selects the second GPU (AMD Renoir) as the render device.
+  # Pin aquamarine to the NVIDIA DRM node so it doesn't try to init a
+  # secondary multi-GPU renderer on the (non-existent) AMD DRM node — that
+  # failure loops on every frame, burns ~1.5 cores of CPU, and starves input
+  # handling so keyboard key-release events get dropped.
+  wayland.windowManager.hyprland.settings.env = [
+    { _args = [ "AQ_DRM_DEVICES" "/dev/dri/card1" ]; }
+  ];
+
   # Workspace 3 is work-specific — Thunderbird and Chrome are only on flanker.
-  # Lock screen immediately on Hyprland start — flanker uses auto-login (no
-  # greeter), so hyprlock is the only authentication gate after boot.
-  wayland.windowManager.hyprland.settings.exec-once = [ "hyprlock" ];
-
-  wayland.windowManager.hyprland.extraConfig = ''
-    # Pin aquamarine to the NVIDIA DRM node so it doesn't try to init a
-    # secondary multi-GPU renderer on the (non-existent) AMD DRM node —
-    # that failure loops on every frame, burns ~1.5 cores of CPU, and
-    # starves input handling so keyboard key-release events get dropped.
-    env = AQ_DRM_DEVICES, /dev/dri/card1
-
-    windowrule {
-        name = ws3-thunderbird
-        match:class = thunderbird
-        match:title = r:^(?!Sestavi:)
-        workspace = 3 silent
+  wayland.windowManager.hyprland.settings.window_rule = [
+    {
+      name = "ws3-thunderbird";
+      match = {
+        class = "thunderbird";
+        title = "r:^(?!Sestavi:)";
+      };
+      workspace = "3 silent";
     }
-
-    windowrule {
-        name = thunderbird-compose
-        match:class = thunderbird
-        match:title = Sestavi:
-        float  = true
-        center = 1
+    {
+      name = "thunderbird-compose";
+      match = {
+        class = "thunderbird";
+        title = "Sestavi:";
+      };
+      float = true;
+      center = 1;
     }
-
-    windowrule {
-        name = ws3-chrome
-        match:class = google-chrome
-        workspace = 3 silent
+    {
+      name = "ws3-chrome";
+      match.class = "google-chrome";
+      workspace = "3 silent";
     }
 
     # ── eSpremnica (Pošta Slovenije shipping labels — Wine/XWayland) ─────
     # Two top-level windows: the real app UI ("eSpremnica") and a shell
     # container ("eSpremnica-Pošta Slovenije") that stays blank post-login.
-    windowrule {
-        name = ws3-espremnica
-        match:class = espremnica\.exe
-        workspace = 3 silent
+    {
+      name = "ws3-espremnica";
+      match.class = "espremnica\\.exe";
+      workspace = "3 silent";
     }
-    windowrule {
-        name = espremnica-main
-        match:class = espremnica\.exe
-        match:title = ^eSpremnica$
-        center = 1
+    {
+      name = "espremnica-main";
+      match = {
+        class = "espremnica\\.exe";
+        title = "^eSpremnica$";
+      };
+      center = 1;
     }
-    windowrule {
-        name = espremnica-login
-        match:class = espremnica\.exe
-        match:title = _frmLogin
-        center = 1
+    {
+      name = "espremnica-login";
+      match = {
+        class = "espremnica\\.exe";
+        title = "_frmLogin";
+      };
+      center = 1;
     }
     # Note: an earlier attempt moved `eSpremnica-Pošta Slovenije` windows to
     # (-9999,-9999). The app spawns 5-6 windows with that same title (only one
     # is visible); hiding them all made the app fail to render its login form
-    # and main UI. Use the SUPER+H keybind below to hide the leftover blank
-    # window manually after logging in.
+    # and main UI. Use the SUPER+H keybind to hide the leftover blank window
+    # manually after logging in.
+  ];
+
+  # Lock screen immediately on Hyprland start — flanker uses auto-login (no
+  # greeter), so hyprlock is the only authentication gate after boot.
+  wayland.windowManager.hyprland.extraConfig = ''
+    hl.on("hyprland.start", function()
+      hl.exec_cmd("hyprlock")
+    end)
   '';
 
   # Yandex Browser .desktop override moved to home/modules/yandex.nix
