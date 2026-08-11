@@ -73,28 +73,38 @@ RASI_EOF
 
   # ── Wallpaper cycler ───────────────────────────────────────────────────────
   wallpaper-next = pkgs.writeShellScriptBin "wallpaper-next" ''
-    DIR="$HOME/Slike/Wallpapers"
-    if [ ! -d "$DIR" ] || [ -z "$(ls "$DIR"/*.{jpg,jpeg,png,webp} 2>/dev/null)" ]; then
-      exit 0
+    set -u
+    DIR="$HOME/Slike/Ozadja"
+    BG="$HOME/.config/background"
+
+    NEXT=$(${pkgs.findutils}/bin/find "$DIR" -maxdepth 1 -type f \
+      \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
+      2>/dev/null | ${pkgs.coreutils}/bin/shuf -n1)
+    if [ -z "$NEXT" ]; then
+      ${pkgs.libnotify}/bin/notify-send "wallpaper-next" "No images in $DIR" 2>/dev/null
+      exit 1
     fi
-    NEXT=$(ls "$DIR"/*.{jpg,jpeg,png,webp} 2>/dev/null | shuf -n1)
-    if [ -n "$NIRI_SOCKET" ]; then
+
+    # ~/.config/background is the single source of truth: awww paints it,
+    # hyprlock blurs it, and matugen.nix stamps against it on activation.
+    # Copy rather than symlink — hyprpaper.nix requires a regular writable file.
+    ${pkgs.coreutils}/bin/cp -f "$NEXT" "$BG"
+
+    if [ -n "''${NIRI_SOCKET:-}" ]; then
       pkill swaybg 2>/dev/null; sleep 0.1
-      ${pkgs.swaybg}/bin/swaybg -i "$NEXT" -m fill &
-    elif [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
-      hyprctl hyprpaper preload "$NEXT"
-      hyprctl hyprpaper wallpaper ",$NEXT"
+      ${pkgs.swaybg}/bin/swaybg -i "$BG" -m fill &
+    else
+      # awww, not hyprpaper — see hyprland/hyprpaper.nix for why. Wayle's
+      # wallpaper engine drives the same daemon, so the two can coexist.
+      ${pkgs.awww}/bin/awww img "$BG"
     fi
-    echo "$NEXT" > /tmp/current-wallpaper
-    # matugen image is broken in v4.0.0 (ENOTTY bug in non-tty context).
-    # Extract dominant color with ImageMagick and use color hex mode instead.
-    (
-      R=$(${pkgs.imagemagick}/bin/magick "$NEXT" -resize 1x1\! -format "%[fx:int(255*u.r)]" info: 2>/dev/null)
-      G=$(${pkgs.imagemagick}/bin/magick "$NEXT" -resize 1x1\! -format "%[fx:int(255*u.g)]" info: 2>/dev/null)
-      B=$(${pkgs.imagemagick}/bin/magick "$NEXT" -resize 1x1\! -format "%[fx:int(255*u.b)]" info: 2>/dev/null)
-      HEX=$(printf "#%02x%02x%02x" "''${R:-128}" "''${G:-128}" "''${B:-128}")
-      matugen color hex "$HEX" 2>/dev/null
-    ) &
+
+    # Full-image palette via matugen's own extraction. --prefer is required:
+    # matugen aborts on images with several candidate source colors when it
+    # has no TTY to ask on, which is always the case from a keybind. (The old
+    # ImageMagick 1x1 dominant-color workaround was for the v4.0.0 ENOTTY bug,
+    # fixed since — we run 4.1.0.)
+    ${pkgs.matugen}/bin/matugen image "$BG" --prefer saturation &
   '';
 
   # ── Power menu ────────────────────────────────────────────────────────────
