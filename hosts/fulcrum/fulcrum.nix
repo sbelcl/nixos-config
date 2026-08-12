@@ -176,7 +176,7 @@
   # The shared bluetooth.nix enables hardware.bluetooth, which installs a D-Bus
   # activation file for org.bluez.  Without hardware, bluetoothd exits
   # immediately, but D-Bus still waits service_start_timeout=25s for the name
-  # to appear — causing HyprPanel (AstalBluetooth) to hang 25s on every login.
+  # to appear — so any Bluetooth client blocks 25s at login waiting for it.
   # Force the option off here so the activation file is never installed.
   # ==========================================================================
   hardware.bluetooth.enable = lib.mkForce false;

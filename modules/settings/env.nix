@@ -21,7 +21,7 @@
     # Java applications on non-reparenting window managers
     _JAVA_AWT_WM_NONREPARENTING = "1";
 
-    # wlroots-based compositors (Niri, Hyprland) may need this
+    # wlroots-based compositors (Hyprland) may need this
     WLR_NO_HARDWARE_CURSORS = "1";
 
     # NVIDIA-specific env vars (GBM_BACKEND, __GLX_VENDOR_LIBRARY_NAME,

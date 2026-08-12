@@ -2,7 +2,8 @@
 # ~/.nixos/home/modules/matugen.nix
 #
 # Matugen template configuration — generates per-app color schemes from the
-# current wallpaper whenever HyprPanel calls `matugen image <wallpaper>`.
+# current wallpaper. HyprPanel used to invoke matugen; it was replaced by
+# Wayle, so the trigger is now wallpaper-next (modules/rofi.nix, SUPER+SHIFT+W).
 # home-manager owns the templates; matugen owns the output files.
 #
 {
@@ -211,7 +212,7 @@ in {
         fg:          {{colors.on_background.default.hex}};
         fg-dim:      {{colors.on_surface_variant.default.hex}};
         cyan:        {{colors.secondary.default.hex}};
-        niri-active: {{colors.primary.default.hex}};
+        accent: {{colors.primary.default.hex}};
         pink:        {{colors.error.default.hex}};
         transparent: rgba(0,0,0,0);
     }

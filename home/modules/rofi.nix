@@ -90,14 +90,11 @@ RASI_EOF
     # Copy rather than symlink — hyprpaper.nix requires a regular writable file.
     ${pkgs.coreutils}/bin/cp -f "$NEXT" "$BG"
 
-    if [ -n "''${NIRI_SOCKET:-}" ]; then
-      pkill swaybg 2>/dev/null; sleep 0.1
-      ${pkgs.swaybg}/bin/swaybg -i "$BG" -m fill &
-    else
-      # awww, not hyprpaper — see hyprland/hyprpaper.nix for why. Wayle's
-      # wallpaper engine drives the same daemon, so the two can coexist.
-      ${pkgs.awww}/bin/awww img "$BG"
-    fi
+    # awww, not hyprpaper — see hyprland/hyprpaper.nix for why. Wayle's
+    # wallpaper engine drives the same daemon, so the two can coexist.
+    # (A swaybg branch gated on $NIRI_SOCKET lived here until df79e86 stripped
+    # Niri; nothing set that variable any more, so it was dead.)
+    ${pkgs.awww}/bin/awww img "$BG"
 
     # Full-image palette via matugen's own extraction. --prefer is required:
     # matugen aborts on images with several candidate source colors when it

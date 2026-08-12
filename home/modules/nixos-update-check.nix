@@ -95,8 +95,9 @@
       [ "$home_out" != "$current_home" ] && msg="''${msg}Home: run updhome"
 
       if [ -n "$msg" ]; then
-        # HyprPanel treats `-t 0` as "don't show" (not "persistent"), so use
-        # `-u critical` — persists until dismissed and stands out visually.
+        # `-t 0` was unreliable with the previous panel (treated as "don't
+        # show" rather than "persistent"), so use `-u critical` — it persists
+        # until dismissed and stands out visually.
         notify-send -a "NixOS Updates" -u critical \
           "Updates available" "$(printf '%b' "$msg")"
       fi

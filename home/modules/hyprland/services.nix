@@ -3,8 +3,7 @@
 #
 # Per-session services for Hyprland. All gated on HYPRLAND_INSTANCE_SIGNATURE
 # so they don't fire under Plasma (fulcrum), which has its own equivalents.
-# nm-applet is intentionally omitted — HyprPanel handles network via
-# AstalNetwork directly.
+# nm-applet is intentionally omitted — Wayle's network module covers it.
 #
 { pkgs, lib, ... }: let
   # udiskie fires its event hook for every device event (added, mounted,

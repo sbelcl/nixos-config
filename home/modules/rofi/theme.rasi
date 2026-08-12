@@ -12,7 +12,7 @@
 window {
     background-color: @bg;
     border:           2px solid;
-    border-color:     @niri-active;
+    border-color:     @accent;
     border-radius:    20px;
     width:            860px;
     padding:          0px;
@@ -34,7 +34,7 @@ inputbar {
     background-color: @bg-alt;
     border-radius:    12px;
     border:           1px solid;
-    border-color:     @niri-active;
+    border-color:     @accent;
     padding:          14px 18px;
     margin:           0px 0px 20px 0px;
     children:         [ prompt, entry ];
@@ -87,7 +87,7 @@ element normal.normal {
 
 element selected.normal {
     background-color: @bg-hover;
-    border-color:     @niri-active;
+    border-color:     @accent;
     text-color:       @fg;
 }
 
