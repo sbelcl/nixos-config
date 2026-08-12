@@ -10,6 +10,19 @@
   inputs,
   ...
 }: {
+  # nixpkgs gained its own services/misc/comfyui.nix, which declares the same
+  # services.comfyui options as the comfyui-nix flake and made this host fail
+  # to evaluate outright ("option ... is already declared"). Disable the
+  # built-in one rather than migrating to it: it hardcodes
+  # --base-directory=/var/lib/comfyui plus ProtectSystem=strict, and offers no
+  # dataDir, gpuSupport or enableManager. Migrating would move the model
+  # library off /mnt/storage onto the NVMe — the thing the block below exists
+  # to avoid — and lose CUDA selection and ComfyUI Manager.
+  #
+  # Revisit if the upstream module grows a data directory option; at that point
+  # the external input can be dropped entirely.
+  disabledModules = [ "services/misc/comfyui.nix" ];
+
   imports = [
     ./hardware
     ../../modules/software
