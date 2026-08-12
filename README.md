@@ -1,117 +1,91 @@
-# NixOS Configuration — flanker
+# NixOS Configuration — flanker & fulcrum
 
-Personal NixOS configuration using flakes with standalone Home Manager.
-Built around a Wayland-first setup using the [Niri](https://github.com/YaLTeR/niri) scrolling compositor.
+Personal multi-host NixOS configuration: one system flake, plus a **standalone**
+Home Manager flake in [`home/`](home/).
 
-## Hardware
+A third machine, the work laptop *tomcat*, lives in a separate private repo.
 
-- **CPU:** AMD
-- **GPU:** NVIDIA (discrete) + AMD (integrated) — PRIME hybrid mode
-- **Display:** Wayland
+For a much more detailed map of where things live, see [CLAUDE.md](CLAUDE.md).
 
-## Structure
+## Hosts
+
+| | fulcrum | flanker |
+|---|---|---|
+| Role | Gaming desktop | Laptop |
+| GPU | NVIDIA RTX 3080 Ti | Hybrid NVIDIA + AMD |
+| Desktop | KDE Plasma (Wayland) only | Hyprland only |
+| Login | SDDM, plus a gamescope "Gaming Mode" session | Auto-login on TTY1, hyprlock as the auth gate |
+| Storage | `/mnt/storage` (ext4 HDD), `/mnt/games` (XFS NVMe) | `/mnt/storage` over NFS from fulcrum, `/mnt/games` local |
+| Extras | ComfyUI on CUDA, Ollama, NFS server | Battery alerts, wallpaper→theme sync |
+
+## Layout
+
+Directory-level only — a file-by-file tree in a README rots faster than it helps.
 
 ```
 .nixos/
-├── flake.nix                  # System flake
-├── flake.lock
-├── hosts/
-│   └── flanker/
-│       ├── flanker.nix        # Host entry point
-│       ├── hardware-configuration.nix
-│       └── graphics.nix       # NVIDIA PRIME config
+├── flake.nix              # system flake — nixosConfigurations.{flanker,fulcrum}
+├── hosts/<host>/          # host entry point + hardware
 ├── modules/
-│   ├── settings/              # System-level settings
-│   │   ├── audio.nix          # PipeWire
-│   │   ├── bluetooth.nix
-│   │   ├── env.nix            # System environment variables
-│   │   ├── greetd.nix         # Display manager
-│   │   ├── locales.nix
-│   │   ├── maintenance.nix    # Nix store maintenance
-│   │   ├── networking.nix
-│   │   ├── power.nix
-│   │   ├── printing.nix
-│   │   ├── usb.nix
-│   │   └── users.nix
-│   └── software/              # System-level applications
-│       ├── docker.nix
-│       ├── niri.nix           # Compositor + XDG portals
-│       ├── packages.nix
-│       ├── steam.nix
-│       └── thunar.nix
-└── home/                      # Standalone Home Manager flake
-    ├── flake.nix              # Home flake (follows system nixpkgs)
-    ├── flake.lock
-    ├── home.nix               # Home entry point
+│   ├── settings/          # shared system settings (networking, audio, users, …)
+│   └── software/          # shared system packages and services
+└── home/                  # standalone Home Manager flake
+    ├── flake.nix          # homeConfigurations."imnos@{flanker,fulcrum}"
+    ├── hosts/<host>.nix   # per-host home overrides
     └── modules/
-        ├── fonts.nix
-        ├── git.nix
-        ├── neovim.nix
-        ├── packages.nix
-        ├── session-variables.nix
-        ├── yandex.nix
-        ├── niri/              # Compositor configuration
-        │   ├── niri.nix       # Keybindings, layout
-        │   ├── waybar.nix
-        │   ├── swaylock.nix
-        │   ├── wlogout.nix
-        │   └── niri-eww.nix
-        └── users/             # User-specific overrides
+        ├── hyprland/      # compositor stack — imported by flanker only
+        └── users/imnos.nix
 ```
 
 ## Usage
 
-### System update
+Both machines have shell aliases that fill in the right host:
+
+```bash
+updsys     # sudo nixos-rebuild switch --flake ~/.nixos#<host>
+updhome    # home-manager switch --flake ~/.nixos/home#imnos@<host>
+```
+
+Written out, for when the aliases are not available (a fresh checkout, a TTY
+rescue shell):
 
 ```bash
 sudo nixos-rebuild switch --flake ~/.nixos#flanker
+home-manager switch --flake ~/.nixos/home#imnos@flanker
+# …or #fulcrum / #imnos@fulcrum
 ```
 
-Or using the alias:
+After pushing from one machine, `git pull` on the other before rebuilding.
+
+## Checking before deploying
 
 ```bash
-updsys
+nix flake check --no-build                    # both flakes evaluate
+nixos-rebuild build --flake ~/.nixos#fulcrum  # build another host without switching
+home-manager build --flake ~/.nixos/home#imnos@flanker
 ```
 
-### Home Manager update
+Building the *other* host is worth the habit: an input bump can break a machine
+you are not sitting at, and you will not find out until you go there. A weekly
+timer ([`home/modules/nixos-update-check.nix`](home/modules/nixos-update-check.nix))
+does this automatically on flanker — it resolves newer inputs in a throwaway copy
+of the tree, so it never rewrites the lock files in place.
 
-```bash
-home-manager switch --flake ~/.nixos/home#imnos
-```
+Note that a passing evaluation says nothing about *runtime* config: Hyprland Lua,
+Wayle TOML, matugen templates and rofi themes are all opaque to Nix. Several have
+been accepted happily and then silently ignored at runtime.
 
-Or using the alias:
+## Design decisions
 
-```bash
-updhome
-```
-
-### Check before deploying
-
-```bash
-# Validate flake
-nix flake check
-
-# Build without activating
-nixos-rebuild build --flake ~/.nixos#flanker
-
-# Test in a VM
-nixos-rebuild build-vm --flake ~/.nixos#flanker
-./result/bin/run-nixos-vm
-```
-
-## Key Keybindings (Niri)
-
-See [`home/modules/niri/niri.nix`](home/modules/niri/niri.nix) for the full list.
-
-| Key | Action |
-|-----|--------|
-| `Super + Enter` | Terminal |
-| `Super + Space` | Overview |
-| `Super + Q` | Close window |
-| `Super + D` | App launcher |
-
-## Design Decisions
-
-- **Separate flakes** — system and home are independent; `updsys` and `updhome` can be run separately to avoid breaking userspace when testing system changes.
-- **Home flake follows system nixpkgs** — `nixpkgs.follows = "system-flake/nixpkgs"` ensures both use the same package set.
-- **NVIDIA hybrid mode** — configured via `hardware.nvidia.mode = "hybrid"` in `graphics.nix`, easily switchable.
+- **Two independent flakes.** `updsys` and `updhome` can be run separately, so a
+  system change under test cannot take userspace down with it.
+- **They do *not* follow each other.** `home/flake.nix` tracks its own
+  `nixos-unstable`. The revisions currently match by coincidence, not by
+  construction — update them together, or expect drift.
+- **Hyprland uses the Lua config format**, not hyprlang, which is removed in
+  Hyprland 0.57. See [`home/modules/hyprland/config.nix`](home/modules/hyprland/config.nix).
+- **Colours come from the wallpaper.** matugen regenerates Alacritty, rofi,
+  fuzzel, hyprlock and kdeglobals palettes; `wallpaper-next` (SUPER+SHIFT+W)
+  drives it.
+- **Host-specific policy lives in host files**, shared policy in `modules/` and
+  `home/modules/`. The Hyprland stack is imported by flanker alone.
