@@ -10,7 +10,8 @@
   # udiskie fires its event hook for every device event (added, mounted,
   # removed, ...), so the script filters for device_mounted itself. It runs
   # ranger in a throwaway Alacritty under the same --class the SUPER+R bind
-  # uses, so one float rule in hyprland/config.nix covers both.
+  # uses, so both entry points behave identically (see hyprland/config.nix —
+  # the class keeps the ws2-terminal rule from grabbing it).
   #
   # {mount_path} is not in udiskie's documented placeholder list ({event},
   # {device_presentation}, {id_uuid}) but works: prompt.py builds the format

@@ -193,16 +193,12 @@
           center = 1;
         }
 
-        # ── ranger — float, not tiled ──────────────────────────────────────
-        # Two entry points share this class: the SUPER+R bind, and udiskie's
-        # event hook on USB mount (hyprland/services.nix).
-        {
-          name = "ranger-float";
-          match.class = "ranger";
-          float = true;
-          size = [ 1344 648 ];  # 70% x 60%
-          center = 1;
-        }
+        # ranger deliberately has no rule. It ran floating until opening an
+        # image proved the point: xdg-open launches the viewer into the tiled
+        # layout, where the floating ranger covered it. Tiled, they sit side by
+        # side. The --class ranger it is launched with still matters though —
+        # without it the ws2-terminal rule above would match its Alacritty
+        # class and yank every ranger window to workspace 2.
 
         # ── Browser file pickers (Yandex/Chrome XWayland) ──────────────────
         # Yandex/Chrome set _NET_WM_WINDOW_TYPE_DIALOG on file pickers, so they
@@ -277,8 +273,9 @@
       -- ── Apps ────────────────────────────────────────────────────────────
       hl.bind(mod .. " + Return",    hl.dsp.exec_cmd("alacritty"))
       hl.bind(mod .. " + E",         hl.dsp.exec_cmd("dolphin"))
-      -- ranger floats via the ranger-float window rule; same class udiskie
-      -- uses, so a USB mount and this bind look identical.
+      -- Same --class udiskie's mount hook uses, so a USB mount and this bind
+      -- behave identically. See the window_rule list for why the class is
+      -- still needed now that ranger tiles.
       hl.bind(mod .. " + R",         hl.dsp.exec_cmd("alacritty --class ranger -e ranger ~"))
       hl.bind(mod .. " + SPACE",     hl.dsp.exec_cmd("fuzzel"))
       hl.bind(mod .. " + SHIFT + Q", hl.dsp.exec_cmd("rofi-power"))

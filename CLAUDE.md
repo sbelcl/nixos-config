@@ -66,8 +66,9 @@ Always `git pull` on the other machine after pushing changes.
 - `/mnt/games` — local XFS NVMe
 
 ### Both machines
-- **Terminal**: Alacritty · **Files**: Dolphin · **Browser**: Yandex Browser (custom flake, GStreamer + Chrome 144 codecs)
-- **Default apps**: images→qview, video/audio→VLC, archives→Ark, PDF→Firefox
+- **Terminal**: Alacritty · **Files**: Dolphin (GUI), ranger (TUI, SUPER+R) · **Browser**: Yandex Browser (custom flake, GStreamer + Chrome 144 codecs)
+- **Default apps** (declared in `home/modules/packages.nix` → `xdg.mimeApps`): images→Loupe, video/audio→mpv, archives→Ark, PDF→Okular, HTML→Yandex Browser, directories→Dolphin
+  - ranger does **not** use these: it opens files with its own launcher, `rifle`, which ignores xdg-mime entirely. `home/modules/ranger.nix` routes images through `xdg-open` so they follow the table above; everything else uses rifle's packaged rules.
 
 ### flanker-only (Hyprland stack)
 - **WM**: Hyprland · **Panel**: Wayle · **Lock**: hyprlock · **Launcher**: Rofi / fuzzel
