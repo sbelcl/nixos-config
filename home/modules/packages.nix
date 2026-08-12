@@ -131,7 +131,27 @@
     # Web browsers & mail clients
     brave
     google-chrome
-    thunderbird
+    # Thunderbird asked to become the default client on every single start.
+    # The startup check (messenger.js) fires when the pref below is true AND
+    # isDefaultClient(MAIL | NET_THUNDERBIRD) is false — and that is a bitmask,
+    # so it must be default for *both*. mailto already resolves to
+    # thunderbird.desktop, but nothing on the system registers the
+    # net.thunderbird:// scheme it added, so the second half can never be
+    # satisfied and the prompt returns forever.
+    #
+    # Setting it through the wrapper's autoconfig rather than a profile
+    # user.js: prefs.js already had this as false and the dialog came back
+    # anyway, and autoconfig applies to every profile and both machines
+    # instead of one hardcoded profile directory name.
+    #
+    # lockPref, not defaultPref, so a stale prefs.js cannot re-enable it. To
+    # get the prompt back, drop this override and toggle the checkbox in
+    # Settings → General → System Integration.
+    (thunderbird.override {
+      extraPrefs = ''
+        lockPref("mail.shell.checkDefaultClient", false);
+      '';
+    })
     # Remote tools
     filezilla
     putty
