@@ -191,7 +191,14 @@
   # ddcci-backlight creates a /sys/class/backlight device from DDC/CI
   # which lets standard tools (brightnessctl, etc.) control brightness
   hardware.i2c.enable = true;
-  users.users.imnos.extraGroups = [ "i2c" "video" ];
+
+  # "input" is fulcrum-only: the foot pedals are read straight from
+  # /dev/input/*, which is root:input. It used to be granted to both hosts from
+  # modules/settings/users.nix — flanker has no such hardware, and the
+  # compositor does not need it (Hyprland gets input devices from logind, not
+  # from the group), so the laptop no longer gets raw access to every keyboard.
+  # ("video" is already granted by modules/settings/users.nix.)
+  users.users.imnos.extraGroups = [ "i2c" "input" ];
   boot.extraModulePackages = with config.boot.kernelPackages; [ ddcci-driver ];
   boot.kernelModules = [ "ddcci" "ddcci-backlight" ];
   # DDC/CI backlight — create i2c client for the ASUS VG34VQL3A on the NVIDIA
