@@ -10,6 +10,23 @@
     enableZshIntegration = true; # Ctrl+R history, Ctrl+T file, Alt+C dir
   };
 
+  # Per-directory environments: cd into a dir with .envrc and its exports are
+  # loaded, unloaded again on leaving. Home-manager rather than system, because
+  # direnv is only useful through its shell hook and ~/.zshrc is generated here.
+  #
+  # nix-direnv replaces direnv's own `use nix`/`use flake` with versions that
+  # cache the evaluated dev shell in .direnv/ and register it as a GC root, so
+  # entering a project doesn't re-evaluate the flake and the weekly nix.gc
+  # (modules/settings/maintenance.nix) doesn't collect it out from under you.
+  #
+  # An .envrc must be approved once with `direnv allow` before it runs — that
+  # approval is per-path user state in ~/.local/share/direnv, not in this repo.
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
