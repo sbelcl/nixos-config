@@ -24,6 +24,7 @@
     127.0.0.1 pma.test
     127.0.0.1 mail.test
     127.0.0.1 digitalnisvet.test
+    127.0.0.1 prosnik.test
   '';
 
   # Bootloader
