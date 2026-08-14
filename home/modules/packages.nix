@@ -67,20 +67,6 @@
     };
   };
 
-  # The gtk-pipe-viewer package drops its desktop entry in $out/share/ instead
-  # of $out/share/applications/, so no launcher (Rofi, fuzzel, KRunner) ever
-  # sees it. Re-declare it here; the icon needs an absolute path too, since it
-  # ships outside the hicolor theme and plain "gtk-pipe-viewer" won't resolve.
-  xdg.desktopEntries.gtk-pipe-viewer = {
-    name = "GTK Pipe Viewer";
-    comment = "Search and play YouTube videos.";
-    exec = "gtk-pipe-viewer";
-    icon = "${pkgs.gtk-pipe-viewer}/share/icons/gtk-pipe-viewer.png";
-    terminal = false;
-    type = "Application";
-    categories = ["AudioVideo" "GTK"];
-  };
-
   home.packages = with pkgs; [
     # Image viewing and manipulation
     gimp
@@ -176,10 +162,7 @@
     audacity
     stremio-linux-shell
     guvcview      # webcam/microscope viewer with V4L2 controls
-    # NewPipe-style YouTube client — no API key, no ads. Ships two binaries:
-    # `pipe-viewer` (CLI/TUI) and `gtk-pipe-viewer` (GUI). Playback and
-    # downloads go through mpv + yt-dlp from mpv.nix.
-    gtk-pipe-viewer
+    freetube      # NewPipe-style YouTube client; SponsorBlock, local subscriptions
     # Social media
     discord
     telegram-desktop
