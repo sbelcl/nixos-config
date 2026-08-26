@@ -181,6 +181,8 @@ let
 
     # ── Toggles ─────────────────────────────────────────────────────────────
     { keys = "SUPER + CTRL + I"; exec = "idle-toggle"; desc = "Toggle idle inhibit (no lock, no sleep)"; category = "Toggles"; }
+    # Manual override for gammastep, which otherwise follows the sun by itself.
+    { keys = "SUPER + CTRL + N"; exec = "nightlight-toggle"; desc = "Toggle night light"; category = "Toggles"; }
 
     # ── Appearance ──────────────────────────────────────────────────────────
     # Repaints the wallpaper and re-runs matugen, so the whole session — bar,

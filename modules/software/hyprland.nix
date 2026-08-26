@@ -46,9 +46,6 @@ with lib; {
       # Launcher
       fuzzel
 
-      # Blue light filter
-      hyprsunset
-
       # Screenshot
       grim
       slurp

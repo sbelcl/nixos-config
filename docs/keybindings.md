@@ -63,7 +63,7 @@
 
 | Keybind | Action |
 |---|---|
-| `ˇ (left of 1)` | Drop-down terminal |
+| `cedilla (key left of 1)` | Drop-down terminal |
 | `SUPER + T` | Task list (taskwarrior-tui) |
 | `SUPER + S` | Scratchpad |
 | `SUPER + SHIFT + S` | Send window to the scratchpad |
@@ -104,6 +104,7 @@
 | Keybind | Action |
 |---|---|
 | `SUPER + CTRL + I` | Toggle idle inhibit (no lock, no sleep) |
+| `SUPER + CTRL + N` | Toggle night light |
 
 ## Appearance
 

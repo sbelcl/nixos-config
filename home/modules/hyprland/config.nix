@@ -325,7 +325,6 @@ in {
         hl.exec_cmd("wayle shell")                           -- panel + notifications
         hl.exec_cmd("hypridle")                              -- lock 5 min, DPMS 10 min
         hl.exec_cmd("snappy-switcher --daemon")              -- animated Alt+Tab
-        hl.exec_cmd("hyprsunset -t 4500")                    -- blue light filter
         hl.exec_cmd("alacritty --class scratchterm")
         hl.exec_cmd("alacritty --class scratchtask -e taskwarrior-tui")
       end)

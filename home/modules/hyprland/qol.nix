@@ -2,9 +2,9 @@
 # ~/.nixos/home/modules/hyprland/qol.nix
 #
 # Small session conveniences, ported from Omarchy: countdown reminders,
-# on-demand status notices, an idle-inhibit toggle, a layout switcher, and
-# push-to-talk dictation. Keybinds for all of these live in config.nix, next
-# to every other bind.
+# on-demand status notices, an idle-inhibit toggle, a layout switcher, a night
+# light toggle, and push-to-talk dictation. Keybinds for all of these live in
+# binds.nix, next to every other bind.
 #
 # Flanker-only, like the rest of hyprland/ — the scripts assume a Wayland
 # session with a notification daemon (Wayle) and hypridle.
@@ -166,6 +166,33 @@
     ${notify} -u low "Layout" "$next"
   '';
 
+  # ── Night light ───────────────────────────────────────────────────────────
+  # gammastep (services.nix) follows sunrise and sunset for Ljubljana on its
+  # own; this is the manual override for when the warm cast is in the way —
+  # judging a photo, picking colours, watching a film.
+  #
+  # Stopping the unit is enough to get neutral colour back: the adjustment is
+  # made through wlr-gamma-control, and the compositor drops it when the
+  # client disconnects. Starting it again re-applies whatever is right for
+  # the current time of day, so the toggle needs no state of its own.
+  #
+  # This used to be a fight rather than a toggle: `hyprsunset -t 4500` was
+  # started from exec-once at every session while gammastep was already
+  # running, so two daemons drove the same protocol and the screen never
+  # reached gammastep's 6500K daytime white. hyprsunset is gone.
+  nightlight-toggle = pkgs.writeShellScriptBin "nightlight-toggle" ''
+    set -uo pipefail
+    unit=gammastep.service
+
+    if ${pkgs.systemd}/bin/systemctl --user is-active --quiet "$unit"; then
+      ${pkgs.systemd}/bin/systemctl --user stop "$unit"
+      ${notify} -u low "Night light off" "Neutral colour restored"
+    else
+      ${pkgs.systemd}/bin/systemctl --user start "$unit"
+      ${notify} -u low "Night light on" "6500K day · 3500K night"
+    fi
+  '';
+
   # ── Idle inhibit ──────────────────────────────────────────────────────────
   # hypridle is started from config.nix's exec-once, not by its systemd unit
   # (hypridle.nix forces WantedBy empty), so the toggle stops and starts the
@@ -193,6 +220,7 @@ in {
     notice-weather
     idle-toggle
     layout-toggle
+    nightlight-toggle
     # Push-to-talk dictation. The transcription model is a ~1 GB runtime
     # download, not a Nix dependency — run `voxtype setup --download` once,
     # then `voxtype setup check` to confirm the mic and compositor bits.
