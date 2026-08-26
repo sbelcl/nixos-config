@@ -1,11 +1,17 @@
 #
-# ~/.nixos/home/modules/dolphin.nix
+# ~/.nixos/home/modules/kde-apps.nix
 #
-# Dolphin file manager with thumbnail and KIO support
+# What is left of the KDE side after Dolphin was replaced by Nautilus: Ark
+# and Okular, which packages.nix still points at for archives and PDFs.
+#
+# The service-cache bits below came with Dolphin but are not about it — they
+# are what lets any KDE application resolve "open with" against the desktop
+# files on this system, which Ark needs to hand a file to anything else.
 #
 { pkgs, lib, ... }: {
   # kbuildsycoca6 needs applications.menu to find desktop files.
-  # Without it, it builds an empty database and Dolphin shows no apps.
+  # Without it, it builds an empty database and KDE apps see no applications
+  # at all in their "open with" menus.
   xdg.configFile."menus/applications.menu".text = ''
     <!DOCTYPE Menu PUBLIC "-//freedesktop//DTD Menu 1.0//EN"
     "http://www.freedesktop.org/standards/menu-spec/menu-1.0.dtd">
@@ -16,7 +22,7 @@
     </Menu>
   '';
 
-  # Rebuild KDE service cache at session start so Dolphin finds all apps.
+  # Rebuild the KDE service cache at session start.
   # Must run inside the user session (needs real XDG_DATA_DIRS + XDG_RUNTIME_DIR).
   systemd.user.services.kbuildsycoca = {
     Unit = {
@@ -32,11 +38,7 @@
   };
 
   home.packages = with pkgs; [
-    kdePackages.dolphin
-    kdePackages.kio-extras       # sftp://, smb://, fish:// in address bar
-    kdePackages.kdegraphics-thumbnailers  # image/SVG thumbnails
-    kdePackages.ffmpegthumbs     # video thumbnails
-    kdePackages.ark              # archive manager (integrates with Dolphin)
-    kdePackages.okular           # PDF & document viewer
+    kdePackages.ark              # archive handler (xdg.mimeApps)
+    kdePackages.okular           # PDF & document viewer (xdg.mimeApps)
   ];
 }

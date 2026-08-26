@@ -27,7 +27,8 @@ Multi-host NixOS flake for imnos. Two machines in this repo: **fulcrum** (deskto
 │   ├── fuzzel.nix                 # Wayland launcher — flanker-only
 │   ├── battery.nix                # UPower alerts — flanker-only (laptop)
 │   ├── matugen.nix                # Wallpaper→theme sync — flanker-only (HyprPanel trigger)
-│   ├── dolphin.nix                # File manager + thumbnails (shared)
+│   ├── nautilus.nix               # File manager + thumbnails + dconf (shared)
+│   ├── kde-apps.nix               # Ark + Okular, the KDE apps mimeApps still uses
 │   └── alacritty.nix              # Terminal (shared)
 └── hosts/
     ├── fulcrum.nix                # Fulcrum-specific home overrides
@@ -75,12 +76,13 @@ Always `git pull` on the other machine after pushing changes.
 - Moonlight client for fulcrum's Sunshine host
 
 ### Both machines
-- **Terminal**: Alacritty · **Files**: Dolphin (GUI), ranger (TUI, SUPER+R) · **Browser**: Yandex Browser (custom flake, GStreamer + Chrome 144 codecs)
-- **Default apps** (declared in `home/modules/packages.nix` → `xdg.mimeApps`): images→Loupe, video/audio→mpv, archives→Ark, PDF→Okular, HTML→Yandex Browser, directories→Dolphin
+- **Terminal**: Alacritty · **Files**: Nautilus (GUI, SUPER+E), ranger (TUI, SUPER+R) · **Browser**: Yandex Browser (custom flake, GStreamer + Chrome 144 codecs)
+- **Default apps** (declared in `home/modules/packages.nix` → `xdg.mimeApps`): images→Loupe, video/audio→mpv, archives→Ark, PDF→Okular, HTML→Yandex Browser, directories→Nautilus
   - ranger does **not** use these: it opens files with its own launcher, `rifle`, which ignores xdg-mime entirely. `home/modules/ranger.nix` routes images through `xdg-open` so they follow the table above; everything else uses rifle's packaged rules.
 - **Web apps** (`home/modules/webapps.nix`): sites given their own launcher entry and window via Chromium's `--app=` — Claude, ChatGPT, Yandex Mail/Calendar, GitHub, phpMyAdmin (`pma.test`). Adding one is a single attrset; `icon` is either an icon-theme name (`"github"`, from Papirus) or a path (`./webapps/icons/x.png`, pinned into its own store path by `builtins.path`). Icons are committed, not fetched at build time, so a moved URL cannot break a rebuild.
   - Launch flags live in `home/modules/yandex-flags.nix`, shared with `yandex.nix` — web apps can't go through `gtk-launch` like `packages.nix` does, because `--app=` is a flag.
   - Window class is Chromium's `chrome-<host>__-Default` (e.g. `chrome-github.com__-Default`), *not* `yandex-browser-beta` — so the `ws1-browser` rule does not catch them (verified: a web app opens on the current workspace), and each one can carry its own window rule.
+- **File manager**: Nautilus (`home/modules/nautilus.nix`). Preferences are `dconf.settings`, not a dotfile; `color-scheme = "prefer-dark"` is what stops libadwaita coming up white. Thumbnailers are found via `XDG_DATA_DIRS/thumbnailers`, so installing `ffmpegthumbnailer`/`webp-pixbuf-loader` is the whole setup, and `sushi` gives space-bar preview. "Open in Terminal" comes from `modules/software/nautilus.nix` (system, needs `updsys`) — that module writes the terminal into the system dconf profile with `lockAll`, so don't set that key in home-manager.
 - **System QOL** (`modules/settings/maintenance.nix`): zram swap (50% of RAM), fwupd firmware updates, `locate` via plocate, and `nh` for rebuilds (`nh os switch`). `nh.clean` is off on purpose — it and the existing `nix.gc.automatic` both install a GC timer and the module asserts if both are on.
 - **`command-not-found` / `,`**: `programs.nix-index` + comma, fed by the `nix-index-database` flake input (`home/flake.nix`) so nothing is indexed locally.
 

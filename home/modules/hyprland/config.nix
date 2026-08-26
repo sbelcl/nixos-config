@@ -246,10 +246,10 @@ in {
           center = 1;
         }
 
-        # ── Dolphin — slight transparency ──────────────────────────────────
+        # ── File manager — slight transparency ─────────────────────────────
         {
-          name = "dolphin-opacity";
-          match.class = "org.kde.dolphin";
+          name = "nautilus-opacity";
+          match.class = "org.gnome.Nautilus";
           opacity = "0.9 override 0.85 override";
         }
 

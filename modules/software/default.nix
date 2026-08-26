@@ -9,6 +9,7 @@
   imports = [
     ./common.nix
     ./thunar.nix
+    ./nautilus.nix
     ./steam.nix
     ./docker.nix
     ./libvirt.nix

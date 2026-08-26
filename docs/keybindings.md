@@ -10,7 +10,7 @@
 | Keybind | Action |
 |---|---|
 | `SUPER + Return` | Terminal |
-| `SUPER + E` | File manager (Dolphin) |
+| `SUPER + E` | File manager (Nautilus) |
 | `SUPER + R` | File manager (ranger) |
 | `SUPER + SPACE` | App launcher |
 | `SUPER + M` | System monitor |

@@ -84,7 +84,7 @@ let
   raw = [
     # ── Apps ────────────────────────────────────────────────────────────────
     { keys = "SUPER + Return"; exec = "alacritty"; desc = "Terminal"; category = "Apps"; }
-    { keys = "SUPER + E"; exec = "dolphin"; desc = "File manager (Dolphin)"; category = "Apps"; }
+    { keys = "SUPER + E"; exec = "nautilus"; desc = "File manager (Nautilus)"; category = "Apps"; }
     # Same --class udiskie's mount hook uses, so a USB mount and this bind
     # behave identically. See config.nix's window_rule list for why the class
     # is still needed now that ranger tiles.

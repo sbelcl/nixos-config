@@ -61,7 +61,7 @@ in {
       "x-scheme-handler/unknown"= "yandex-browser-beta.desktop";
       "application/xhtml+xml"   = "yandex-browser-beta.desktop";
       # File manager
-      "inode/directory"          = "org.kde.dolphin.desktop";
+      "inode/directory"          = "org.gnome.Nautilus.desktop";
       # Images → Loupe
       "image/jpeg"               = "org.gnome.Loupe.desktop";
       "image/png"                = "org.gnome.Loupe.desktop";
@@ -161,7 +161,7 @@ in {
     poppler-utils # PDF tools (pdftotext, pdfimages, etc.)
     taskwarrior3  # CLI task manager
     taskwarrior-tui # terminal UI for taskwarrior
-    # Archive management (ark is in dolphin.nix)
+    # Archive management (ark is in kde-apps.nix)
     p7zip
     unrar
     zip

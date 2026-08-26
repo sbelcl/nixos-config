@@ -17,7 +17,8 @@
     ./git.nix
     ./alacritty.nix
     ./mpv.nix
-    ./dolphin.nix
+    ./nautilus.nix
+    ./kde-apps.nix
     ./ranger.nix
     ./taskwarrior.nix
   ];
