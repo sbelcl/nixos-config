@@ -329,7 +329,26 @@ in {
 
       -- ── Window management ───────────────────────────────────────────────
       hl.bind(mod .. " + Q", hl.dsp.window.close())
-      hl.bind(mod .. " + F", hl.dsp.window.fullscreen(1))
+
+      -- Fullscreen family. hl.dsp.window.fullscreen only reads a *table* —
+      -- a bare number argument is silently ignored and you get the defaults
+      -- (mode "fullscreen", action "toggle"). This used to read
+      -- `fullscreen(1)`, which looked like "mode 1 = maximized" but was in
+      -- fact plain fullscreen; spelled out now so it says what it does.
+      --
+      --   mod+F        real fullscreen — no gaps, no bar
+      --   mod+ALT+F    maximized — fills the workspace, keeps gaps and bar
+      --   mod+CTRL+F   "fake" fullscreen: the client is told it is
+      --                fullscreen (so a video player goes to its fullscreen
+      --                UI) while the window stays exactly where it is.
+      --                internal 0 = leave the window alone, client 2 =
+      --                FSMODE_FULLSCREEN, per FullscreenController.hpp.
+      hl.bind(mod .. " + F",        hl.dsp.window.fullscreen{ mode = "fullscreen" })
+      hl.bind(mod .. " + ALT + F",  hl.dsp.window.fullscreen{ mode = "maximized" })
+      hl.bind(mod .. " + CTRL + F", hl.dsp.window.fullscreen_state{ internal = 0, client = 2, action = "toggle" })
+
+      -- Float the focused window. No table = toggle.
+      hl.bind(mod .. " + SHIFT + F", hl.dsp.window.float())
       -- Send focused window off-screen — manual way to hide phantom windows
       -- (e.g. eSpremnica's leftover blank shell after login). Move it back via
       -- a workspace switch, or kill it with mod+Q if unneeded.
@@ -353,6 +372,12 @@ in {
       hl.bind(mod .. " + SHIFT + right", hl.dsp.window.move{ direction = "right" })
       hl.bind(mod .. " + SHIFT + up",    hl.dsp.window.move{ direction = "up" })
       hl.bind(mod .. " + SHIFT + down",  hl.dsp.window.move{ direction = "down" })
+
+      -- ── Layout ──────────────────────────────────────────────────────────
+      -- Switch general:layout between scrolling and dwindle (qol.nix).
+      -- Not mod+L, which is hyprlock — losing the lock key to a layout
+      -- toggle would be a bad trade.
+      hl.bind(mod .. " + ALT + L", hl.dsp.exec_cmd("layout-toggle"))
 
       -- ── Scrolling layout ────────────────────────────────────────────────
       hl.bind(mod .. " + comma",        hl.dsp.layout("swapcol l"))

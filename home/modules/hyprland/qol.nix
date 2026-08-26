@@ -2,9 +2,9 @@
 # ~/.nixos/home/modules/hyprland/qol.nix
 #
 # Small session conveniences, ported from Omarchy: countdown reminders,
-# on-demand status notices, an idle-inhibit toggle, and push-to-talk
-# dictation. Keybinds for all of these live in config.nix, next to every
-# other bind.
+# on-demand status notices, an idle-inhibit toggle, a layout switcher, and
+# push-to-talk dictation. Keybinds for all of these live in config.nix, next
+# to every other bind.
 #
 # Flanker-only, like the rest of hyprland/ — the scripts assume a Wayland
 # session with a notification daemon (Wayle) and hypridle.
@@ -139,6 +139,33 @@
     fi
   '';
 
+  # ── Layout ────────────────────────────────────────────────────────────────
+  # Flip general:layout between the scrolling default and dwindle.
+  #
+  # `hyprctl keyword` is not an option here — with the Lua config format it
+  # refuses outright ("keyword can't work with non-legacy parsers. Use
+  # eval."), so the switch goes through `hyprctl eval`, which runs a snippet
+  # against the live config the same way hyprland.lua does.
+  #
+  # Reads the current value rather than tracking a counter, so it stays
+  # correct if the layout is changed by any other means.
+  #
+  # Note: workspace 2 pins layout = "dwindle" in its workspace_rule
+  # (config.nix), and a per-workspace rule outranks general:layout — so this
+  # key does nothing there, by design.
+  layout-toggle = pkgs.writeShellScriptBin "layout-toggle" ''
+    set -euo pipefail
+
+    cur=$(${pkgs.hyprland}/bin/hyprctl getoption general:layout -j | ${pkgs.jq}/bin/jq -r '.str')
+    case "$cur" in
+      scrolling) next=dwindle ;;
+      *)         next=scrolling ;;
+    esac
+
+    ${pkgs.hyprland}/bin/hyprctl eval "hl.config{ general = { layout = \"$next\" } }" >/dev/null
+    ${notify} -u low "Layout" "$next"
+  '';
+
   # ── Idle inhibit ──────────────────────────────────────────────────────────
   # hypridle is started from config.nix's exec-once, not by its systemd unit
   # (hypridle.nix forces WantedBy empty), so the toggle stops and starts the
@@ -165,6 +192,7 @@ in {
     notice-battery
     notice-weather
     idle-toggle
+    layout-toggle
     # Push-to-talk dictation. The transcription model is a ~1 GB runtime
     # download, not a Nix dependency — run `voxtype setup --download` once,
     # then `voxtype setup check` to confirm the mic and compositor bits.

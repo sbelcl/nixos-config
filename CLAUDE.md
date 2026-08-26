@@ -84,6 +84,11 @@ Always `git pull` on the other machine after pushing changes.
   - `SUPER+CTRL+Print` OCR region→clipboard (`ocr-region`, tesseract `slv+eng`) · `SUPER+SHIFT+Print` colour picker
   - `SUPER+CTRL+R` set reminder (fuzzel prompt; `remind 7 tea is ready` from a shell does the same) · `+ALT` list · `+SHIFT` clear
   - `SUPER+CTRL+ALT+T/B/W` time / battery / weather notice · `SUPER+CTRL+I` toggle idle inhibit
+  - Fullscreen family: `SUPER+F` real fullscreen · `SUPER+ALT+F` maximized (keeps gaps/bar) · `SUPER+CTRL+F` fake fullscreen (client told it's fullscreen, window unmoved)
+  - `SUPER+SHIFT+F` toggle floating · `SUPER+ALT+L` switch layout scrolling↔dwindle (`layout-toggle`). Not `SUPER+L` — that's hyprlock.
+    - `hyprctl keyword` **does not work** with the Lua config ("can't work with non-legacy parsers"); runtime config changes go through `hyprctl eval 'hl.config{...}'`.
+    - Workspace 2 pins `layout = "dwindle"` in its workspace_rule, and a per-workspace rule outranks `general:layout`, so the toggle is a no-op there.
+    - Unlike bind *options*, dispatcher table args (`mode`, `action`) **are** validated by `--verify-config` — an invalid mode is rejected loudly.
   - `SUPER+CTRL+X` toggle dictation · `F9` hold-to-talk. Needs a one-time `voxtype setup --download` (~1 GB model, runtime state not Nix).
   - Hyprland's Lua `hl.bind` takes options as a 3rd table arg (`{ release = true }` = hyprlang's `bindr`). **`Hyprland --verify-config` does not validate these keys** — a typo passes as "config ok" and is silently ignored.
 - **Imports** (in `home/hosts/flanker.nix`): `hyprland/hyprland.nix`, `rofi.nix`, `fuzzel.nix`, `battery.nix`, `matugen.nix`
