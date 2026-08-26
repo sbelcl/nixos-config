@@ -27,15 +27,12 @@
     # zero-width drag) — leave silently, exactly as ocr-region does.
     region=$(${pkgs.slurp}/bin/slurp) || exit 0
 
+    # satty names the file but will not create the directory.
     ${pkgs.coreutils}/bin/mkdir -p "$HOME/Slike/Screenshots"
 
-    ${pkgs.grim}/bin/grim -g "$region" - \
-      | ${pkgs.satty}/bin/satty --filename - \
-          --output-filename "$HOME/Slike/Screenshots/%Y-%m-%d_%H-%M-%S.png" \
-          --copy-command ${pkgs.wl-clipboard}/bin/wl-copy \
-          --actions-on-enter save-to-clipboard \
-          --early-exit=all \
-          --initial-tool=arrow
+    # Everything else is in ~/.config/satty/config.toml below, so a bare
+    # `satty --filename shot.png` from a shell behaves like the keybind.
+    ${pkgs.grim}/bin/grim -g "$region" - | ${pkgs.satty}/bin/satty --filename -
   '';
 
   # Select a screen region, OCR it, put the text on the clipboard.
@@ -82,7 +79,46 @@
     printf '%s' "$text" | ${pkgs.wl-clipboard}/bin/wl-copy
     ${pkgs.libnotify}/bin/notify-send "Text extracted" "$(printf '%s' "$text" | head -c 120)"
   '';
+  # satty's behaviour, in the file it looks for on its own rather than on the
+  # command line — it logged "config file not found" on every launch, and a
+  # config makes the keybind and a hand-run `satty` behave identically.
+  #
+  # The palette is deliberately *not* wallpaper-derived, unlike everything
+  # matugen touches. These are annotation ink: they have to stay legible on
+  # top of whatever was on screen, which is not related to what the desktop
+  # looks like. Red through blue, fully opaque, in the order the 1-9 keys
+  # select them.
+  sattyConfig = ''
+    [general]
+    initial-tool = "arrow"
+    copy-command = "${pkgs.wl-clipboard}/bin/wl-copy"
+    # Close after any save action, so the key behaves like a screenshot tool
+    # rather than leaving an editor behind.
+    early-exit = ["all"]
+    actions-on-enter = ["save-to-clipboard"]
+    # Only written when you ask for it (Ctrl+S); Ctrl+C or Enter copies.
+    output-filename = "~/Slike/Screenshots/%Y-%m-%d_%H-%M-%S.png"
+    default-round-caps = true
+    primary-highlighter = "block"
+
+    [font]
+    family = "JetBrainsMono Nerd Font"
+    style = "Regular"
+
+    [color-palette]
+    palette = [
+      "#ff3b30ff",
+      "#ff9500ff",
+      "#ffcc00ff",
+      "#34c759ff",
+      "#32ade6ff",
+      "#ffffffff",
+      "#000000ff",
+    ]
+  '';
 in {
+  xdg.configFile."satty/config.toml".text = sattyConfig;
+
   home.packages = [
     screenshot-annotate
     ocr-region
