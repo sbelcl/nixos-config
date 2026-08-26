@@ -82,12 +82,32 @@ in {
 
   # Workspace 3 is work-specific — Thunderbird and Chrome are only on flanker.
   wayland.windowManager.hyprland.settings.window_rule = [
+    # Thunderbird lives on workspace 3; compose windows float on top of it.
+    #
+    # The exclusion used to be spelled `title = "r:^(?!Sestavi:)"` on the rule
+    # below, which never worked: Hyprland matches with RE2, which has no
+    # lookahead, so every config parse logged
+    #
+    #     Error parsing 'r:^(?!Sestavi:)': invalid perl operator: (?!
+    #
+    # and the rule matched nothing at all — mail was not being placed on
+    # workspace 3 either. Confirmed on a live session: a window carrying a
+    # rule with that pattern ignores it and opens on the active workspace.
+    #
+    # RE2 has no negation and Hyprland's match table has no negative property
+    # (`negative`, `not_title`, `title_not`, `exclude` are all rejected as
+    # unknown), so the exclusion moves out of the regex and into rule order:
+    # both rules match a compose window, and the last one to set a property
+    # wins — also verified live, with two rules and a throwaway window.
+    #
+    # So the compose rule re-states the workspace *without* `silent`. That is
+    # the whole point of the original exclusion, reached from the other side:
+    # a compose window opened from another workspace (a mailto: link on 1)
+    # takes the view with it to 3 instead of vanishing silently onto a
+    # workspace you are not looking at.
     {
       name = "ws3-thunderbird";
-      match = {
-        class = "thunderbird";
-        title = "r:^(?!Sestavi:)";
-      };
+      match.class = "thunderbird";
       workspace = "3 silent";
     }
     {
@@ -96,6 +116,7 @@ in {
         class = "thunderbird";
         title = "Sestavi:";
       };
+      workspace = "3";
       float = true;
       center = 1;
     }
