@@ -380,8 +380,27 @@ in {
       hl.bind(mod .. " + ALT + L", hl.dsp.exec_cmd("layout-toggle"))
 
       -- ── Scrolling layout ────────────────────────────────────────────────
-      hl.bind(mod .. " + comma",        hl.dsp.layout("swapcol l"))
-      hl.bind(mod .. " + period",       hl.dsp.layout("swapcol r"))
+      -- Column swapping completes the arrow family, so the modifier tracks
+      -- how much moves:
+      --   mod + arrow          move focus
+      --   mod + SHIFT + arrow  move the focused window
+      --   mod + CTRL + arrow   move the whole column it sits in
+      --
+      -- Was mod+comma / mod+period, which gave no hint of direction and sat
+      -- nowhere near the keys doing the related thing.
+      --
+      -- swapcol exchanges the focused column with its neighbour, carrying
+      -- every window in it; focus stays with the column and the viewport
+      -- follows. It wraps (scrolling:wrap_swapcol defaults true), so going
+      -- left off the front lands at the back. No vertical equivalent exists
+      -- — columns are only ordered horizontally — hence left/right only.
+      --
+      -- Scrolling-layout only: silently does nothing on workspace 2, which
+      -- pins dwindle in its workspace_rule.
+      hl.bind(mod .. " + CTRL + left",  hl.dsp.layout("swapcol l"))
+      hl.bind(mod .. " + CTRL + right", hl.dsp.layout("swapcol r"))
+
+      -- Column width through the configured presets.
       hl.bind(mod .. " + bracketleft",  hl.dsp.layout("colresize -conf"))
       hl.bind(mod .. " + bracketright", hl.dsp.layout("colresize +conf"))
 
