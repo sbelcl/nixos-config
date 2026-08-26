@@ -106,11 +106,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786355323,
-        "narHash": "sha256-TD+D7G1iiMQeVRG5sWkPefE96iUymCL6t/3GE/vCoN8=",
+        "lastModified": 1787727758,
+        "narHash": "sha256-QT5/oMmwNpWRnc5QYzjVv9/urKgNhbQWxK+o88Yy6SY=",
         "owner": "sbelcl",
         "repo": "nix-yandex-browser",
-        "rev": "90abe2576cf0601beb3602ed726ddee75f0e2dd7",
+        "rev": "568c8167e0936aaf57d986b0ff8c1aa5bcb7b4c0",
         "type": "github"
       },
       "original": {
