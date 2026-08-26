@@ -98,7 +98,15 @@
     fd
     jq
     htop
+    btop          # nicer top: per-core/gpu graphs, process tree, mouse
+    fastfetch     # system summary (the neofetch that is still maintained)
+    dua           # interactive disk usage — `dua i /path` to walk and delete
+    tldr          # example-first man pages: `tldr tar`
     tree
+    lazygit       # git TUI — stage hunks, rebase, resolve conflicts
+    lazydocker    # docker TUI — logs, exec, prune (docker is enabled system-wide)
+    qrencode      # make QR codes: `qrencode -t ANSIUTF8 'wifi-password'`
+    zbar          # read them back: `zbarimg shot.png`
     tesseract   # OCR — extract text from screen regions (Mod+Ctrl+Print)
     wev         # Wayland event viewer — identify key names
     nmap        # network scanner
@@ -129,6 +137,12 @@
     # LibreOffice
     libreoffice-qt-fresh
     hunspell
+    # Annotate and fill PDFs — sign a form, type into a non-fillable one,
+    # scribble on a scan. Okular (the default PDF handler in xdg.mimeApps
+    # above) only does highlights and sticky notes, so this is a companion
+    # to it rather than a replacement; it is deliberately not the mime
+    # default.
+    xournalpp
     # Web browsers & mail clients
     brave
     google-chrome

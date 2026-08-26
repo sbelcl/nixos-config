@@ -41,7 +41,12 @@ in {
   # mkForce: nullOr can't merge a null over the shared module's string value.
   xdg.userDirs.desktop = lib.mkForce null;
 
-  home.packages = [sudo-askpass];
+  home.packages = [
+    sudo-askpass
+    # Client for fulcrum's Sunshine host (hosts/fulcrum/fulcrum.nix). Flanker
+    # only — fulcrum is the machine being streamed from.
+    pkgs.moonlight-qt
+  ];
 
   # Clear Plasma's ksshaskpass out of the environment — flanker doesn't run
   # Plasma, but if PATH ever picks up ksshaskpass (e.g. via a nix profile),

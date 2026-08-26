@@ -12,7 +12,6 @@
   # Fulcrum-specific packages not in the shared home config
   home.packages = with pkgs; [
     vscode
-    btop
   ];
 
   # Plasma rewrites these GTK config files on every session start (flipping
