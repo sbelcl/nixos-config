@@ -12,6 +12,17 @@
       pkgs.hplip      # general HP support
       pkgs.foo2zjs    # HP LaserJet 1010/1018/1020 (GDI printers)
     ];
+
+    # Virtual "print to PDF" printer. Installs a CUPS queue named `pdf`;
+    # jobs sent to it land as PDFs in the directory below.
+    cups-pdf = {
+      enable = true;
+      instances.pdf.settings = {
+        Out = "\${HOME}/Dokumenti/PDF";
+        # created files owned by the printing user, rw for them only
+        UserUMask = "0077";
+      };
+    };
   };
 
   # samba client for connecting to Windows shared printers (smb://)
