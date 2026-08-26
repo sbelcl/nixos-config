@@ -124,6 +124,7 @@
     gemini-cli
     kiro
     codex
+    herdr         # agent multiplexer — run/switch multiple coding agents in one terminal
     python315
     # LibreOffice
     libreoffice-qt-fresh
