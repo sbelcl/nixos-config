@@ -40,15 +40,27 @@ in {
   #    Alt/Astra Linux (hardcoded distro check); on NixOS we must pass it
   #    ourselves or Chromium falls back to X11/XWayland, which on NVIDIA
   #    proprietary renders transparently under Plasma.
-  #  --use-angle=gl : Chromium 144+ (Yandex 26.6.x) defaults to
-  #    --use-angle=vulkan via ANGLE, which is broken on the NVIDIA
-  #    proprietary driver — the window appears but renders nothing.
-  #    Forcing ANGLE's OpenGL backend keeps hardware accel (video decode,
-  #    WebGL, canvas GPU) while avoiding the Vulkan crash path.
+  # --use-angle=gl used to be here as well. It was countering the flake's
+  # own baked-in --use-angle=vulkan, and that flag is gone as of
+  # nix-yandex-browser 5ebd7d2, so there is nothing left to counter.
+  #
+  # Measured on flanker (AMD Renoir iGPU, Hyprland) after the EGL fix in
+  # b925cd6, with and without the flag: byte-for-byte the same outcome —
+  # WEBGL: ANGLE (AMD, AMD Radeon Graphics (radeonsi renoir), OpenGL ES 3.2)
+  # and video decoding in both. It buys nothing here.
+  #
+  # NOT verified on fulcrum, which is the NVIDIA machine the flag was
+  # originally written for and cannot be tested from flanker. The original
+  # symptom was a window that maps but renders nothing. If that returns,
+  # put `--use-angle=gl` back on the exec line below — but check the GPU
+  # actually initialises first, because the real cause of that symptom was
+  # LD_LIBRARY_PATH entries missing their /lib suffix, which meant EGL
+  # never loaded at all and no ANGLE backend could have worked:
+  #   yandex-browser-beta 2>&1 | grep -i "dlopen native EGL"
   xdg.desktopEntries.yandex-browser-beta = {
     name = "Yandex Browser (beta)";
     genericName = "Web Browser";
-    exec = "yandex-browser-beta --ozone-platform=wayland --use-angle=gl %U";
+    exec = "yandex-browser-beta --ozone-platform=wayland %U";
     icon = "yandex-browser-beta";
     categories = ["Network" "WebBrowser"];
     mimeType = [
