@@ -15,6 +15,7 @@
     ./networking.nix
     ./power.nix
     ./printing.nix
+    ./storage.nix
     ./sddm.nix
     ./users.nix
   ];
