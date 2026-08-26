@@ -108,6 +108,32 @@
   # Let gamescope raise its scheduling priority (CAP_SYS_NICE) for smoother frames.
   programs.gamescope.capSysNice = true;
 
+  # Sunshine — stream this machine's screen to Moonlight on flanker over the
+  # LAN. Steam Remote Play (enabled above) only streams Steam games; Sunshine
+  # streams the whole desktop, so emulators, launchers and non-Steam titles
+  # work too, and it uses NVENC on the 3080 Ti rather than a CPU encoder.
+  #
+  # capSysAdmin is required for KMS capture: without it Sunshine can only
+  # capture through a portal and silently produces a black stream under
+  # Plasma/Wayland.
+  #
+  # Pairing is a one-time step — open https://localhost:47990 here, then enter
+  # the PIN Moonlight shows on flanker.
+  services.sunshine = {
+    enable = true;
+    openFirewall = true;
+    capSysAdmin = true;
+  };
+
+  # gpu-screen-recorder — NVENC capture with a replay buffer, so the last N
+  # seconds can be saved after something happens rather than recording the
+  # whole session. OBS (below) stays for planned/edited recordings.
+  #
+  # The module exists (rather than just the package) because promptless
+  # capture needs setcap on the binary; installing the package alone makes
+  # every recording pop a portal dialog.
+  programs.gpu-screen-recorder.enable = true;
+
   # Gaming packages (not in home config)
   environment.systemPackages = with pkgs; [
     lutris
