@@ -1,161 +1,146 @@
-# Niri Keybindings
+<!-- Generated from home/modules/hyprland/binds.nix — do not edit by hand.
+     Regenerate: nix eval --raw -f home/modules/hyprland/binds.nix docsMarkdown > docs/keybindings.md -->
 
-**Mod** = Super (Win key)
+# Hyprland keybindings
 
----
+**SUPER** is the Windows key. `SUPER+ALT+SPACE` opens the searchable action menu; `SUPER+K` shows this list in a window.
 
-## Applications
+## Apps
 
 | Keybind | Action |
 |---|---|
-| `Super+Space` | AGS launcher overlay |
-| `Mod+T` | Terminal (Alacritty) |
-| `Mod+D` | App launcher (Fuzzel) |
-| `Mod+E` | File manager (Thunar) |
-| `Mod+M` | System monitor (Mission Center) |
-| `Mod+N` | Notification center (SwayNC) |
-| `Super+Alt+L` | Lock screen (Swaylock) |
-| `Super+Alt+S` | Toggle screen reader (Orca) |
-
----
+| `SUPER + Return` | Terminal |
+| `SUPER + E` | File manager (Dolphin) |
+| `SUPER + R` | File manager (ranger) |
+| `SUPER + SPACE` | App launcher |
+| `SUPER + M` | System monitor |
+| `XF86Calculator` | Calculator |
 
 ## Windows
 
 | Keybind | Action |
 |---|---|
-| `Mod+Q` | Close window |
-| `Mod+V` | Toggle floating / tiling |
-| `Mod+Shift+V` | Switch focus between floating and tiling |
-| `Mod+W` | Toggle tabbed column display |
-| `Mod+O` | Toggle overview |
-
----
+| `SUPER + Q` | Close window |
+| `SUPER + F` | Fullscreen — no gaps, no bar |
+| `SUPER + ALT + F` | Maximize — fills the workspace, keeps gaps and bar |
+| `SUPER + CTRL + F` | Fake fullscreen — client thinks it is fullscreen, window unmoved |
+| `SUPER + SHIFT + F` | Toggle floating |
+| `SUPER + H` | Hide window off-screen |
 
 ## Focus
 
 | Keybind | Action |
 |---|---|
-| `Mod+H / ←` | Focus column left |
-| `Mod+L / →` | Focus column right |
-| `Mod+J / ↓` | Focus window down |
-| `Mod+K / ↑` | Focus window up |
-| `Mod+Home` | Focus first column |
-| `Mod+End` | Focus last column |
-| `Mod+U / Page↓` | Focus workspace below |
-| `Mod+I / Page↑` | Focus workspace above |
-| `Mod+1–9` | Focus workspace N |
-| `Mod+Shift+H/J/K/L / arrows` | Focus monitor left/down/up/right |
+| `SUPER + left` | Focus left |
+| `SUPER + right` | Focus right |
+| `SUPER + up` | Focus up |
+| `SUPER + down` | Focus down |
+| `SUPER + SHIFT + left` | Move window left |
+| `SUPER + SHIFT + right` | Move window right |
+| `SUPER + SHIFT + up` | Move window up |
+| `SUPER + SHIFT + down` | Move window down |
+| `SUPER + CTRL + left` | Move column left |
+| `SUPER + CTRL + right` | Move column right |
+| `ALT + Tab` | Next window |
+| `ALT + SHIFT + Tab` | Previous window |
 
----
-
-## Move Windows / Columns
-
-| Keybind | Action |
-|---|---|
-| `Mod+Ctrl+H / ←` | Move column left |
-| `Mod+Ctrl+L / →` | Move column right |
-| `Mod+Ctrl+J / ↓` | Move window down in column |
-| `Mod+Ctrl+K / ↑` | Move window up in column |
-| `Mod+Ctrl+Home` | Move column to first |
-| `Mod+Ctrl+End` | Move column to last |
-| `Mod+Ctrl+U / Page↓` | Move column to workspace below |
-| `Mod+Ctrl+I / Page↑` | Move column to workspace above |
-| `Mod+Ctrl+1–9` | Move column to workspace N |
-| `Mod+Shift+Ctrl+H/J/K/L / arrows` | Move column to monitor |
-
----
-
-## Column / Window Sizing
+## Layout
 
 | Keybind | Action |
 |---|---|
-| `Mod+R` | Cycle preset column widths |
-| `Mod+Shift+R` | Cycle preset window heights |
-| `Mod+Ctrl+R` | Reset window height |
-| `Mod+F` | Maximize column |
-| `Mod+Shift+F` | Fullscreen window |
-| `Mod+Ctrl+F` | Expand column to available width |
-| `Mod+C` | Center column |
-| `Mod+Ctrl+C` | Center all visible columns |
-| `Mod+Minus` | Shrink column width by 10% |
-| `Mod+Equal` | Grow column width by 10% |
-| `Mod+Shift+Minus` | Shrink window height by 10% |
-| `Mod+Shift+Equal` | Grow window height by 10% |
-
----
-
-## Column Stacking
-
-| Keybind | Action |
-|---|---|
-| `Mod+[` | Consume/expel window left |
-| `Mod+]` | Consume/expel window right |
-| `Mod+,` | Consume window from right into column |
-| `Mod+.` | Expel bottom window from column |
-
----
+| `SUPER + [` | Narrower column |
+| `SUPER + ]` | Wider column |
+| `SUPER + ALT + L` | Switch layout: scrolling ↔ dwindle |
 
 ## Workspaces
 
 | Keybind | Action |
 |---|---|
-| `Mod+Shift+U` | Move workspace down |
-| `Mod+Shift+I` | Move workspace up |
+| `SUPER + 1-0` | Switch to workspace 1-10 (0 = 10) |
+| `SUPER + SHIFT + 1-0` | Move window to workspace 1-10 |
 
----
-
-## Mouse (with Mod held)
+## Scratchpads
 
 | Keybind | Action |
 |---|---|
-| `Mod+Scroll↓/↑` | Focus workspace below/above |
-| `Mod+Ctrl+Scroll↓/↑` | Move column to workspace below/above |
-| `Mod+Scroll→/←` | Focus column right/left |
-| `Mod+Ctrl+Scroll→/←` | Move column right/left |
+| `ˇ (left of 1)` | Drop-down terminal |
+| `SUPER + T` | Task list (taskwarrior-tui) |
+| `SUPER + S` | Scratchpad |
+| `SUPER + SHIFT + S` | Send window to the scratchpad |
 
----
-
-## Screenshots
+## Capture
 
 | Keybind | Action |
 |---|---|
-| `Print` | Screenshot (pick region) |
-| `Ctrl+Print` | Screenshot full screen |
-| `Alt+Print` | Screenshot focused window |
-| `Mod+Print` | Screenshot region → annotate (Swappy) |
-
----
-
-## Media & Hardware
-
-| Keybind | Action |
-|---|---|
-| `Volume Up` | Raise volume |
-| `Volume Down` | Lower volume |
-| `Mute` | Toggle output mute |
-| `Mic Mute` | Toggle mic mute |
-| `Brightness Up` | Raise brightness |
-| `Brightness Down` | Lower brightness |
-| `Caps Lock` | Toggle Caps Lock + OSD |
-| `Num Lock` | Toggle Num Lock + OSD |
-| `Scroll Lock` | Toggle Scroll Lock + OSD |
-
----
+| `Print` | Screenshot region → clipboard |
+| `SUPER + Print` | Screenshot screen → clipboard |
+| `SUPER + CTRL + Print` | OCR region → clipboard (slv+eng) |
+| `SUPER + SHIFT + Print` | Pick a colour → clipboard |
 
 ## Clipboard
 
 | Keybind | Action |
 |---|---|
-| `Mod+Shift+C` | Clipboard history picker (cliphist + fuzzel) |
+| `SUPER + V` | Clipboard history |
 
----
+## Reminders
+
+| Keybind | Action |
+|---|---|
+| `SUPER + CTRL + R` | Set a reminder |
+| `SUPER + CTRL + ALT + R` | List pending reminders |
+| `SUPER + CTRL + SHIFT + R` | Cancel all reminders |
+
+## Notices
+
+| Keybind | Action |
+|---|---|
+| `SUPER + CTRL + ALT + T` | Time and date |
+| `SUPER + CTRL + ALT + B` | Battery level |
+| `SUPER + CTRL + ALT + W` | Weather |
+
+## Toggles
+
+| Keybind | Action |
+|---|---|
+| `SUPER + CTRL + I` | Toggle idle inhibit (no lock, no sleep) |
+
+## Appearance
+
+| Keybind | Action |
+|---|---|
+| `SUPER + SHIFT + W` | Next wallpaper (retints the session) |
+
+## Dictation
+
+| Keybind | Action |
+|---|---|
+| `SUPER + CTRL + X` | Toggle dictation |
+| `F9` | Hold to dictate |
+
+## Media
+
+| Keybind | Action |
+|---|---|
+| `XF86AudioRaiseVolume` | Volume up |
+| `XF86AudioLowerVolume` | Volume down |
+| `XF86AudioMute` | Mute output |
+| `XF86AudioMicMute` | Mute microphone |
+| `XF86MonBrightnessUp` | Brightness up |
+| `XF86MonBrightnessDown` | Brightness down |
 
 ## System
 
 | Keybind | Action |
 |---|---|
-| `Mod+Shift+?` | Show hotkey overlay |
-| `Mod+Escape` | Toggle keyboard shortcut inhibit |
-| `Mod+Shift+P` | Power off monitors |
-| `Mod+Shift+E` | Quit Niri (with confirmation) |
-| `Ctrl+Alt+Delete` | Quit Niri (with confirmation) |
+| `SUPER + ALT + SPACE` | Action menu — everything on this page, searchable |
+| `SUPER + K` | Show this keybinding list |
+| `SUPER + L` | Lock screen |
+| `SUPER + SHIFT + Q` | Power menu |
+
+## Mouse
+
+| Keybind | Action |
+|---|---|
+| `SUPER + drag LMB` | Move window |
+| `SUPER + drag RMB` | Resize window |

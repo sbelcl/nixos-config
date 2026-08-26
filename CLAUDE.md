@@ -18,6 +18,8 @@ Multi-host NixOS flake for imnos. Two machines in this repo: **fulcrum** (deskto
 │   ├── default.nix                # Shared home modules (DE/WM-agnostic)
 │   ├── packages.nix               # User packages + MIME associations
 │   ├── hyprland/                  # Hyprland stack — flanker-only import
+│   │   ├── binds.nix              # every keybind, as data (see below)
+│   │   ├── menu.nix               # action menu + cheatsheet, generated from binds.nix
 │   │   └── qol.nix                # reminders, notices, idle toggle, dictation
 │   ├── rofi.nix                   # App launcher — flanker-only (Plasma uses KRunner)
 │   ├── fuzzel.nix                 # Wayland launcher — flanker-only
@@ -47,7 +49,7 @@ Always `git pull` on the other machine after pushing changes.
 | Add system package | `hosts/<host>/<host>.nix` → `environment.systemPackages` |
 | Enable a system service | `hosts/<host>/<host>.nix` → `services.*` |
 | Configure a dotfile | `home/modules/<app>.nix` |
-| Add Hyprland keybind | `home/modules/hyprland/config.nix` (flanker only) |
+| Add Hyprland keybind | `home/modules/hyprland/binds.nix`, then regenerate the docs (flanker only) |
 | Add MIME association | `home/modules/packages.nix` → `xdg.mimeApps.defaultApplications` |
 | Shared across both machines | `modules/` (system) or `home/modules/` (home) |
 | Host-specific | `hosts/<host>/` or `home/hosts/<host>.nix` |
@@ -80,7 +82,11 @@ Always `git pull` on the other machine after pushing changes.
 - **WM**: Hyprland · **Panel**: Wayle · **Lock**: hyprlock · **Launcher**: Rofi / fuzzel
 - **Session services** (gated on `HYPRLAND_INSTANCE_SIGNATURE`): cliphist, polkit-gnome, udiskie, gammastep — in `home/modules/hyprland/services.nix`; voxtype dictation daemon in `qol.nix`; battery alerts (`home/modules/battery.nix`) use the same gate
 - **Theme sync**: matugen watches wallpaper changes via HyprPanel and rewrites Alacritty/Rofi/fuzzel/kdeglobals color files
-- **Keybinds**: `home/modules/hyprland/config.nix` — all binds live here, including those for scripts defined in `qol.nix`
+- **Keybinds**: `home/modules/hyprland/binds.nix` — every bind is one entry in a list, and three things are rendered from it: the `hl.bind()` calls in `config.nix`, the `SUPER+ALT+SPACE` action menu and `SUPER+K` cheatsheet (`menu.nix`), and `docs/keybindings.md`. Nothing writes into `~/.nixos` at activation, so regenerate the doc by hand after editing:
+    - `nix eval --raw -f home/modules/hyprland/binds.nix docsMarkdown > docs/keybindings.md`
+    - The file is plain Nix (no module args, no `lib`) precisely so that command needs no build. `keys = null` makes a documentation-only row; `menu = false` keeps an exec entry out of the menu; `label` overrides the displayed key.
+    - Only `exec` entries reach the menu — running "focus left" from a launcher that just took focus is meaningless.
+  - `SUPER+ALT+SPACE` action menu · `SUPER+K` keybinding cheatsheet (floating Alacritty, class `cheatsheet`)
   - `SUPER+CTRL+Print` OCR region→clipboard (`ocr-region`, tesseract `slv+eng`) · `SUPER+SHIFT+Print` colour picker
   - `SUPER+CTRL+R` set reminder (fuzzel prompt; `remind 7 tea is ready` from a shell does the same) · `+ALT` list · `+SHIFT` clear
   - `SUPER+CTRL+ALT+T/B/W` time / battery / weather notice · `SUPER+CTRL+I` toggle idle inhibit
@@ -88,6 +94,7 @@ Always `git pull` on the other machine after pushing changes.
   - Arrow family, modifier = how much moves: `SUPER+arrow` focus · `SUPER+SHIFT+arrow` move window · `SUPER+CTRL+←/→` move the whole column (`swapcol`, scrolling-only, wraps)
   - `SUPER+SHIFT+F` toggle floating · `SUPER+ALT+L` switch layout scrolling↔dwindle (`layout-toggle`). Not `SUPER+L` — that's hyprlock.
     - `hyprctl keyword` **does not work** with the Lua config ("can't work with non-legacy parsers"); runtime config changes go through `hyprctl eval 'hl.config{...}'`.
+    - Same trap in `hyprctl dispatch`: it wraps its argument as `return hl.dispatch(<arg>)` and evaluates it, so `hyprctl dispatch exec foo` is a Lua syntax error. Spell it `hyprctl dispatch 'hl.dsp.exec_cmd([[foo]])'` (what `menu.nix` does).
     - Workspace 2 pins `layout = "dwindle"` in its workspace_rule, and a per-workspace rule outranks `general:layout`, so the toggle is a no-op there.
     - Unlike bind *options*, dispatcher table args (`mode`, `action`) **are** validated by `--verify-config` — an invalid mode is rejected loudly.
   - `SUPER+CTRL+X` toggle dictation · `F9` hold-to-talk. Needs a one-time `voxtype setup --download` (~1 GB model, runtime state not Nix).

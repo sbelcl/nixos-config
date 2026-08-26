@@ -9,13 +9,20 @@
 #   extraConfig — raw Lua, appended last. Holds curves/animations (which must
 #                 be defined in order — settings renders alphabetically, so
 #                 `animation` would emit before `curve` and fail on an
-#                 undefined bezier) and binds (dispatchers are Lua objects,
-#                 so expressing them through settings needs mkLuaInline
-#                 anyway — plain Lua reads better).
+#                 undefined bezier), the startup block, and the generated
+#                 keybinds (dispatchers are Lua objects, so expressing them
+#                 through settings needs mkLuaInline anyway — plain Lua
+#                 reads better).
+#
+# Binds themselves are not written here: they live as data in binds.nix, which
+# also renders the SUPER+ALT+SPACE menu, the SUPER+K cheatsheet and
+# docs/keybindings.md.
 #
 # Every construct here was validated with `Hyprland --verify-config`.
 #
 { pkgs, inputs, ... }: let
+  binds = import ./binds.nix;
+
   # Select a screen region, OCR it, put the text on the clipboard.
   #
   # slv+eng, in that order: tesseract weights the first language highest, and
@@ -231,6 +238,15 @@ in {
           workspace = "special:tasks silent";
         }
 
+        # ── Keybinding cheatsheet (SUPER+K) — float centered ───────────────
+        {
+          name = "cheatsheet-float";
+          match.class = "cheatsheet";
+          float = true;
+          size = [ 1100 860 ];  # tall enough for a whole category at once
+          center = 1;
+        }
+
         # ── Calculator — float centered ────────────────────────────────────
         {
           name = "calculator-float";
@@ -289,8 +305,6 @@ in {
     };
 
     extraConfig = ''
-      local mod = "SUPER"
-
       -- ── Curves and animations ───────────────────────────────────────────
       -- Curves first: hl.animation resolves the bezier by name at call time.
       hl.curve("easeOut", { type = "bezier", points = { {0.16, 1}, {0.3, 1} } })
@@ -316,170 +330,11 @@ in {
         hl.exec_cmd("alacritty --class scratchtask -e taskwarrior-tui")
       end)
 
-      -- ── Apps ────────────────────────────────────────────────────────────
-      hl.bind(mod .. " + Return",    hl.dsp.exec_cmd("alacritty"))
-      hl.bind(mod .. " + E",         hl.dsp.exec_cmd("dolphin"))
-      -- Same --class udiskie's mount hook uses, so a USB mount and this bind
-      -- behave identically. See the window_rule list for why the class is
-      -- still needed now that ranger tiles.
-      hl.bind(mod .. " + R",         hl.dsp.exec_cmd("alacritty --class ranger -e ranger ~"))
-      hl.bind(mod .. " + SPACE",     hl.dsp.exec_cmd("fuzzel"))
-      hl.bind(mod .. " + SHIFT + Q", hl.dsp.exec_cmd("rofi-power"))
-      hl.bind(mod .. " + M",         hl.dsp.exec_cmd("missioncenter"))
-
-      -- ── Window management ───────────────────────────────────────────────
-      hl.bind(mod .. " + Q", hl.dsp.window.close())
-
-      -- Fullscreen family. hl.dsp.window.fullscreen only reads a *table* —
-      -- a bare number argument is silently ignored and you get the defaults
-      -- (mode "fullscreen", action "toggle"). This used to read
-      -- `fullscreen(1)`, which looked like "mode 1 = maximized" but was in
-      -- fact plain fullscreen; spelled out now so it says what it does.
-      --
-      --   mod+F        real fullscreen — no gaps, no bar
-      --   mod+ALT+F    maximized — fills the workspace, keeps gaps and bar
-      --   mod+CTRL+F   "fake" fullscreen: the client is told it is
-      --                fullscreen (so a video player goes to its fullscreen
-      --                UI) while the window stays exactly where it is.
-      --                internal 0 = leave the window alone, client 2 =
-      --                FSMODE_FULLSCREEN, per FullscreenController.hpp.
-      hl.bind(mod .. " + F",        hl.dsp.window.fullscreen{ mode = "fullscreen" })
-      hl.bind(mod .. " + ALT + F",  hl.dsp.window.fullscreen{ mode = "maximized" })
-      hl.bind(mod .. " + CTRL + F", hl.dsp.window.fullscreen_state{ internal = 0, client = 2, action = "toggle" })
-
-      -- Float the focused window. No table = toggle.
-      hl.bind(mod .. " + SHIFT + F", hl.dsp.window.float())
-      -- Send focused window off-screen — manual way to hide phantom windows
-      -- (e.g. eSpremnica's leftover blank shell after login). Move it back via
-      -- a workspace switch, or kill it with mod+Q if unneeded.
-      hl.bind(mod .. " + H", hl.dsp.window.move{ x = -9999, y = -9999 })
-
-      -- ── Lock ────────────────────────────────────────────────────────────
-      hl.bind(mod .. " + L", hl.dsp.exec_cmd("hyprlock"))
-
-      -- ── Focus ───────────────────────────────────────────────────────────
-      hl.bind(mod .. " + left",  hl.dsp.focus{ direction = "left" })
-      hl.bind(mod .. " + right", hl.dsp.focus{ direction = "right" })
-      hl.bind(mod .. " + up",    hl.dsp.focus{ direction = "up" })
-      hl.bind(mod .. " + down",  hl.dsp.focus{ direction = "down" })
-
-      -- ── Alt+Tab switcher (snappy-switcher) ──────────────────────────────
-      hl.bind("ALT + Tab",         hl.dsp.exec_cmd("snappy-switcher next"))
-      hl.bind("ALT + SHIFT + Tab", hl.dsp.exec_cmd("snappy-switcher prev"))
-
-      -- ── Move windows ────────────────────────────────────────────────────
-      hl.bind(mod .. " + SHIFT + left",  hl.dsp.window.move{ direction = "left" })
-      hl.bind(mod .. " + SHIFT + right", hl.dsp.window.move{ direction = "right" })
-      hl.bind(mod .. " + SHIFT + up",    hl.dsp.window.move{ direction = "up" })
-      hl.bind(mod .. " + SHIFT + down",  hl.dsp.window.move{ direction = "down" })
-
-      -- ── Layout ──────────────────────────────────────────────────────────
-      -- Switch general:layout between scrolling and dwindle (qol.nix).
-      -- Not mod+L, which is hyprlock — losing the lock key to a layout
-      -- toggle would be a bad trade.
-      hl.bind(mod .. " + ALT + L", hl.dsp.exec_cmd("layout-toggle"))
-
-      -- ── Scrolling layout ────────────────────────────────────────────────
-      -- Column swapping completes the arrow family, so the modifier tracks
-      -- how much moves:
-      --   mod + arrow          move focus
-      --   mod + SHIFT + arrow  move the focused window
-      --   mod + CTRL + arrow   move the whole column it sits in
-      --
-      -- Was mod+comma / mod+period, which gave no hint of direction and sat
-      -- nowhere near the keys doing the related thing.
-      --
-      -- swapcol exchanges the focused column with its neighbour, carrying
-      -- every window in it; focus stays with the column and the viewport
-      -- follows. It wraps (scrolling:wrap_swapcol defaults true), so going
-      -- left off the front lands at the back. No vertical equivalent exists
-      -- — columns are only ordered horizontally — hence left/right only.
-      --
-      -- Scrolling-layout only: silently does nothing on workspace 2, which
-      -- pins dwindle in its workspace_rule.
-      hl.bind(mod .. " + CTRL + left",  hl.dsp.layout("swapcol l"))
-      hl.bind(mod .. " + CTRL + right", hl.dsp.layout("swapcol r"))
-
-      -- Column width through the configured presets.
-      hl.bind(mod .. " + bracketleft",  hl.dsp.layout("colresize -conf"))
-      hl.bind(mod .. " + bracketright", hl.dsp.layout("colresize +conf"))
-
-      -- ── Workspaces ──────────────────────────────────────────────────────
-      for i = 1, 9 do
-        hl.bind(mod .. " + " .. i,            hl.dsp.focus{ workspace = i })
-        hl.bind(mod .. " + SHIFT + " .. i,    hl.dsp.window.move{ workspace = i })
-      end
-      hl.bind(mod .. " + 0",         hl.dsp.focus{ workspace = 10 })
-      hl.bind(mod .. " + SHIFT + 0", hl.dsp.window.move{ workspace = 10 })
-
-      -- ── Scratchpad ──────────────────────────────────────────────────────
-      hl.bind("cedilla",             hl.dsp.workspace.toggle_special("term"))
-      hl.bind(mod .. " + T",         hl.dsp.workspace.toggle_special("tasks"))
-      hl.bind(mod .. " + S",         hl.dsp.workspace.toggle_special("magic"))
-      hl.bind(mod .. " + SHIFT + S", hl.dsp.window.move{ workspace = "special:magic" })
-
-      -- ── Screenshot ──────────────────────────────────────────────────────
-      -- Print = region → clipboard, mod+Print = full screen → clipboard
-      hl.bind("Print",             hl.dsp.exec_cmd([[grim -g "$(slurp)" - | wl-copy]]))
-      hl.bind(mod .. " + Print",   hl.dsp.exec_cmd("grim - | wl-copy"))
-      -- Region → OCR → clipboard. tesseract has been installed (and this key
-      -- documented in CLAUDE.md) since well before the bind existed.
-      hl.bind(mod .. " + CTRL + Print",  hl.dsp.exec_cmd("ocr-region"))
-      -- Pick a colour from anywhere on screen; -a copies it as hex.
-      -- Not mod+Print (Omarchy's key for this) — that is already full-screen
-      -- capture here.
-      hl.bind(mod .. " + SHIFT + Print", hl.dsp.exec_cmd("hyprpicker -a"))
-
-      -- ── Clipboard ───────────────────────────────────────────────────────
-      hl.bind(mod .. " + V", hl.dsp.exec_cmd("rofi-clipboard"))
-
-      -- ── Reminders (scripts in hyprland/qol.nix) ─────────────────────────
-      -- No argument opens a fuzzel prompt; `remind 7 tea is ready` from a
-      -- shell does the same thing without one.
-      hl.bind(mod .. " + CTRL + R",          hl.dsp.exec_cmd("remind"))
-      hl.bind(mod .. " + CTRL + ALT + R",    hl.dsp.exec_cmd("reminders-list"))
-      hl.bind(mod .. " + CTRL + SHIFT + R",  hl.dsp.exec_cmd("reminders-clear"))
-
-      -- ── Notices ─────────────────────────────────────────────────────────
-      -- Wayle's bar shows all three already; these are for when a fullscreen
-      -- window is covering it.
-      hl.bind(mod .. " + CTRL + ALT + T", hl.dsp.exec_cmd("notice-time"))
-      hl.bind(mod .. " + CTRL + ALT + B", hl.dsp.exec_cmd("notice-battery"))
-      hl.bind(mod .. " + CTRL + ALT + W", hl.dsp.exec_cmd("notice-weather"))
-
-      -- ── Idle inhibit ────────────────────────────────────────────────────
-      -- Stops hypridle locking mid-film or mid-presentation.
-      hl.bind(mod .. " + CTRL + I", hl.dsp.exec_cmd("idle-toggle"))
-
-      -- ── Dictation ───────────────────────────────────────────────────────
-      -- Toggle for long dictation; F9 is hold-to-talk, so it needs a second
-      -- bind for the key-up edge. `{ release = true }` is the Lua API's
-      -- spelling of hyprlang's bindr (LuaBindingsToplevel.cpp reads the opts
-      -- table's `release` field) — note that --verify-config accepts any
-      -- key here, including misspelled ones, so this cannot be checked by
-      -- parsing alone.
-      hl.bind(mod .. " + CTRL + X", hl.dsp.exec_cmd("voxtype record toggle"))
-      hl.bind("F9",                 hl.dsp.exec_cmd("voxtype record start"))
-      hl.bind("F9", hl.dsp.exec_cmd("voxtype record stop"), { release = true })
-
-      -- ── Wallpaper ───────────────────────────────────────────────────────
-      hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("wallpaper-next"))
-
-      -- ── Media keys ──────────────────────────────────────────────────────
-      -- These called swayosd-client until df79e86 removed swayosd with the
-      -- Niri stack, leaving six dead binds. Wayle draws its own OSD and is
-      -- already what the bar's scroll bindings use, so no extra daemon.
-      hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd("wayle audio output-volume +5"))
-      hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd("wayle audio output-volume -5"))
-      hl.bind("XF86AudioMute",         hl.dsp.exec_cmd("wayle audio output-mute"))
-      hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd("wayle audio input-mute"))
-      hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd("brightnessctl set +5%"))
-      hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl set 5%-"))
-      hl.bind("XF86Calculator",        hl.dsp.exec_cmd("gnome-calculator"))
-
-      -- ── Mouse binds (hold modifier + drag) ──────────────────────────────
-      hl.bind(mod .. " + mouse:272", hl.dsp.window.drag())
-      hl.bind(mod .. " + mouse:273", hl.dsp.window.resize())
+      -- ── Keybinds ───────────────────────────────────────────────────────
+      -- Generated from hyprland/binds.nix, which is also what the SUPER+K
+      -- cheatsheet, the SUPER+ALT+SPACE menu and docs/keybindings.md are
+      -- rendered from. Add or change a bind there, not here.
+${binds.lua}
     '';
   };
 }

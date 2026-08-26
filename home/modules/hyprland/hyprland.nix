@@ -10,5 +10,6 @@
     ./wayle.nix
     ./services.nix
     ./qol.nix
+    ./menu.nix
   ];
 }
