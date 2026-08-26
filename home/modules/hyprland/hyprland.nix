@@ -11,5 +11,6 @@
     ./services.nix
     ./qol.nix
     ./menu.nix
+    ./screenshot.nix
   ];
 }

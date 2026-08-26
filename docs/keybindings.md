@@ -74,6 +74,7 @@
 |---|---|
 | `Print` | Screenshot region → clipboard |
 | `SUPER + Print` | Screenshot screen → clipboard |
+| `SHIFT + Print` | Screenshot region → annotate → clipboard |
 | `SUPER + CTRL + Print` | OCR region → clipboard (slv+eng) |
 | `SUPER + SHIFT + Print` | Pick a colour → clipboard |
 

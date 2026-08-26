@@ -20,6 +20,7 @@ Multi-host NixOS flake for imnos. Two machines in this repo: **fulcrum** (deskto
 │   ├── hyprland/                  # Hyprland stack — flanker-only import
 │   │   ├── binds.nix              # every keybind, as data (see below)
 │   │   ├── menu.nix               # action menu + cheatsheet, generated from binds.nix
+│   │   ├── screenshot.nix         # satty annotate + OCR capture scripts
 │   │   └── qol.nix                # reminders, notices, idle toggle, dictation
 │   ├── rofi.nix                   # App launcher — flanker-only (Plasma uses KRunner)
 │   ├── fuzzel.nix                 # Wayland launcher — flanker-only
@@ -80,16 +81,16 @@ Always `git pull` on the other machine after pushing changes.
 
 ### flanker-only (Hyprland stack)
 - **WM**: Hyprland · **Panel**: Wayle · **Lock**: hyprlock · **Launcher**: Rofi / fuzzel
-- **Session services** (gated on `HYPRLAND_INSTANCE_SIGNATURE`): cliphist, polkit-gnome, udiskie, gammastep — in `home/modules/hyprland/services.nix`; voxtype dictation daemon in `qol.nix`; battery alerts (`home/modules/battery.nix`) use the same gate
+- **Session services** (gated on `HYPRLAND_INSTANCE_SIGNATURE`): cliphist, polkit-gnome, udiskie, gammastep (the only gamma setter — hyprsunset was removed; `SUPER+CTRL+N` stops/starts the unit) — in `home/modules/hyprland/services.nix`; voxtype dictation daemon in `qol.nix`; battery alerts (`home/modules/battery.nix`) use the same gate
 - **Theme sync**: matugen watches wallpaper changes via HyprPanel and rewrites Alacritty/Rofi/fuzzel/kdeglobals color files
 - **Keybinds**: `home/modules/hyprland/binds.nix` — every bind is one entry in a list, and three things are rendered from it: the `hl.bind()` calls in `config.nix`, the `SUPER+ALT+SPACE` action menu and `SUPER+K` cheatsheet (`menu.nix`), and `docs/keybindings.md`. Nothing writes into `~/.nixos` at activation, so regenerate the doc by hand after editing:
     - `nix eval --raw -f home/modules/hyprland/binds.nix docsMarkdown > docs/keybindings.md`
     - The file is plain Nix (no module args, no `lib`) precisely so that command needs no build. `keys = null` makes a documentation-only row; `menu = false` keeps an exec entry out of the menu; `label` overrides the displayed key.
     - Only `exec` entries reach the menu — running "focus left" from a launcher that just took focus is meaningless.
   - `SUPER+ALT+SPACE` action menu · `SUPER+K` keybinding cheatsheet (floating Alacritty, class `cheatsheet`)
-  - `SUPER+CTRL+Print` OCR region→clipboard (`ocr-region`, tesseract `slv+eng`) · `SUPER+SHIFT+Print` colour picker
+  - Capture: `Print` region→clipboard · `SHIFT+Print` region→satty→clipboard/`~/Slike/Screenshots` · `SUPER+Print` whole screen · `SUPER+CTRL+Print` OCR (`ocr-region`, tesseract `slv+eng`) · `SUPER+SHIFT+Print` colour picker
   - `SUPER+CTRL+R` set reminder (fuzzel prompt; `remind 7 tea is ready` from a shell does the same) · `+ALT` list · `+SHIFT` clear
-  - `SUPER+CTRL+ALT+T/B/W` time / battery / weather notice · `SUPER+CTRL+I` toggle idle inhibit
+  - `SUPER+CTRL+ALT+T/B/W` time / battery / weather notice · `SUPER+CTRL+I` toggle idle inhibit · `SUPER+CTRL+N` toggle night light
   - Fullscreen family: `SUPER+F` real fullscreen · `SUPER+ALT+F` maximized (keeps gaps/bar) · `SUPER+CTRL+F` fake fullscreen (client told it's fullscreen, window unmoved)
   - Arrow family, modifier = how much moves: `SUPER+arrow` focus · `SUPER+SHIFT+arrow` move window · `SUPER+CTRL+←/→` move the whole column (`swapcol`, scrolling-only, wraps)
   - `SUPER+SHIFT+F` toggle floating · `SUPER+ALT+L` switch layout scrolling↔dwindle (`layout-toggle`). Not `SUPER+L` — that's hyprlock.

@@ -157,6 +157,9 @@ let
     # ── Capture ─────────────────────────────────────────────────────────────
     { keys = "Print"; exec = ''grim -g "$(slurp)" - | wl-copy''; desc = "Screenshot region → clipboard"; category = "Capture"; }
     { keys = "SUPER + Print"; exec = "grim - | wl-copy"; desc = "Screenshot screen → clipboard"; category = "Capture"; }
+    # Region → satty → wherever you send it. See hyprland/screenshot.nix for
+    # what satty does and does not save by itself.
+    { keys = "SHIFT + Print"; exec = "screenshot-annotate"; desc = "Screenshot region → annotate → clipboard"; category = "Capture"; }
     { keys = "SUPER + CTRL + Print"; exec = "ocr-region"; desc = "OCR region → clipboard (slv+eng)"; category = "Capture"; }
     # Not SUPER+Print (Omarchy's key for this) — that is already full-screen
     # capture here.
