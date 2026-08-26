@@ -9,5 +9,6 @@
     ./hyprpaper.nix
     ./wayle.nix
     ./services.nix
+    ./qol.nix
   ];
 }

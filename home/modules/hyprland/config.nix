@@ -15,9 +15,55 @@
 #
 # Every construct here was validated with `Hyprland --verify-config`.
 #
-{ pkgs, inputs, ... }: {
+{ pkgs, inputs, ... }: let
+  # Select a screen region, OCR it, put the text on the clipboard.
+  #
+  # slv+eng, in that order: tesseract weights the first language highest, and
+  # the Slovenian model is the one that knows š/č/ž — running eng-only on
+  # Slovenian text silently mangles them into s/c/z rather than failing. eng
+  # follows because most of what gets grabbed off a screen is English UI text
+  # or code. pkgs.tesseract ships every traineddata file, so neither needs
+  # requesting separately.
+  #
+  # Writing grim's output to a file instead of piping it: tesseract seeks
+  # its input, so it cannot read a pipe, and `tesseract - -` fails on stdin
+  # that isn't a real file.
+  ocr-region = pkgs.writeShellScriptBin "ocr-region" ''
+    set -euo pipefail
+
+    # slurp exits non-zero when the selection is cancelled (Escape or a
+    # zero-width drag). Leave silently — a notification there would fire on
+    # every mis-drag.
+    region=$(${pkgs.slurp}/bin/slurp) || exit 0
+
+    img=$(mktemp --suffix=.png)
+    trap 'rm -f "$img"' EXIT
+    ${pkgs.grim}/bin/grim -g "$region" "$img"
+
+    # tesseract writes progress to stderr and exits non-zero on an empty
+    # image; treat "no text" as a normal outcome, not a crash.
+    text=$(${pkgs.tesseract}/bin/tesseract "$img" - -l slv+eng 2>/dev/null || true)
+
+    # Strip surrounding whitespace: tesseract always appends newlines, and
+    # pasting those into a chat box sends the message early. Escaped as
+    # ''${ so Nix leaves the parameter expansion for bash instead of trying
+    # to interpolate `text` at build time.
+    shopt -s extglob
+    text="''${text##+([[:space:]])}"
+    text="''${text%%+([[:space:]])}"
+
+    if [ -z "$text" ]; then
+      ${pkgs.libnotify}/bin/notify-send -u normal "OCR" "No text found in selection"
+      exit 0
+    fi
+
+    printf '%s' "$text" | ${pkgs.wl-clipboard}/bin/wl-copy
+    ${pkgs.libnotify}/bin/notify-send "Text extracted" "$(printf '%s' "$text" | head -c 120)"
+  '';
+in {
   home.packages = [
     inputs.snappy-switcher.packages.${pkgs.stdenv.hostPlatform.system}.default
+    ocr-region
   ];
 
   wayland.windowManager.hyprland = {
@@ -332,9 +378,45 @@
       -- Print = region → clipboard, mod+Print = full screen → clipboard
       hl.bind("Print",             hl.dsp.exec_cmd([[grim -g "$(slurp)" - | wl-copy]]))
       hl.bind(mod .. " + Print",   hl.dsp.exec_cmd("grim - | wl-copy"))
+      -- Region → OCR → clipboard. tesseract has been installed (and this key
+      -- documented in CLAUDE.md) since well before the bind existed.
+      hl.bind(mod .. " + CTRL + Print",  hl.dsp.exec_cmd("ocr-region"))
+      -- Pick a colour from anywhere on screen; -a copies it as hex.
+      -- Not mod+Print (Omarchy's key for this) — that is already full-screen
+      -- capture here.
+      hl.bind(mod .. " + SHIFT + Print", hl.dsp.exec_cmd("hyprpicker -a"))
 
       -- ── Clipboard ───────────────────────────────────────────────────────
       hl.bind(mod .. " + V", hl.dsp.exec_cmd("rofi-clipboard"))
+
+      -- ── Reminders (scripts in hyprland/qol.nix) ─────────────────────────
+      -- No argument opens a fuzzel prompt; `remind 7 tea is ready` from a
+      -- shell does the same thing without one.
+      hl.bind(mod .. " + CTRL + R",          hl.dsp.exec_cmd("remind"))
+      hl.bind(mod .. " + CTRL + ALT + R",    hl.dsp.exec_cmd("reminders-list"))
+      hl.bind(mod .. " + CTRL + SHIFT + R",  hl.dsp.exec_cmd("reminders-clear"))
+
+      -- ── Notices ─────────────────────────────────────────────────────────
+      -- Wayle's bar shows all three already; these are for when a fullscreen
+      -- window is covering it.
+      hl.bind(mod .. " + CTRL + ALT + T", hl.dsp.exec_cmd("notice-time"))
+      hl.bind(mod .. " + CTRL + ALT + B", hl.dsp.exec_cmd("notice-battery"))
+      hl.bind(mod .. " + CTRL + ALT + W", hl.dsp.exec_cmd("notice-weather"))
+
+      -- ── Idle inhibit ────────────────────────────────────────────────────
+      -- Stops hypridle locking mid-film or mid-presentation.
+      hl.bind(mod .. " + CTRL + I", hl.dsp.exec_cmd("idle-toggle"))
+
+      -- ── Dictation ───────────────────────────────────────────────────────
+      -- Toggle for long dictation; F9 is hold-to-talk, so it needs a second
+      -- bind for the key-up edge. `{ release = true }` is the Lua API's
+      -- spelling of hyprlang's bindr (LuaBindingsToplevel.cpp reads the opts
+      -- table's `release` field) — note that --verify-config accepts any
+      -- key here, including misspelled ones, so this cannot be checked by
+      -- parsing alone.
+      hl.bind(mod .. " + CTRL + X", hl.dsp.exec_cmd("voxtype record toggle"))
+      hl.bind("F9",                 hl.dsp.exec_cmd("voxtype record start"))
+      hl.bind("F9", hl.dsp.exec_cmd("voxtype record stop"), { release = true })
 
       -- ── Wallpaper ───────────────────────────────────────────────────────
       hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("wallpaper-next"))
