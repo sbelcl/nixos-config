@@ -26,7 +26,8 @@ Multi-host NixOS flake for imnos. Two machines in this repo: **fulcrum** (deskto
 │   ├── rofi.nix                   # App launcher — flanker-only (Plasma uses KRunner)
 │   ├── fuzzel.nix                 # Wayland launcher — flanker-only
 │   ├── battery.nix                # UPower alerts — flanker-only (laptop)
-│   ├── matugen.nix                # Wallpaper→theme sync — flanker-only (HyprPanel trigger)
+│   ├── matugen.nix                # Colour templates — flanker-only
+│   ├── theme.nix                  # Theme source, light/dark, wallpaper-next
 │   ├── nautilus.nix               # File manager + thumbnails + dconf (shared)
 │   ├── kde-apps.nix               # Ark + Okular, the KDE apps mimeApps still uses
 │   └── alacritty.nix              # Terminal (shared)
@@ -89,7 +90,12 @@ Always `git pull` on the other machine after pushing changes.
 ### flanker-only (Hyprland stack)
 - **WM**: Hyprland · **Panel**: Wayle · **Lock**: hyprlock · **Launcher**: Rofi / fuzzel
 - **Session services** (gated on `HYPRLAND_INSTANCE_SIGNATURE`): cliphist, polkit-gnome, udiskie, gammastep (the only gamma setter — hyprsunset was removed; `SUPER+CTRL+N` stops/starts the unit) — in `home/modules/hyprland/services.nix`; voxtype dictation daemon in `qol.nix`; battery alerts (`home/modules/battery.nix`) use the same gate
-- **Theme sync**: matugen regenerates colour files from the wallpaper on `SUPER+SHIFT+W` (`wallpaper-next`), and on `updhome` whenever a template changes (activation stamp in `matugen.nix`). Covers Alacritty, Rofi, fuzzel, kdeglobals, hyprlock, `colors.sh`, **Hyprland's window borders** and **btop**.
+- **Theme sync**: `matugen.nix` owns the templates, `theme.nix` owns the *source* and the *mode* and is the only thing that runs matugen (`theme-apply`). Covers Alacritty, Rofi, fuzzel, kdeglobals, hyprlock, `colors.sh`, **Hyprland's window borders**, **btop** and **GTK 3/4** — which is also how satty and every other GTK app gets themed.
+  - `SUPER+SHIFT+W` next wallpaper · `SUPER+SHIFT+T` pick the source (wallpaper or a named seed colour) · `SUPER+ALT+T` toggle light/dark. Timers switch at 07:30 and 19:30 (`autoSwitch`/`lightAt`/`darkAt` at the top of `theme.nix`).
+  - The seeds are *seeds*, not theme ports: matugen derives a whole Material scheme from one colour, so they are named by colour (Indigo, Amber, Forest…) rather than after the themes they resemble.
+  - State is `~/.local/state/theme/{source,mode}`, re-applied on activation (`themeReapply`) so a light session or a named seed survives `updhome`.
+  - GTK: matugen cannot write `gtk.css` (home-manager owns it), so it writes `matugen.css` beside it and `fonts.nix` adds an absolute `@import`. Running GTK apps do not reload CSS — restart them.
+  - matugen prints "The image format could not be determined" on every wallpaper run. Cosmetic: `~/.config/background` has no extension, so the format guess by filename fails while the actual decode (by content) succeeds.
   - Borders go through `~/.config/hypr/colors.lua`: `hyprland.lua` loads it at start (guarded — `dofile` on a missing path is fatal, and it does not exist until matugen has run), and matugen's `post_hook` applies it live with `hyprctl eval "dofile(...)"`. The colours in `config.nix` are the pre-matugen fallback.
   - btop's `color_theme = "matugen"` is set in `matugen.nix` rather than with the package, because the theme only exists where matugen runs — fulcrum keeps btop's default.
   - satty is deliberately *not* matugen-themed: its palette is annotation ink and has to stay legible on top of arbitrary screenshots. Static config in `hyprland/screenshot.nix`.
@@ -100,6 +106,7 @@ Always `git pull` on the other machine after pushing changes.
   - `SUPER+ALT+SPACE` action menu · `SUPER+K` keybinding cheatsheet (floating Alacritty, class `cheatsheet`)
   - Capture: `Print` region→clipboard · `SHIFT+Print` region→satty→clipboard/`~/Slike/Screenshots` · `SUPER+Print` whole screen · `SUPER+CTRL+Print` OCR (`ocr-region`, tesseract `slv+eng`) · `SUPER+SHIFT+Print` colour picker
   - `SUPER+CTRL+R` set reminder (fuzzel prompt; `remind 7 tea is ready` from a shell does the same) · `+ALT` list · `+SHIFT` clear
+  - `SUPER+SHIFT+T` theme source picker · `SUPER+ALT+T` light/dark toggle
   - `SUPER+CTRL+ALT+T/B/W` time / battery / weather notice · `SUPER+CTRL+I` toggle idle inhibit · `SUPER+CTRL+N` toggle night light
   - Fullscreen family: `SUPER+F` real fullscreen · `SUPER+ALT+F` maximized (keeps gaps/bar) · `SUPER+CTRL+F` fake fullscreen (client told it's fullscreen, window unmoved)
   - Arrow family, modifier = how much moves: `SUPER+arrow` focus · `SUPER+SHIFT+arrow` move window · `SUPER+CTRL+←/→` move the whole column (`swapcol`, scrolling-only, wraps)

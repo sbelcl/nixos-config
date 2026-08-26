@@ -71,50 +71,6 @@ RASI_EOF
     done
   '';
 
-  # ── Wallpaper cycler ───────────────────────────────────────────────────────
-  wallpaper-next = pkgs.writeShellScriptBin "wallpaper-next" ''
-    set -u
-    DIR="$HOME/Slike/Ozadja"
-    BG="$HOME/.config/background"
-
-    NEXT=$(${pkgs.findutils}/bin/find "$DIR" -maxdepth 1 -type f \
-      \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) \
-      2>/dev/null | ${pkgs.coreutils}/bin/shuf -n1)
-    if [ -z "$NEXT" ]; then
-      ${pkgs.libnotify}/bin/notify-send "wallpaper-next" "No images in $DIR" 2>/dev/null
-      exit 1
-    fi
-
-    # ~/.config/background is the single source of truth: awww paints it,
-    # hyprlock blurs it, and matugen.nix stamps against it on activation.
-    # Copy rather than symlink — hyprpaper.nix requires a regular writable file.
-    ${pkgs.coreutils}/bin/cp -f "$NEXT" "$BG"
-
-    # awww, not hyprpaper — see hyprland/hyprpaper.nix for why. Wayle's
-    # wallpaper engine drives the same daemon, so the two can coexist.
-    # (A swaybg branch gated on $NIRI_SOCKET lived here until df79e86 stripped
-    # Niri; nothing set that variable any more, so it was dead.)
-    ${pkgs.awww}/bin/awww img "$BG"
-
-    # Full-image palette via matugen's own extraction. --prefer is required:
-    # matugen aborts on images with several candidate source colors when it
-    # has no TTY to ask on, which is always the case from a keybind. (The old
-    # ImageMagick 1x1 dominant-color workaround was for the v4.0.0 ENOTTY bug,
-    # fixed since — we run 4.1.0.)
-    ${pkgs.matugen}/bin/matugen image "$BG" --prefer saturation &
-
-    # Wayle's bar is fully transparent (bar.background-opacity = 0), so its
-    # text sits directly on the wallpaper — a bright wallpaper leaves light
-    # text on light pixels, which is unreadable. Flip Wayle's matugen palette
-    # between light and dark by mean wallpaper luminance. Requires
-    # styling.theme-provider = "matugen" in ~/.config/wayle/config.toml;
-    # the value lands in runtime.toml and Wayle applies it live.
-    LUMA=$(${pkgs.imagemagick}/bin/magick "$BG" -resize '1x1!' -colorspace gray \
-      -format "%[fx:int(255*u)]" info: 2>/dev/null || echo 0)
-    if [ "$LUMA" -gt 128 ]; then LIGHT=true; else LIGHT=false; fi
-    ${pkgs.wayle}/bin/wayle config set styling.matugen-light "$LIGHT" >/dev/null 2>&1 || true
-  '';
-
   # ── Power menu ────────────────────────────────────────────────────────────
   rofi-power = pkgs.writeShellScriptBin "rofi-power" ''
     source ~/.config/theme/colors.sh 2>/dev/null || { BG="#1a0a0a"; FG="#e8d5d5"; ACCENT="#c45454"; BG_ALT="#2a1215"; BG_SEL="#3d1e1e"; }
@@ -152,7 +108,9 @@ RASI_EOF
   '';
 
 in {
-  home.packages = [rofi-launcher rofi-power rofi-clipboard wallpaper-next];
+  # wallpaper-next moved to theme.nix — it is a theming action, and it needs
+  # the stored light/dark mode that theme-apply owns.
+  home.packages = [rofi-launcher rofi-power rofi-clipboard];
 
   programs.rofi = {
     enable  = true;

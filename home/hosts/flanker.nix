@@ -25,7 +25,8 @@ in {
     ../modules/rofi.nix              # launcher (Plasma uses KRunner)
     ../modules/fuzzel.nix            # secondary launcher (Wayland-native)
     ../modules/battery.nix           # UPower alerts + backup timer (laptop only)
-    ../modules/matugen.nix           # wallpaper→color scheme sync (via wallpaper-next)
+    ../modules/matugen.nix           # wallpaper→color scheme sync (templates)
+    ../modules/theme.nix             # theme source + light/dark mode + wallpaper-next
     ../modules/nixos-update-check.nix # weekly flake-update + build + notify
   ];
 

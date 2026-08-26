@@ -191,6 +191,9 @@ let
     # Repaints the wallpaper and re-runs matugen, so the whole session — bar,
     # terminal, launchers, lock screen — retints from the new image.
     { keys = "SUPER + SHIFT + W"; exec = "wallpaper-next"; desc = "Next wallpaper (retints the session)"; category = "Appearance"; }
+    # theme.nix — the source of the colours, and which half of the palette.
+    { keys = "SUPER + SHIFT + T"; exec = "theme-set"; desc = "Pick colour source: wallpaper or a named seed"; category = "Appearance"; }
+    { keys = "SUPER + ALT + T"; exec = "theme-mode toggle"; desc = "Toggle light / dark"; category = "Appearance"; }
 
     # ── Dictation ───────────────────────────────────────────────────────────
     # Toggle for long dictation; F9 is hold-to-talk, so it needs a second bind

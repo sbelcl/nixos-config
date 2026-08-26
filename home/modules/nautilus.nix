@@ -41,6 +41,10 @@
 
     # libadwaita reads this, and Nautilus is libadwaita. Without it the window
     # comes up white next to everything else in the session.
+    #
+    # This is the default, not the owner: theme-mode (theme.nix) rewrites it
+    # at runtime, and re-applies the stored mode after every switch, so a
+    # light session survives `updhome` even though this says dark.
     "org/gnome/desktop/interface".color-scheme = "prefer-dark";
 
     # The terminal for "Open in Terminal" is NOT set here: the NixOS module

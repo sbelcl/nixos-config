@@ -112,6 +112,8 @@
 | Keybind | Action |
 |---|---|
 | `SUPER + SHIFT + W` | Next wallpaper (retints the session) |
+| `SUPER + SHIFT + T` | Pick colour source: wallpaper or a named seed |
+| `SUPER + ALT + T` | Toggle light / dark |
 
 ## Dictation
 
