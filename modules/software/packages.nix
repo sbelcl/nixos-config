@@ -14,6 +14,14 @@
     nvme-cli      # NVMe drive health (nvme smart-log /dev/nvme0)
   ];
 
+  # LocalSend — AirDrop-style file transfer over the LAN. Enabled through the
+  # NixOS module rather than home.packages because receiving needs TCP/UDP
+  # 53317 open, and the package alone doesn't touch the firewall.
+  programs.localsend = {
+    enable = true;
+    openFirewall = true;
+  };
+
   # Enable lm_sensors kernel modules
   hardware.sensor.iio.enable = true;
 }
