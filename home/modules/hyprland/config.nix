@@ -68,6 +68,11 @@ in {
           gaps_out = 8;
           border_size = 2;
           # Gradients are { colors = [...], angle = N }, not a hyprlang string.
+          #
+          # These are the fallback, not the final word: ~/.config/hypr/colors.lua
+          # (written by matugen, loaded at the top of extraConfig below)
+          # overrides both from the wallpaper. They are what a machine shows
+          # before matugen has ever run.
           "col.active_border" = {
             colors = [ "rgba(e2e2e2ee)" "rgba(ffffffff)" ];
             angle = 45;
@@ -270,6 +275,23 @@ in {
     };
 
     extraConfig = ''
+      -- ── Wallpaper-derived colours ───────────────────────────────────────
+      -- matugen writes this file on every wallpaper change and re-applies it
+      -- to the running compositor itself (matugen.nix); loading it here is
+      -- what makes the colours survive a restart. It comes after `settings`
+      -- because home-manager renders extraConfig last, so it overrides the
+      -- fallback borders above.
+      --
+      -- Guarded: dofile() on a missing path is a fatal config error, and the
+      -- file does not exist until matugen has run once — without the check a
+      -- fresh machine would fail to start rather than start unthemed.
+      local colorsFile = os.getenv("HOME") .. "/.config/hypr/colors.lua"
+      local colorsHandle = io.open(colorsFile, "r")
+      if colorsHandle then
+        colorsHandle:close()
+        dofile(colorsFile)
+      end
+
       -- ── Curves and animations ───────────────────────────────────────────
       -- Curves first: hl.animation resolves the bezier by name at call time.
       hl.curve("easeOut", { type = "bezier", points = { {0.16, 1}, {0.3, 1} } })

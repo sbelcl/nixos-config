@@ -87,7 +87,10 @@ Always `git pull` on the other machine after pushing changes.
 ### flanker-only (Hyprland stack)
 - **WM**: Hyprland · **Panel**: Wayle · **Lock**: hyprlock · **Launcher**: Rofi / fuzzel
 - **Session services** (gated on `HYPRLAND_INSTANCE_SIGNATURE`): cliphist, polkit-gnome, udiskie, gammastep (the only gamma setter — hyprsunset was removed; `SUPER+CTRL+N` stops/starts the unit) — in `home/modules/hyprland/services.nix`; voxtype dictation daemon in `qol.nix`; battery alerts (`home/modules/battery.nix`) use the same gate
-- **Theme sync**: matugen watches wallpaper changes via HyprPanel and rewrites Alacritty/Rofi/fuzzel/kdeglobals color files
+- **Theme sync**: matugen regenerates colour files from the wallpaper on `SUPER+SHIFT+W` (`wallpaper-next`), and on `updhome` whenever a template changes (activation stamp in `matugen.nix`). Covers Alacritty, Rofi, fuzzel, kdeglobals, hyprlock, `colors.sh`, **Hyprland's window borders** and **btop**.
+  - Borders go through `~/.config/hypr/colors.lua`: `hyprland.lua` loads it at start (guarded — `dofile` on a missing path is fatal, and it does not exist until matugen has run), and matugen's `post_hook` applies it live with `hyprctl eval "dofile(...)"`. The colours in `config.nix` are the pre-matugen fallback.
+  - btop's `color_theme = "matugen"` is set in `matugen.nix` rather than with the package, because the theme only exists where matugen runs — fulcrum keeps btop's default.
+  - satty is deliberately *not* matugen-themed: its palette is annotation ink and has to stay legible on top of arbitrary screenshots. Static config in `hyprland/screenshot.nix`.
 - **Keybinds**: `home/modules/hyprland/binds.nix` — every bind is one entry in a list, and three things are rendered from it: the `hl.bind()` calls in `config.nix`, the `SUPER+ALT+SPACE` action menu and `SUPER+K` cheatsheet (`menu.nix`), and `docs/keybindings.md`. Nothing writes into `~/.nixos` at activation, so regenerate the doc by hand after editing:
     - `nix eval --raw -f home/modules/hyprland/binds.nix docsMarkdown > docs/keybindings.md`
     - The file is plain Nix (no module args, no `lib`) precisely so that command needs no build. `keys = null` makes a documentation-only row; `menu = false` keeps an exec entry out of the menu; `label` overrides the displayed key.
