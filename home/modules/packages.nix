@@ -6,7 +6,40 @@
   pkgs,
   lib,
   ...
-}: {
+}: let
+  # xdg-mime dispatches on URL *scheme*, never on domain, so "YouTube links
+  # open in FreeTube" cannot be expressed in the table below — https is https.
+  # This dispatcher becomes the http/https handler instead: YouTube links go
+  # to FreeTube, everything else is handed straight back to the browser.
+  # Unrecognised URLs fall through to the browser, so anything this script
+  # doesn't understand degrades to normal browsing rather than opening nothing.
+  #
+  # studio. and music.youtube.com are routed to the browser on purpose —
+  # FreeTube renders neither, and swallowing those links silently is worse
+  # than just opening them.
+  #
+  # The browser is launched through its .desktop entry rather than its binary
+  # so that --ozone-platform=wayland and --use-angle=gl stay defined in exactly
+  # one place (home/modules/yandex.nix). Bypassing them renders every Chromium
+  # window blank on the NVIDIA proprietary driver, and a second copy of the
+  # flags here would drift out of sync silently.
+  youtube-link-dispatch = pkgs.writeShellScriptBin "youtube-link-dispatch" ''
+    browser() {
+      exec ${pkgs.gtk3}/bin/gtk-launch yandex-browser-beta.desktop "$@"
+    }
+
+    [ $# -eq 0 ] && browser
+
+    case "$1" in
+      *://studio.youtube.com/*|*://music.youtube.com/*) browser "$@" ;;
+      *://youtu.be/*|*://youtube.com/*|*://*.youtube.com/*)
+        exec ${pkgs.freetube}/bin/freetube "$1"
+        ;;
+    esac
+
+    browser "$@"
+  '';
+in {
   # Enable firefox
   programs.firefox.enable = true;
   programs.firefox.configPath = ".mozilla/firefox";
@@ -17,8 +50,12 @@
     defaultApplications = {
       # Browser
       "text/html"                = "yandex-browser-beta.desktop";
-      "x-scheme-handler/http"   = "yandex-browser-beta.desktop";
-      "x-scheme-handler/https"  = "yandex-browser-beta.desktop";
+      # http/https go through the dispatcher above, not straight to the
+      # browser: it forwards YouTube links to FreeTube and everything else
+      # back to Yandex. text/html stays on the browser — local .html files
+      # are not URLs and never need routing.
+      "x-scheme-handler/http"   = "youtube-link-dispatch.desktop";
+      "x-scheme-handler/https"  = "youtube-link-dispatch.desktop";
       "x-scheme-handler/ftp"    = "yandex-browser-beta.desktop";
       "x-scheme-handler/about"  = "yandex-browser-beta.desktop";
       "x-scheme-handler/unknown"= "yandex-browser-beta.desktop";
@@ -65,6 +102,16 @@
       "application/x-rar"        = "org.kde.ark.desktop";
       "application/gzip"         = "org.kde.ark.desktop";
     };
+  };
+
+  # Hidden from menus — this is a URL handler, not something to launch.
+  xdg.desktopEntries.youtube-link-dispatch = {
+    name = "Web Link (YouTube → FreeTube)";
+    exec = "${youtube-link-dispatch}/bin/youtube-link-dispatch %u";
+    terminal = false;
+    type = "Application";
+    noDisplay = true;
+    mimeType = ["x-scheme-handler/http" "x-scheme-handler/https"];
   };
 
   home.packages = with pkgs; [
