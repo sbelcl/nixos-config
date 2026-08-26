@@ -42,6 +42,9 @@
 
   # Apply the same cursor in Wayland sessions
   home.pointerCursor = {
+    # Explicit since home-manager 25.05: setting the options below no longer
+    # implies enable, and relying on that is deprecated.
+    enable = true;
     name = "Bibata-Modern-Classic";
     package = pkgs.bibata-cursors;
     size = 24;
