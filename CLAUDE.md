@@ -17,6 +17,7 @@ Multi-host NixOS flake for imnos. Two machines in this repo: **fulcrum** (deskto
 ├── modules/
 │   ├── default.nix                # Shared home modules (DE/WM-agnostic)
 │   ├── packages.nix               # User packages + MIME associations
+│   ├── webapps.nix                # Sites as apps (--app= windows) + webapps/icons/
 │   ├── hyprland/                  # Hyprland stack — flanker-only import
 │   │   ├── binds.nix              # every keybind, as data (see below)
 │   │   ├── menu.nix               # action menu + cheatsheet, generated from binds.nix
@@ -52,6 +53,7 @@ Always `git pull` on the other machine after pushing changes.
 | Configure a dotfile | `home/modules/<app>.nix` |
 | Add Hyprland keybind | `home/modules/hyprland/binds.nix`, then regenerate the docs (flanker only) |
 | Add MIME association | `home/modules/packages.nix` → `xdg.mimeApps.defaultApplications` |
+| Add a web app | `home/modules/webapps.nix` → `apps` list (one attrset) |
 | Shared across both machines | `modules/` (system) or `home/modules/` (home) |
 | Host-specific | `hosts/<host>/` or `home/hosts/<host>.nix` |
 
@@ -76,6 +78,9 @@ Always `git pull` on the other machine after pushing changes.
 - **Terminal**: Alacritty · **Files**: Dolphin (GUI), ranger (TUI, SUPER+R) · **Browser**: Yandex Browser (custom flake, GStreamer + Chrome 144 codecs)
 - **Default apps** (declared in `home/modules/packages.nix` → `xdg.mimeApps`): images→Loupe, video/audio→mpv, archives→Ark, PDF→Okular, HTML→Yandex Browser, directories→Dolphin
   - ranger does **not** use these: it opens files with its own launcher, `rifle`, which ignores xdg-mime entirely. `home/modules/ranger.nix` routes images through `xdg-open` so they follow the table above; everything else uses rifle's packaged rules.
+- **Web apps** (`home/modules/webapps.nix`): sites given their own launcher entry and window via Chromium's `--app=` — Claude, ChatGPT, Yandex Mail/Calendar, GitHub, phpMyAdmin (`pma.test`). Adding one is a single attrset; `icon` is either an icon-theme name (`"github"`, from Papirus) or a path (`./webapps/icons/x.png`, pinned into its own store path by `builtins.path`). Icons are committed, not fetched at build time, so a moved URL cannot break a rebuild.
+  - Launch flags live in `home/modules/yandex-flags.nix`, shared with `yandex.nix` — web apps can't go through `gtk-launch` like `packages.nix` does, because `--app=` is a flag.
+  - Window class is Chromium's `chrome-<host>__-Default` (e.g. `chrome-github.com__-Default`), *not* `yandex-browser-beta` — so the `ws1-browser` rule does not catch them (verified: a web app opens on the current workspace), and each one can carry its own window rule.
 - **System QOL** (`modules/settings/maintenance.nix`): zram swap (50% of RAM), fwupd firmware updates, `locate` via plocate, and `nh` for rebuilds (`nh os switch`). `nh.clean` is off on purpose — it and the existing `nix.gc.automatic` both install a GC timer and the module asserts if both are on.
 - **`command-not-found` / `,`**: `programs.nix-index` + comma, fed by the `nix-index-database` flake input (`home/flake.nix`) so nothing is indexed locally.
 

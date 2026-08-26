@@ -13,6 +13,7 @@
     ./session-variables.nix
 
     ./yandex.nix
+    ./webapps.nix
     ./git.nix
     ./alacritty.nix
     ./mpv.nix

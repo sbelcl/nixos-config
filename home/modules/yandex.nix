@@ -4,6 +4,9 @@
   inputs,
   ...
 }: let
+  # Shared with webapps.nix — see yandex-flags.nix.
+  flags = import ./yandex-flags.nix;
+
   yandex-browser-beta = inputs.yandex-browser.packages.${pkgs.stdenv.hostPlatform.system}.yandex-browser-beta;
 
   # The GStreamer wrapper that used to live here is gone: it prepended the
@@ -60,7 +63,7 @@ in {
   xdg.desktopEntries.yandex-browser-beta = {
     name = "Yandex Browser (beta)";
     genericName = "Web Browser";
-    exec = "yandex-browser-beta --ozone-platform=wayland %U";
+    exec = "yandex-browser-beta ${flags} %U";
     icon = "yandex-browser-beta";
     categories = ["Network" "WebBrowser"];
     mimeType = [
