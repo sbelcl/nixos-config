@@ -3,11 +3,40 @@
 #
 {
   pkgs,
+  inputs,
   ...
 }: {
+  imports = [inputs.nix-index-database.homeModules.nix-index];
+
+  # Typing a command that isn't installed prints which package provides it,
+  # and `, <cmd>` runs it once from that package without installing anything.
+  #
+  # This replaces NixOS's own command-not-found handler, which reads a
+  # database shipped with nix-channels — a flakes-only system never populates
+  # it, so the handler can only ever say "not found".
+  #
+  # The database comes from the nix-index-database flake input, so nothing is
+  # indexed locally; see home/flake.nix.
+  programs.nix-index = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+  programs.nix-index-database.comma.enable = true;
+
   programs.fzf = {
     enable = true;
     enableZshIntegration = true; # Ctrl+R history, Ctrl+T file, Alt+C dir
+  };
+
+  # `z <partial-dir>` jumps to the best-matching directory you have actually
+  # visited, scored by frequency and recency. autocd (below) already turns a
+  # bare path into a cd, so this only earns its place for the fuzzy case.
+  #
+  # The zsh hook shadows `cd` itself, which is why this is here rather than in
+  # home.packages — the binary alone changes nothing.
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
   };
 
   # Per-directory environments: cd into a dir with .envrc and its exports are

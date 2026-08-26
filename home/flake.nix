@@ -15,6 +15,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Prebuilt nix-index database, refreshed upstream twice a week. Without
+    # it, `nix-locate` needs a local `nix-index` run (tens of minutes, and
+    # stale the moment nixpkgs moves) before the command-not-found handler
+    # can answer anything.
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # snappy-switcher: pinned — upstream commit 06eb4c5 (v4.0.0) broke its own
     # substituteInPlace by removing /usr/local from the systemd unit but not
     # from the derivation. Un-pin once upstream fixes the mismatch.
