@@ -6,23 +6,17 @@
 }: let
   yandex-browser-beta = inputs.yandex-browser.packages.${pkgs.stdenv.hostPlatform.system}.yandex-browser-beta;
 
-  # Upstream flake bug: LD_LIBRARY_PATH references gstreamer-bin (no libs)
-  # instead of the default output that has libgstreamer-1.0.so.
-  # Wrap the browser to prepend the correct GStreamer library paths.
-  gstLibPath = pkgs.lib.makeLibraryPath (with pkgs.gst_all_1; [
-    gstreamer
-    gst-plugins-base
-    gst-plugins-good
-    gst-plugins-bad
-    gst-plugins-ugly
-    gst-libav
-  ]);
-
+  # The GStreamer wrapper that used to live here is gone: it prepended the
+  # plugin packages to LD_LIBRARY_PATH, which was the wrong variable —
+  # GStreamer finds plugins through GST_PLUGIN_SYSTEM_PATH_1_0, never the
+  # linker path — and the flake's own inner wrapper `--set` that variable
+  # afterwards, overwriting anything set out here regardless.
+  #
+  # Both halves are fixed upstream as of nix-yandex-browser 5ebd7d2: the
+  # plugin path now uses gstreamer.out (the bare attribute resolves to the
+  # plugin-less "bin" output) and includes ugly and libav.
   yandex-browser-patched = yandex-browser-beta.overrideAttrs (old: {
     postFixup = (old.postFixup or "") + ''
-      wrapProgram $out/bin/yandex-browser-beta \
-        --prefix LD_LIBRARY_PATH : "${gstLibPath}"
-
       # Fix .desktop file: strip DRI_PRIME=1 — it forces the AMD iGPU on
       # flanker's hybrid GPU setup, which conflicts with NVIDIA under
       # Hyprland. Leave --ozone-platform=wayland intact; Yandex's own
