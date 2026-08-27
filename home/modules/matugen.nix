@@ -382,6 +382,25 @@ in {
     theme[process_end]="{{colors.error.default.hex}}"
   '';
 
+  # The @import that pulls the GTK colours above into the gtk.css that
+  # home-manager writes (fonts.nix owns that file, and it is a symlink into
+  # the store — hence an absolute URL, or a relative import would resolve
+  # inside the store).
+  #
+  # This lives here rather than in fonts.nix because fonts.nix is shared and
+  # matugen is not: on fulcrum the imported file would never be written, and
+  # every GTK app there would log a failed import at startup for colours it
+  # was never going to get.
+  #
+  # The import lands after the theme's, and in GTK CSS the last
+  # @define-color for a name wins, so these override adw-gtk3-dark.
+  gtk.gtk3.extraCss = ''
+    @import url("file://${config.home.homeDirectory}/.config/gtk-3.0/matugen.css");
+  '';
+  gtk.gtk4.extraCss = ''
+    @import url("file://${config.home.homeDirectory}/.config/gtk-4.0/matugen.css");
+  '';
+
   # btop only reads the theme above if its config points at it, and the theme
   # only exists where matugen runs — which is this module, flanker-only. So
   # the pointer lives here too rather than in packages.nix, where btop itself
