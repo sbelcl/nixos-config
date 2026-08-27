@@ -14,13 +14,59 @@
 # If wayle-settings ever fails to save, it is writing config.toml rather than
 # runtime.toml — drop the xdg.configFile block below to make it writable again.
 #
-{ pkgs, ... }: {
-  home.packages = [
-    pkgs.wayle
-    pkgs.brightnessctl   # backend for Wayle's brightness module + scroll binding
-  ];
+# The two modules that only make sense on hardware that has the hardware are
+# behind options, so the same bar can be imported by a desktop. Both default
+# to off — a machine declares what it has, rather than the bar assuming a
+# laptop and quietly rendering a battery that reads nothing.
+#
+#   flanker  sets both (see home/hosts/flanker.nix)
+#   fulcrum  sets neither, so it gets systray/bluetooth/network/microphone/
+#            volume/dashboard when it picks up this stack. Its brightness is
+#            DDC/CI over ddcutil, which Wayle's backlight module cannot drive.
+#
+{ config, pkgs, lib, ... }: let
+  cfg = config.local.bar;
 
-  xdg.configFile."wayle/config.toml".text = ''
+  rightModules =
+    [ "systray" ]
+    ++ lib.optional cfg.battery "battery"
+    ++ [ "bluetooth" "network" "microphone" ]
+    ++ lib.optional cfg.backlight "brightness"
+    ++ [ "volume" "dashboard" ];
+
+  # Rendered as a TOML array: ["a", "b", ...]
+  rightArray = ''["'' + lib.concatStringsSep ''", "'' rightModules + ''"]'';
+
+  brightnessModule = ''
+
+    # ── Brightness (needs pkgs.brightnessctl) ─────────────────────────────────────
+    [modules.brightness]
+    icon-color     = "fg-default"
+    icon-bg-color  = "transparent"
+    label-color    = "fg-default"
+    scroll-up    = "brightnessctl set +5%"
+    scroll-down  = "brightnessctl set 5%-"
+  '';
+
+  batteryModule = ''
+    [modules.battery]
+    icon-color = "fg-default"
+    icon-bg-color = "transparent"
+    label-color = "fg-default"
+  '';
+in {
+  options.local.bar = {
+    battery = lib.mkEnableOption "the battery module in the Wayle bar";
+    backlight = lib.mkEnableOption "the brightness module in the Wayle bar";
+  };
+
+  config.home.packages = [
+    pkgs.wayle
+  ] ++ lib.optional cfg.backlight
+    # backend for Wayle's brightness module + scroll binding
+    pkgs.brightnessctl;
+
+  config.xdg.configFile."wayle/config.toml".text = ''
     # Wayle configuration — fiddling round 1
     #   * transparent bar + button backgrounds
     #   * monochrome (fg-colored) icons + labels
@@ -37,7 +83,7 @@
     show = true
     left   = ["hyprland-workspaces"]
     center = ["media", "clock"]
-    right  = ["systray", "battery", "bluetooth", "network", "microphone", "brightness", "volume", "dashboard"]
+    right  = ${rightArray}
 
     # ── Volume ────────────────────────────────────────────────────────────────────
     [modules.volume]
@@ -46,21 +92,9 @@
     label-color    = "fg-default"
     scroll-up    = "wayle audio output-volume +5"
     scroll-down  = "wayle audio output-volume -5"
-
-    # ── Brightness (needs pkgs.brightnessctl) ─────────────────────────────────────
-    [modules.brightness]
-    icon-color     = "fg-default"
-    icon-bg-color  = "transparent"
-    label-color    = "fg-default"
-    scroll-up    = "brightnessctl set +5%"
-    scroll-down  = "brightnessctl set 5%-"
-
+    ${lib.optionalString cfg.backlight brightnessModule}
     # ── Other modules — force fg color so nothing stays red/blue/yellow ───────────
-    [modules.battery]
-    icon-color = "fg-default"
-    icon-bg-color = "transparent"
-    label-color = "fg-default"
-
+    ${lib.optionalString cfg.battery batteryModule}
     [modules.bluetooth]
     icon-color = "fg-default"
     icon-bg-color = "transparent"

@@ -42,6 +42,13 @@ in {
   # mkForce: nullOr can't merge a null over the shared module's string value.
   xdg.userDirs.desktop = lib.mkForce null;
 
+  # Hardware this machine actually has, which is what the Wayle bar composes
+  # itself from (home/modules/hyprland/wayle.nix).
+  local.bar = {
+    battery = true;
+    backlight = true;
+  };
+
   home.packages = [
     sudo-askpass
     # Client for fulcrum's Sunshine host (hosts/fulcrum/fulcrum.nix). Flanker
