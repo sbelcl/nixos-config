@@ -54,6 +54,23 @@
       "imnos@fulcrum" = mkHome ./hosts/fulcrum.nix;
     };
 
+    # `nix flake check` does not understand homeConfigurations. It is not a
+    # standard flake output schema, so the command reports it as unknown and
+    # never forces an activationPackage -- a check that passes while saying
+    # nothing at all about whether either configuration evaluates.
+    #
+    # Re-exporting them here is what gives the command meaning. It is not
+    # hypothetical: the default wallpaper used to be reached as
+    # ../../../assets/..., which climbs out of this flake's source tree, so
+    # both configurations failed pure evaluation while `nix flake check`
+    # stayed green. That only ever worked because `nix ... ./home` is silently
+    # widened to git+file:<repo>?dir=home, pulling the parent repo into the
+    # store copy; the honest `path:` form failed outright.
+    checks.${system} = {
+      home-flanker = self.homeConfigurations."imnos@flanker".activationPackage;
+      home-fulcrum = self.homeConfigurations."imnos@fulcrum".activationPackage;
+    };
+
     # Development shell
     devShells.${system}.default = pkgs.mkShell {
       packages = [pkgs.home-manager];

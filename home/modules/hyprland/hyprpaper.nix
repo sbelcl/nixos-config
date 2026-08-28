@@ -14,7 +14,7 @@
 # matugen.nix both read it.
 #
 { pkgs, lib, ... }: let
-  wallpaper = ../../../assets/wallpapers/default.png;
+  wallpaper = ../../assets/wallpapers/default.png;
 in {
   home.packages = [ pkgs.awww ];
 

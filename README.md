@@ -33,7 +33,7 @@ Directory-level only — a file-by-file tree in a README rots faster than it hel
     ├── flake.nix          # homeConfigurations."imnos@{flanker,fulcrum}"
     ├── hosts/<host>.nix   # per-host home overrides
     └── modules/
-        ├── hyprland/      # compositor stack — imported by flanker only
+        ├── hyprland/      # compositor stack — imported by both hosts
         └── users/imnos.nix
 ```
 
@@ -60,9 +60,25 @@ After pushing from one machine, `git pull` on the other before rebuilding.
 ## Checking before deploying
 
 ```bash
-nix flake check --no-build                    # both flakes evaluate
-nixos-rebuild build --flake ~/.nixos#fulcrum  # build another host without switching
+nix flake check --no-build                       # root flake — the two NixOS systems
+nix flake check ./home --no-build                # home flake — both homeConfigurations
+nixos-rebuild build --flake ~/.nixos#fulcrum     # build another host without switching
 home-manager build --flake ~/.nixos/home#imnos@flanker
+```
+
+The second line is not redundant. `home/` is its own flake and the root check
+never descends into it, so a root-only check says nothing about either home
+configuration. It is also only meaningful because `home/flake.nix` re-exports
+both activation packages as `checks`: `homeConfigurations` is not a schema
+`nix flake check` recognises, so without that it reports an unknown output and
+forces nothing.
+
+To validate the working tree rather than the last commit, ask for the path
+explicitly — a flake reference in a Git repository resolves to `HEAD`, silently
+ignoring uncommitted edits:
+
+```bash
+nix flake check path:$PWD --no-build
 ```
 
 Building the *other* host is worth the habit: an input bump can break a machine
@@ -88,4 +104,5 @@ been accepted happily and then silently ignored at runtime.
   fuzzel, hyprlock and kdeglobals palettes; `wallpaper-next` (SUPER+SHIFT+W)
   drives it.
 - **Host-specific policy lives in host files**, shared policy in `modules/` and
-  `home/modules/`. The Hyprland stack is imported by flanker alone.
+  `home/modules/`. The Hyprland stack is imported by both hosts; `battery.nix`
+  and `nixos-update-check.nix` are what stay flanker-only.
