@@ -1,7 +1,7 @@
 #
 # ~/.nixos/hosts/fulcrum/fulcrum.nix
 #
-# Gaming rig — SDDM + Plasma (Wayland), NVIDIA
+# Gaming rig — Hyprland (no greeter, TTY1 auto-login), NVIDIA, LUKS root
 #
 {
   pkgs,
@@ -33,9 +33,128 @@
   # Hostname
   networking.hostName = "fulcrum";
 
+  # ==========================================================================
+  # DNS — keep the hotspot's resolver out of it
+  # ==========================================================================
+  #
+  # This machine lives permanently behind the phone hotspot, whose DHCP hands
+  # out 192.168.43.1 as the nameserver. That resolver stops answering fairly
+  # regularly (dig against it times out while the gateway still pings and
+  # 1.1.1.1 answers fine), and while it is in that state every lookup on the
+  # box dies -- which is what broke `nixos-rebuild` with a screenful of
+  # "Could not resolve host: cache.nixos.org".
+  #
+  # modules/settings/networking.nix already intends to prevent this, via
+  # networkmanager.connectionConfig ipv4/ipv6.ignore-auto-dns. It does not
+  # work: those are *defaults for unset properties*, and the saved profile
+  # still reports `ipv4.ignore-auto-dns: no`, so NM keeps handing the hotspot
+  # resolver to systemd-resolved as a per-link server. Link DNS outranks the
+  # global Quad9 list, so the good servers below never get consulted.
+  #
+  # dns = "none" takes NetworkManager out of DNS entirely, so resolved falls
+  # back on its own global configuration -- Quad9, with proper #dns.quad9.net
+  # names for TLS certificate validation.
+  #
+  # mkForce because the resolved module itself sets this to "systemd-resolved"
+  # (nixos/modules/system/boot/resolved.nix) -- that wiring is precisely what
+  # carries the per-link DHCP servers across, so overriding it is the point.
+  networking.networkmanager.dns = lib.mkForce "none";
+
+  # With the hotspot resolver gone, pin resolution to Quad9 over authenticated
+  # TLS: "opportunistic" would still silently fall back to cleartext 53 against
+  # whatever a network hands us. Verified 9.9.9.9:853 and 1.1.1.1:853 both
+  # accept connections from here before turning this on.
+  #
+  # These two options are a pair, and the ordering matters if anyone unpicks
+  # them later: strict DoT *without* dns = "none" is worse than neither. NM
+  # would still push 192.168.43.1 onto the link, resolved would try DoT to a
+  # phone that does not speak it, and strict mode forbids the fallback -- so
+  # the machine would have no name resolution at all.
+  #
+  # Host-scoped deliberately. Strict DoT means no DNS whatsoever on a network
+  # that blocks 853; fine for a desktop that never leaves this hotspot, wrong
+  # for flanker, which moves between networks it does not control.
+  services.resolved.settings.Resolve.DNSOverTLS = lib.mkForce "true";
+
+  # Local DNSSEC validation off, delegated to Quad9 over the authenticated
+  # channel above.
+  #
+  # Not a shrug at security -- resolved's own validation is what was breaking
+  # here. Over this hotspot it intermittently fails to assemble the chain and
+  # answers "DNSSEC validation failed: no-signature", including for zones that
+  # are not signed at all (nixos.org has no DS record at its parent, so there
+  # is nothing to validate). The failure is intermittent: the same name
+  # resolves on one query and SERVFAILs on the next.
+  #
+  # That SERVFAIL is what actually broke `nixos-rebuild`, and it is worth
+  # knowing why the symptom is so confusing. nsswitch.conf here reads
+  #
+  #     hosts: ... resolve [!UNAVAIL=return] files myhostname dns
+  #
+  # so a SERVFAIL from resolved is a *definitive* answer to glibc and the
+  # trailing `dns` fallback is never consulted. Meanwhile `resolvectl query`
+  # goes over D-Bus and can look fine at that same moment -- so the box appears
+  # to have working DNS while every getaddrinfo() caller, nix included, fails.
+  # Test with `getent ahosts`, not `resolvectl`, when judging this.
+  #
+  # 9.9.9.9 is a validating resolver and returns SERVFAIL for genuinely bogus
+  # answers, so the check still happens; it happens there rather than here,
+  # and DNSOverTLS = "true" is what makes trusting that answer reasonable.
+  # These two settings are a pair in that direction too: do not turn this off
+  # while leaving DoT opportunistic.
+  services.resolved.settings.Resolve.DNSSEC = lib.mkForce "false";
+
+  # NetworkManager-wait-online sat on the critical path for 37s of a 2m14s
+  # boot: graphical.target -> multi-user.target -> docker.service ->
+  # network-online.target -> here. Nothing on this box needs the network up
+  # before the session starts. flanker has dropped this for the same reason
+  # (its delay was only 4.5s -- this hotspot is far slower to settle).
+  systemd.services.NetworkManager-wait-online.enable = false;
+
+  # Socket-activate docker rather than starting it at boot; it is what pulls
+  # network-online.target onto the critical path above. First `docker` command
+  # of a session takes ~2s, everything after is unchanged. Also flanker's.
+  virtualisation.docker.enableOnBoot = false;
+
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  # ==========================================================================
+  # LUKS unlock — TPM2, no passphrase at boot
+  # ==========================================================================
+
+  # The scripted initrd cannot talk to a TPM; systemd-cryptsetup in a systemd
+  # initrd is what implements tpm2-device. This is the prerequisite for the
+  # option below, not an independent preference.
+  boot.initrd.systemd.enable = true;
+
+  # Ask the TPM to release the key at boot. The device itself is declared in
+  # hardware/hardware-configuration.nix — hardware there, policy here — and the
+  # two attrsets merge.
+  #
+  # Safe before enrollment: with no TPM2 keyslot present this fails and falls
+  # back to the passphrase prompt, so it can land in the same rebuild as the
+  # Hyprland migration and be enrolled afterwards.
+  #
+  # Enrolled once, by hand, against PCRs 0+2+7 (firmware, option ROMs, secure
+  # boot state):
+  #
+  #   sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=0+2+7 \
+  #     /dev/nvme0n1p2
+  #
+  # That ADDS a keyslot; the passphrase stays valid and is the recovery path.
+  # Re-enroll after anything that changes those measurements — a BIOS update
+  # moves PCR 0.
+  #
+  # Known limit, accepted deliberately: Secure Boot is disabled on this box, so
+  # PCR 7 attests very little, and 0+2+7 measures neither kernel nor initrd.
+  # /boot is unencrypted FAT, so someone with physical access could alter the
+  # initrd and the TPM would still hand over the key. Data at rest is still
+  # protected — a drive pulled from the machine, or a boot from other media,
+  # will not unseal. Closing the rest means Secure Boot + lanzaboote, at which
+  # point PCR 7 becomes load-bearing.
+  boot.initrd.luks.devices."cryptroot".crypttabExtraOpts = [ "tpm2-device=auto" ];
 
   # Use latest kernel for best gaming support
   boot.kernelPackages = pkgs.linuxPackages_latest;
@@ -53,43 +172,36 @@
   nix.settings.max-jobs = lib.mkForce 1;
 
   # ==========================================================================
-  # Display Manager and Desktop Environments
+  # Desktop — Hyprland (migrated off SDDM + Plasma 6)
   # ==========================================================================
 
-  # SDDM (Wayland greeter) — Plasma is the only session offered on this rig.
-  services.displayManager.sddm = {
-    enable = true;
-    wayland.enable = true;
-  };
+  # Hyprland is now the only session here, matching flanker. There is no
+  # greeter: getty auto-logs in on TTY1, zsh execs start-hyprland (see
+  # home/modules/users/imnos.nix + modules/software/hyprland.nix), and
+  # hyprlock is the authentication gate.
+  desktop.hyprland.enable = true;
 
-  # KDE Plasma 6 — the only desktop, best for gaming (VRR/HDR/tearing on NVIDIA)
-  services.desktopManager.plasma6.enable = true;
+  # NixOS applies this to tty1 only — tty2–tty6 still require a login, which
+  # is the way back in if the compositor fails to start.
+  services.getty.autologinUser = "imnos";
 
-  # Trim Plasma defaults we don't use.  akonadi/kdepim spawns a MariaDB-backed
-  # PIM server and resource agents on login; the rest are apps superseded by
-  # Nix-managed alternatives (mpv for audio, nix-env for software, etc.) or
-  # things we never launch.
-  environment.plasma6.excludePackages = with pkgs.kdePackages; [
-    akonadi
-    kdepim-runtime
-    elisa            # audio routed to mpv
-    discover         # software management is via Nix
-    khelpcenter
-    krdp             # don't run an RDP server by default
-    qrca
-    kmag
-    kmousetool
-    kmouth
-  ];
+  # GNOME Keyring, unlocked by the hyprlock auth that replaces the greeter.
+  # Plasma's kwallet went with plasma6, so without this nothing holds secrets
+  # for the session.
+  services.gnome.gnome-keyring.enable = true;
+  security.pam.services.login.enableGnomeKeyring = true;
+  security.pam.services.hyprlock.enableGnomeKeyring = true;
 
   # KDE Connect — phone integration (notifications, SMS, file send, clipboard).
   # programs.kdeconnect opens the discovery TCP/UDP ports 1714-1764 in the
-  # firewall, which the package alone doesn't do.
+  # firewall, which the package alone doesn't do. Kept without Plasma: the
+  # daemon is standalone, but its tray icon now needs kdeconnect-indicator
+  # running against Wayle's systray rather than Plasma's applet.
   programs.kdeconnect.enable = true;
 
-  # Keep the X server available for XWayland (X11 games/apps under Plasma) and
-  # for SDDM. Xmonad has been removed.
-  services.xserver.enable = true;
+  # services.xserver.enable is gone with SDDM. XWayland is unaffected — it
+  # comes from programs.hyprland (xwayland.enable defaults true), not from
+  # the X server module, so X11 games and Wine keep working.
 
   # ==========================================================================
   # Gaming
@@ -98,10 +210,18 @@
   # Steam hardware support (controllers, etc.)
   hardware.steam-hardware.enable = true;
 
-  # Steam "Gaming Mode" session (Deck-style) via gamescope — a dedicated SDDM
-  # session that runs games in their own micro-compositor. Best path for HDR +
-  # VRR on the ASUS VG34VQL3A: enter this session and enable HDR, or use the
-  # per-game launch option:
+  # Steam "Gaming Mode" session (Deck-style) via gamescope — best path for
+  # HDR + VRR on the ASUS VG34VQL3A.
+  #
+  # Kept enabled after the Plasma/SDDM removal, which costs less than it
+  # looks: nixos/modules/programs/steam.nix installs `steam-gamescope` into
+  # environment.systemPackages whenever this is on, and registers the
+  # wayland-session .desktop with the display manager *separately*. With no
+  # display manager the session entry has nothing to appear in, but the
+  # launcher command survives — so Gaming Mode is now `steam-gamescope` from
+  # rofi or a keybind instead of a greeter entry.
+  #
+  # Per-game alternative, unchanged:
   #   gamescope -f --hdr-enabled --adaptive-sync -- %command%
   programs.steam.gamescopeSession.enable = true;
 
@@ -144,7 +264,7 @@
     unrar # required by gamma-launcher to extract STALKER GAMMA mod archives
     obs-studio
     kdePackages.kdenlive
-    kdePackages.filelight       # disk usage treemap — /mnt/storage & /mnt/games
+    kdePackages.filelight       # disk usage treemap — /mnt/storage
     kdePackages.isoimagewriter  # write Linux ISOs to USB
     nvtopPackages.nvidia
     ddcutil # DDC/CI monitor brightness control
@@ -161,12 +281,18 @@
     options = [ "nofail" "x-systemd.automount" ];
   };
 
-  # Games NVMe drive (XFS) — permanent mount for Steam library
-  fileSystems."/mnt/games" = {
-    device = "/dev/disk/by-uuid/89606cba-0dcc-4fb6-ae26-fc419a66e048";
-    fsType = "xfs";
-    options = [ "nofail" "x-systemd.automount" ];
-  };
+  # No /mnt/games on fulcrum any more. That was an XFS NVMe holding the Steam
+  # library; the LUKS reinstall took over the same physical 931.5G drive, so
+  # the filesystem is gone rather than unplugged and the UUID resolves to
+  # nothing. The entry survived the reinstall because it lives here rather
+  # than in hardware-configuration.nix, which is also why it was not caught
+  # when that file was corrected.
+  #
+  # The Steam library is now the default one inside $HOME
+  # (~/.local/share/Steam/steamapps) — the same physical disk it always was,
+  # just no longer a separate filesystem. Nothing to declare for it.
+  #
+  # flanker still has a real /mnt/games; that one stays.
 
   # ==========================================================================
   # ComfyUI — image & video generation (RTX 3080 Ti, 12GB VRAM)

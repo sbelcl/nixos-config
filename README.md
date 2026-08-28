@@ -13,10 +13,10 @@ For a much more detailed map of where things live, see [CLAUDE.md](CLAUDE.md).
 |---|---|---|
 | Role | Gaming desktop | Laptop |
 | GPU | NVIDIA RTX 3080 Ti | Hybrid NVIDIA + AMD |
-| Desktop | KDE Plasma (Wayland) only | Hyprland only |
-| Login | SDDM, plus a gamescope "Gaming Mode" session | Auto-login on TTY1, hyprlock as the auth gate |
-| Storage | `/mnt/storage` (ext4 HDD), `/mnt/games` (XFS NVMe) | `/mnt/storage` over NFS from fulcrum, `/mnt/games` local |
-| Extras | ComfyUI on CUDA, Ollama, NFS server | Battery alerts, wallpaper→theme sync |
+| Desktop | Hyprland only | Hyprland only |
+| Login | Auto-login on TTY1, hyprlock as the auth gate | Auto-login on TTY1, hyprlock as the auth gate |
+| Storage | `/mnt/storage` (ext4 HDD, currently unplugged — SATA cable) | `/mnt/storage` over NFS from fulcrum, `/mnt/games` local |
+| Extras | ComfyUI on CUDA, Ollama, NFS server, Gaming Mode via `steam-gamescope` | Battery alerts |
 
 ## Layout
 

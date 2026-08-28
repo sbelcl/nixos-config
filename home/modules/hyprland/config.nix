@@ -304,8 +304,12 @@ in {
       hl.animation{ leaf = "workspaces", enabled = true, speed = 6,  bezier = "easeOut", style = "fade" }
 
       -- ── Startup ─────────────────────────────────────────────────────────
-      -- hyprlang's exec-once. hyprlock on boot is flanker-only (auto-login,
-      -- no greeter); on fulcrum SDDM already authenticates.
+      -- hyprlang's exec-once. hyprlock last: every host that imports this
+      -- stack auto-logins on TTY1 with no greeter, so the lock IS the
+      -- authentication gate. This used to live in home/hosts/flanker.nix
+      -- because fulcrum had SDDM to authenticate for it; fulcrum no longer
+      -- does, and duplicating it per host would just be two copies of the
+      -- same invariant.
       hl.on("hyprland.start", function()
         hl.exec_cmd("awww-daemon")                          -- wallpaper daemon
         hl.exec_cmd("awww img ~/.config/background")         -- initial wallpaper
@@ -314,6 +318,7 @@ in {
         hl.exec_cmd("snappy-switcher --daemon")              -- animated Alt+Tab
         hl.exec_cmd("alacritty --class scratchterm")
         hl.exec_cmd("alacritty --class scratchtask -e taskwarrior-tui")
+        hl.exec_cmd("hyprlock")                              -- auth gate (no greeter)
       end)
 
       -- ── Keybinds ───────────────────────────────────────────────────────

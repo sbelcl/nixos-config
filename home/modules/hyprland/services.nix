@@ -2,7 +2,8 @@
 # ~/.nixos/home/modules/hyprland/services.nix
 #
 # Per-session services for Hyprland. All gated on HYPRLAND_INSTANCE_SIGNATURE
-# so they don't fire under Plasma (fulcrum), which has its own equivalents.
+# so they only fire inside a Hyprland session, and stay inert on a host or
+# session that is not running one.
 # nm-applet is intentionally omitted — Wayle's network module covers it.
 #
 { pkgs, lib, ... }: let

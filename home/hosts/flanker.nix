@@ -18,11 +18,12 @@
     exec ${pkgs.fuzzel}/bin/fuzzel --dmenu --password --prompt-only="''${1:-sudo password: }"
   '';
 in {
-  # Hyprland stack + WM-specific bits — flanker is the only host using these.
-  # Fulcrum (Plasma) and tomcat (GNOME, separate repo) must not import them.
+  # Hyprland stack + WM-specific bits. Fulcrum imports most of this set too
+  # now that it has migrated off Plasma; battery.nix and nixos-update-check.nix
+  # are what stay flanker-only. tomcat (GNOME, separate repo) imports none of it.
   imports = [
     ../modules/hyprland/hyprland.nix
-    ../modules/rofi.nix              # launcher (Plasma uses KRunner)
+    ../modules/rofi.nix              # launcher
     ../modules/fuzzel.nix            # secondary launcher (Wayland-native)
     ../modules/battery.nix           # UPower alerts + backup timer (laptop only)
     ../modules/matugen.nix           # wallpaper→color scheme sync (templates)
@@ -32,8 +33,11 @@ in {
 
   # No desktop dir on flanker — Hyprland has no desktop containment, so
   # ~/Namizje was only ever an empty folder. null drops XDG_DESKTOP_DIR from
-  # user-dirs.dirs entirely. Kept host-local: fulcrum runs Plasma, which does
-  # render desktop icons, so it keeps $HOME/Namizje from the shared module.
+  # user-dirs.dirs entirely. Still host-local, but no longer for the original
+  # reason: fulcrum ran Plasma, which renders desktop icons, so it kept
+  # $HOME/Namizje from the shared module. Fulcrum is Hyprland now and has the
+  # same empty-folder situation — dropping it there too is a live decision,
+  # not a no-op, because the directory may already have files in it.
   # Caveat: with the key absent, `xdg-user-dir DESKTOP` reports the spec
   # fallback $HOME/Desktop — so anything that writes a desktop shortcut would
   # resurrect an English ~/Desktop. ~/.wine/drive_c/users/imnos/Desktop used to
@@ -165,13 +169,6 @@ in {
     # manually after logging in.
   ];
 
-  # Lock screen immediately on Hyprland start — flanker uses auto-login (no
-  # greeter), so hyprlock is the only authentication gate after boot.
-  wayland.windowManager.hyprland.extraConfig = ''
-    hl.on("hyprland.start", function()
-      hl.exec_cmd("hyprlock")
-    end)
-  '';
 
   # Yandex Browser .desktop override moved to home/modules/yandex.nix
   # (DRI_PRIME=1 and --ozone-platform=wayland removed — they cause

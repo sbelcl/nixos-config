@@ -230,7 +230,7 @@ in {
   # voxtype's keybind entry points (`voxtype record ...`) signal a running
   # daemon; without it every dictation key is a no-op. Gated on
   # HYPRLAND_INSTANCE_SIGNATURE like every other unit in services.nix so it
-  # never starts under Plasma on fulcrum.
+  # never starts outside a Hyprland session.
   #
   # Restart=on-failure rather than always: with no model downloaded the
   # daemon exits cleanly, and restarting that forever would just spin.

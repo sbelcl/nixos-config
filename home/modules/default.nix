@@ -1,8 +1,9 @@
 #
 # Shared home-manager modules (DE/WM-agnostic).
 # WM-specific bits (Hyprland stack, rofi/fuzzel launchers, matugen theme sync,
-# battery alerts) are imported per-host from home/hosts/<host>.nix so they
-# don't leak into Plasma-only fulcrum.
+# battery alerts) are imported per-host from home/hosts/<host>.nix so a host
+# that does not run the compositor never pulls them in — tomcat (GNOME) today,
+# and fulcrum until it migrated off Plasma.
 #
 {...}: {
   imports = [
