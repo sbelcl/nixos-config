@@ -323,6 +323,51 @@
   # Store Ollama models on bulk HDD to save NVMe space
   services.ollama.home = "/mnt/storage/ollama";
 
+  # ollama.home is the unit's WorkingDirectory, so it has to exist before the
+  # service starts; systemd cannot create it, and failed the whole unit at
+  # namespace setup ("Failed to set up mount namespacing: /mnt/storage/ollama:
+  # No such file or directory", 226/NAMESPACE) because the reinstalled /mnt
+  # /storage no longer had it.
+  #
+  # Naming a user is what makes the tmpfiles rule below meaningful. Left at
+  # null the module runs ollama under DynamicUser with a transient UID, and
+  # there is no stable owner to give a directory outside /var/lib to. Setting
+  # it creates the account (the module does that itself) and pins the owner.
+  services.ollama.user = "ollama";
+  services.ollama.group = "ollama";
+
+  # d = create if missing, and do not touch anything already inside.
+  # Z = recurse, resetting owner and mode on everything under the path.
+  #
+  # ComfyUI needs the recursive form because its data predates the reinstall
+  # and the UIDs moved underneath it: the tree is owned by uid 991, which used
+  # to be comfyui and now resolves to wpa_supplicant, while the service runs as
+  # uid 998. At mode 0750 that is not a permissions nuisance but a hard stop --
+  # comfyui.service could not even enter its own WorkingDirectory and died with
+  # 200/CHDIR on every restart.
+  #
+  # Neither rule runs at boot, and that is the behaviour we want. /mnt/storage
+  # is an x-systemd.automount, and tmpfiles refuses to walk through one rather
+  # than triggering it:
+  #
+  #   Detected autofs mount point '/mnt/storage' during canonicalization
+  #   Skipping /mnt/storage/comfyui
+  #
+  # So the recursive walk costs nothing per boot, and -- more usefully -- with
+  # the drive unplugged these rules cannot create anything in the bare
+  # mountpoint on the root filesystem, which is how stray files end up shadowed
+  # under a mount. They apply during nixos-rebuild switch, when the filesystem
+  # is already mounted, which is enough for a one-off ownership repair.
+  #
+  # Consequence worth knowing when applying this: activation restarts the
+  # service and runs tmpfiles concurrently, so comfyui can fail 200/CHDIR once
+  # more on the switch that fixes it and recover on its own Restart=. A failed
+  # comfyui in that one switch is expected, not a reason to dig.
+  systemd.tmpfiles.rules = [
+    "d /mnt/storage/ollama 0750 ollama ollama -"
+    "Z /mnt/storage/comfyui 0750 comfyui comfyui -"
+  ];
+
   # ==========================================================================
   # Bluetooth — fulcrum has no Bluetooth hardware.
   # The shared bluetooth.nix enables hardware.bluetooth, which installs a D-Bus
