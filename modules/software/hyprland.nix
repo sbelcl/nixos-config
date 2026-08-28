@@ -34,6 +34,18 @@ with lib; {
 
     # Hyprland ecosystem packages
     environment.systemPackages = with pkgs; [
+      # Session entry point. home/modules/users/imnos.nix execs this from zsh
+      # on TTY1 for the auto-login hosts. It lives here, behind the same mkIf
+      # as the compositor, so the command exists exactly where Hyprland does.
+      # Paired with the `command -v` guard on the caller, a host that does not
+      # enable this module drops to a normal shell instead of a getty respawn
+      # loop. Before this, the caller exec'd a name nothing in the repo
+      # defined -- survivable only because fulcrum had SDDM and never reached
+      # TTY1, and a login loop the moment it didn't.
+      (writeShellScriptBin "start-hyprland" ''
+        exec ${config.programs.hyprland.package}/bin/Hyprland "$@"
+      '')
+
       # Core utilities
       hyprpaper # wallpaper
       hyprlock # screen locker

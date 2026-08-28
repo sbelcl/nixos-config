@@ -65,8 +65,16 @@
     initContent = ''
       eval "$(starship init zsh)"
 
-      # Auto-start Hyprland on TTY1 (flanker auto-login)
-      if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+      # Auto-start Hyprland on TTY1 (auto-login hosts). start-hyprland is
+      # defined in modules/software/hyprland.nix behind desktop.hyprland.enable,
+      # so the command check is what scopes this shared snippet to the hosts
+      # that actually run it -- there is no host condition available here.
+      # The check is load-bearing, not defensive: zsh does not survive an exec
+      # of a missing command even when interactive, so on an auto-login TTY a
+      # bare `exec` of an absent binary means the shell dies and getty
+      # respawns it, forever.
+      if [ -z "$WAYLAND_DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ] \
+         && command -v start-hyprland >/dev/null; then
         exec start-hyprland
       fi
     '';
