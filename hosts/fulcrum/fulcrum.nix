@@ -116,9 +116,54 @@
   # of a session takes ~2s, everything after is unchanged. Also flanker's.
   virtualisation.docker.enableOnBoot = false;
 
+  # Same treatment for libvirt, which is what remained on the critical path
+  # once NetworkManager-wait-online was gone:
+  #
+  #   graphical.target @4.406s -> multi-user.target -> libvirt-guests.service
+  #     -> network.target @2.513s -> NetworkManager.service
+  #
+  # libvirtd.socket is enabled and active, so dropping the daemon's
+  # WantedBy only defers it: virsh, virt-manager or any libvirt client
+  # starts it on first connection. libvirt-guests exists to save and restore
+  # running domains across a reboot, which is worth nothing on a host with no
+  # domains at all (`virsh list --all` is empty here), and it is the unit that
+  # drags network.target in.
+  #
+  # Revisit if this machine ever gets a VM set to autostart: with libvirtd no
+  # longer pulled in at boot, nothing would connect to the socket to start it,
+  # so the guest would stay down until something touched libvirt.
+  #
+  # Host-scoped rather than edited into modules/software/libvirt.nix, which
+  # flanker imports too.
+  systemd.services.libvirtd.wantedBy = lib.mkForce [];
+  systemd.services.libvirt-guests.wantedBy = lib.mkForce [];
+
   # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  # systemd-boot's default is 5s and this host was still on it, spending
+  # 3.1s of a 23s boot sitting in the menu. flanker has been on 1 for a
+  # while. Hold space (or an arrow key) during boot to get the menu anyway
+  # and pick an older generation -- the rollback path is unchanged, it just
+  # is not offered unprompted.
+  boot.loader.timeout = 1;
+
+  # Quiet console. Cosmetic, and deliberately without plymouth: the splash is
+  # the part that would actually cost time (~0.5-1s to start and hand over),
+  # and on a host that auto-logins straight into hyprlock it would be on
+  # screen for a couple of seconds. These three are about log suppression
+  # only, so they are roughly time-neutral -- the boot is not faster for
+  # being quieter, it just stops printing.
+  #
+  # The LUKS passphrase prompt is unaffected. It comes from systemd-cryptsetup
+  # over the console rather than the kernel ring buffer, so the fallback path
+  # is still visible if the TPM ever refuses to unseal -- which matters,
+  # because that prompt is the only thing standing between a failed unseal and
+  # an apparently dead boot.
+  boot.kernelParams = [ "quiet" "udev.log_level=3" ];
+  boot.consoleLogLevel = 0;
+  boot.initrd.verbose = false;
 
   # ==========================================================================
   # LUKS unlock — TPM2, no passphrase at boot
