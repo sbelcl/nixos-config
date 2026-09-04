@@ -10,8 +10,8 @@
     isNormalUser = true;
     description = "imnos";
     # Keep this list to groups that exist and are actually needed. Hardware
-    # groups belong in the host that has the hardware — see fulcrum.nix for
-    # "input" (foot pedals).
+    # groups belong in the host that has the hardware (e.g. "input" for a
+    # device that needs raw evdev access), not here.
     #
     # Removed, and why:
     #   seat, storage, plugdev, scanner — these groups do not exist on NixOS

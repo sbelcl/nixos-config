@@ -23,7 +23,9 @@
     # Native Wayland for Firefox
     MOZ_ENABLE_WAYLAND = "1";
 
-    # LIBVA_DRIVER_NAME is host-scoped (nvidia on fulcrum, autodetect on flanker).
+    # LIBVA_DRIVER_NAME is deliberately unset: flanker's AMD iGPU drives the
+    # session and autodetection picks the right driver. A host whose compositor
+    # runs on NVIDIA sets it in its own host file.
   };
 
   xdg.userDirs.setSessionVariables = true;

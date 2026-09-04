@@ -52,7 +52,10 @@
   # NetworkManager-wait-online blocks boot for 4.5s — not needed on a desktop.
   systemd.services.NetworkManager-wait-online.enable = false;
 
-  # Fulcrum's bulk storage — NFS share, mounted at /mnt/storage
+  # Bulk storage on the desktop at 192.168.43.152 — NFS share, mounted at
+  # /mnt/storage. That machine runs Arch and is not configured from this repo,
+  # so the export lives there; nofail + automount means a rebuild here still
+  # succeeds if it is offline or has stopped exporting.
   fileSystems."/mnt/storage" = {
     device  = "192.168.43.152:/mnt/storage";
     fsType  = "nfs";
@@ -125,7 +128,7 @@
   #
   # Tradeoff: within the window any process running as imnos can use the grant,
   # not just the one that authenticated. Acceptable on a single-user laptop
-  # where hyprlock is the auth gate; deliberately not applied to fulcrum.
+  # where hyprlock is the auth gate; it is host-local for that reason.
   security.sudo.extraConfig = ''
     Defaults timestamp_type=global
     Defaults timestamp_timeout=15

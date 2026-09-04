@@ -72,9 +72,9 @@ in {
   # WEBGL: ANGLE (AMD, AMD Radeon Graphics (radeonsi renoir), OpenGL ES 3.2)
   # and video decoding in both. It buys nothing here.
   #
-  # NOT verified on fulcrum, which is the NVIDIA machine the flag was
-  # originally written for and cannot be tested from flanker. The original
-  # symptom was a window that maps but renders nothing. If that returns,
+  # The flag was originally written for a machine whose compositor ran on
+  # NVIDIA, which this config no longer has, so that case is untested. The
+  # original symptom was a window that maps but renders nothing. If that returns,
   # put `--use-angle=gl` back on the exec line below — but check the GPU
   # actually initialises first, because the real cause of that symptom was
   # LD_LIBRARY_PATH entries missing their /lib suffix, which meant EGL

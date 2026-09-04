@@ -20,9 +20,9 @@
 # laptop and quietly rendering a battery that reads nothing.
 #
 #   flanker  sets both (see home/hosts/flanker.nix)
-#   fulcrum  sets neither, so it gets systray/bluetooth/network/microphone/
-#            volume/dashboard when it picks up this stack. Its brightness is
-#            DDC/CI over ddcutil, which Wayle's backlight module cannot drive.
+#   a desktop  would set neither and get systray/bluetooth/network/microphone/
+#            volume/dashboard only — a monitor's brightness is DDC/CI over
+#            ddcutil, which Wayle's backlight module cannot drive anyway.
 #
 { config, pkgs, lib, ... }: let
   cfg = config.local.bar;

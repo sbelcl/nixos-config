@@ -57,7 +57,10 @@ in {
         { _args = [ "NIXOS_OZONE_WL" "1" ]; }
         { _args = [ "ELECTRON_OZONE_PLATFORM_HINT" "auto" ]; }
         # NVIDIA GPU vars (LIBVA_DRIVER_NAME, NVD_BACKEND, GBM_BACKEND,
-        # __GLX_VENDOR_LIBRARY_NAME) are set per-host in home/hosts/fulcrum.nix.
+        # __GLX_VENDOR_LIBRARY_NAME) are not set here: flanker runs the
+        # compositor on the AMD iGPU and forcing them would pull the NVIDIA
+        # stack into every session. A host that renders on NVIDIA sets them in
+        # its own host file.
       ];
 
       # One hl.config{...} call. dwindle/scrolling are top-level keys, not
@@ -306,10 +309,9 @@ in {
       -- ── Startup ─────────────────────────────────────────────────────────
       -- hyprlang's exec-once. hyprlock last: every host that imports this
       -- stack auto-logins on TTY1 with no greeter, so the lock IS the
-      -- authentication gate. This used to live in home/hosts/flanker.nix
-      -- because fulcrum had SDDM to authenticate for it; fulcrum no longer
-      -- does, and duplicating it per host would just be two copies of the
-      -- same invariant.
+      -- authentication gate. It lives here rather than in a host file because
+      -- it follows from the stack, not from the machine — a host that grows a
+      -- display manager is the case that would move it back out.
       hl.on("hyprland.start", function()
         hl.exec_cmd("awww-daemon")                          -- wallpaper daemon
         hl.exec_cmd("awww img ~/.config/background")         -- initial wallpaper

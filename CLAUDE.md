@@ -1,13 +1,12 @@
 # NixOS Config — Claude Context
 
-Multi-host NixOS flake for imnos. Two machines in this repo: **fulcrum** (desktop) and **flanker** (laptop). Work laptop **tomcat** lives in a separate private repo (`sbelcl/nixos-tomcat`).
+NixOS flake for imnos. One machine in this repo: **flanker** (laptop). Work laptop **tomcat** lives in a separate private repo (`sbelcl/nixos-tomcat`). The desktop **fulcrum** was configured here until it was reinstalled with Arch; its host files are gone from the tree but still in git history.
 
 ## Repo Layout
 
 ```
 ~/.nixos/                          ← system flake
 ├── hosts/
-│   ├── fulcrum/fulcrum.nix        # Gaming desktop — RTX 3080 Ti, Hyprland only
 │   └── flanker/flanker.nix        # Laptop — hybrid NVIDIA+AMD, Hyprland only
 └── modules/
     ├── software/                  # Shared system packages/services
@@ -18,7 +17,7 @@ Multi-host NixOS flake for imnos. Two machines in this repo: **fulcrum** (deskto
 │   ├── default.nix                # Shared home modules (DE/WM-agnostic)
 │   ├── packages.nix               # User packages + MIME associations
 │   ├── webapps.nix                # Sites as apps (--app= windows) + webapps/icons/
-│   ├── hyprland/                  # Hyprland stack — imported by both hosts
+│   ├── hyprland/                  # Hyprland stack — imported by flanker.nix
 │   │   ├── binds.nix              # every keybind, as data (see below)
 │   │   ├── menu.nix               # action menu + cheatsheet, generated from binds.nix
 │   │   ├── screenshot.nix         # satty annotate + OCR capture scripts
@@ -32,8 +31,7 @@ Multi-host NixOS flake for imnos. Two machines in this repo: **fulcrum** (deskto
 │   ├── kde-apps.nix               # Ark + Okular, the KDE apps mimeApps still uses
 │   └── alacritty.nix              # Terminal (shared)
 └── hosts/
-    ├── fulcrum.nix                # Fulcrum-specific home overrides
-    └── flanker.nix                # Flanker home + the laptop-only modules
+    └── flanker.nix                # Flanker home + the WM- and laptop-only modules
 ```
 
 ## Apply Changes
@@ -56,27 +54,18 @@ Always `git pull` on the other machine after pushing changes.
 | Add Hyprland keybind | `home/modules/hyprland/binds.nix`, then regenerate the docs |
 | Add MIME association | `home/modules/packages.nix` → `xdg.mimeApps.defaultApplications` |
 | Add a web app | `home/modules/webapps.nix` → `apps` list (one attrset) |
-| Shared across both machines | `modules/` (system) or `home/modules/` (home) |
+| Shared / host-agnostic | `modules/` (system) or `home/modules/` (home) |
 | Host-specific | `hosts/<host>/` or `home/hosts/<host>.nix` |
 
 ## Key Facts
 
-### fulcrum (desktop)
-- RTX 3080 Ti · **Hyprland only** — migrated off KDE Plasma. Auto-login on TTY1, no greeter, hyprlock as the auth gate. Gaming Mode is the `steam-gamescope` command (HDR/VRR path) rather than an SDDM session entry: `programs.steam.gamescopeSession` installs that binary into `systemPackages` independently of the session `.desktop` it registers with a display manager, so removing SDDM cost the greeter entry and nothing else.
-- `/mnt/storage` — ext4 HDD, automounted
-- `/mnt/games` — gone. Was an XFS NVMe for the Steam library; the LUKS reinstall took that same physical drive, so the Steam library is now the default one in `~/.local/share/Steam/steamapps` on the encrypted root. flanker still has a real `/mnt/games`.
-- ComfyUI at `http://127.0.0.1:8188` (CUDA, models in `/mnt/storage/comfyui/`)
-- NFS server — exports `/mnt/storage` to `192.168.43.0/24`
-- Sunshine host (`services.sunshine`, port 47990 web UI) — stream the whole desktop to Moonlight on flanker. Pair once via https://localhost:47990. Steam Remote Play still covers Steam-only streaming.
-- `gpu-screen-recorder` — NVENC replay buffer, installed via `programs.gpu-screen-recorder` so capture needs no portal prompt
-
-### flanker (laptop)
+### flanker (laptop) — the only host here
 - Hybrid NVIDIA+AMD · **Hyprland only** — auto-login on TTY1, no greeter, hyprlock as auth gate
-- `/mnt/storage` — NFS mount from fulcrum (`192.168.43.152:/mnt/storage`)
+- `/mnt/storage` — NFS mount from the desktop at `192.168.43.152:/mnt/storage`. That machine runs Arch and is **not** configured from this repo, so its export, Sunshine host and ComfyUI are all managed there; `nofail` + automount keeps a rebuild working when it is offline.
 - `/mnt/games` — local XFS NVMe
-- Moonlight client for fulcrum's Sunshine host
+- Moonlight client for that desktop's Sunshine host
 
-### Both machines
+### General
 - **Terminal**: Alacritty · **Files**: Nautilus (GUI, SUPER+E), ranger (TUI, SUPER+R) · **Browser**: Yandex Browser (custom flake, GStreamer + Chrome 144 codecs)
 - **Default apps** (declared in `home/modules/packages.nix` → `xdg.mimeApps`): images→Loupe, video/audio→mpv, archives→Ark, PDF→Okular, HTML→Yandex Browser, directories→Nautilus
   - ranger does **not** use these: it opens files with its own launcher, `rifle`, which ignores xdg-mime entirely. `home/modules/ranger.nix` routes images through `xdg-open` so they follow the table above; everything else uses rifle's packaged rules.
@@ -87,9 +76,9 @@ Always `git pull` on the other machine after pushing changes.
 - **System QOL** (`modules/settings/maintenance.nix`): zram swap (50% of RAM), fwupd firmware updates, `locate` via plocate, and `nh` for rebuilds (`nh os switch`). `nh.clean` is off on purpose — it and the existing `nix.gc.automatic` both install a GC timer and the module asserts if both are on.
 - **`command-not-found` / `,`**: `programs.nix-index` + comma, fed by the `nix-index-database` flake input (`home/flake.nix`) so nothing is indexed locally.
 
-### Hyprland stack (both hosts)
+### Hyprland stack (imported from `home/hosts/flanker.nix`)
 - **WM**: Hyprland · **Panel**: Wayle · **Lock**: hyprlock · **Launcher**: Rofi / fuzzel
-  - The Wayle bar composes itself from `local.bar.{battery,backlight}` (`home/modules/hyprland/wayle.nix`), both default off. flanker sets both; fulcrum sets neither, so it gets systray/bluetooth/network/microphone/volume/dashboard and no `brightnessctl`. fulcrum's brightness is DDC/CI via `ddcutil`, which Wayle's backlight module cannot drive. The bluetooth module is still unconditional — fulcrum has no radio, so it renders an inert control until that one gets the same option treatment.
+  - The Wayle bar composes itself from `local.bar.{battery,backlight}` (`home/modules/hyprland/wayle.nix`), both default off. flanker sets both; a desktop importing this stack would set neither and get systray/bluetooth/network/microphone/volume/dashboard with no `brightnessctl` — a monitor's brightness is DDC/CI via `ddcutil`, which Wayle's backlight module cannot drive. The bluetooth module is unconditional, so a machine with no radio renders an inert control until that one gets the same option treatment.
 - **Session services** (gated on `HYPRLAND_INSTANCE_SIGNATURE`): cliphist, polkit-gnome, udiskie, gammastep (the only gamma setter — hyprsunset was removed; `SUPER+CTRL+N` stops/starts the unit) — in `home/modules/hyprland/services.nix`; voxtype dictation daemon in `qol.nix`; battery alerts (`home/modules/battery.nix`) use the same gate
 - **Theme sync**: `matugen.nix` owns the templates, `theme.nix` owns the *source* and the *mode* and is the only thing that runs matugen (`theme-apply`). Covers Alacritty, Rofi, fuzzel, kdeglobals, hyprlock, `colors.sh`, **Hyprland's window borders**, **btop** and **GTK 3/4** — which is also how satty and every other GTK app gets themed.
   - `SUPER+SHIFT+W` next wallpaper · `SUPER+SHIFT+T` pick the source (wallpaper or a named seed colour) · `SUPER+ALT+T` toggle light/dark. Timers switch at 07:30 and 19:30 (`autoSwitch`/`lightAt`/`darkAt` at the top of `theme.nix`).
@@ -98,7 +87,7 @@ Always `git pull` on the other machine after pushing changes.
   - GTK: matugen cannot write `gtk.css` (home-manager owns it), so it writes `matugen.css` beside it and `fonts.nix` adds an absolute `@import`. Running GTK apps do not reload CSS — restart them.
   - matugen prints "The image format could not be determined" on every wallpaper run. Cosmetic: `~/.config/background` has no extension, so the format guess by filename fails while the actual decode (by content) succeeds.
   - Borders go through `~/.config/hypr/colors.lua`: `hyprland.lua` loads it at start (guarded — `dofile` on a missing path is fatal, and it does not exist until matugen has run), and matugen's `post_hook` applies it live with `hyprctl eval "dofile(...)"`. The colours in `config.nix` are the pre-matugen fallback.
-  - btop's `color_theme = "matugen"` is set in `matugen.nix` rather than with the package, because the theme only exists where matugen runs — which is now both hosts.
+  - btop's `color_theme = "matugen"` is set in `matugen.nix` rather than with the package, because the theme only exists where matugen runs — a host without it keeps btop's default.
   - satty is deliberately *not* matugen-themed: its palette is annotation ink and has to stay legible on top of arbitrary screenshots. Static config in `hyprland/screenshot.nix`.
 - **Keybinds**: `home/modules/hyprland/binds.nix` — every bind is one entry in a list, and three things are rendered from it: the `hl.bind()` calls in `config.nix`, the `SUPER+ALT+SPACE` action menu and `SUPER+K` cheatsheet (`menu.nix`), and `docs/keybindings.md`. Nothing writes into `~/.nixos` at activation, so regenerate the doc by hand after editing:
     - `nix eval --raw -f home/modules/hyprland/binds.nix docsMarkdown > docs/keybindings.md`
@@ -118,8 +107,8 @@ Always `git pull` on the other machine after pushing changes.
     - Unlike bind *options*, dispatcher table args (`mode`, `action`) **are** validated by `--verify-config` — an invalid mode is rejected loudly.
   - `SUPER+CTRL+X` toggle dictation · `F9` hold-to-talk. Needs a one-time `voxtype setup --download` (~1 GB model, runtime state not Nix).
   - Hyprland's Lua `hl.bind` takes options as a 3rd table arg (`{ release = true }` = hyprlang's `bindr`). **`Hyprland --verify-config` does not validate these keys** — a typo passes as "config ok" and is silently ignored.
-- **Imports**: both hosts pull `hyprland/hyprland.nix`, `rofi.nix`, `fuzzel.nix`, `matugen.nix`, `theme.nix` from their `home/hosts/<host>.nix`. flanker additionally takes `battery.nix` (UPower alerts, laptop) and `nixos-update-check.nix`.
-- **Session start**: `start-hyprland` (in `modules/software/hyprland.nix`, behind `desktop.hyprland.enable`) is exec'd by zsh on TTY1 from `home/modules/users/imnos.nix`. That caller guards on `command -v` — load-bearing, not defensive: zsh does **not** survive an `exec` of a missing command even when interactive, so on an auto-login TTY a bare exec of an absent binary means the shell dies and getty respawns it forever. `hyprlock` runs last in the shared `hyprland.start` handler in `config.nix`, since neither host has a greeter.
+- **Imports** (in `home/hosts/flanker.nix`): `hyprland/hyprland.nix`, `rofi.nix`, `fuzzel.nix`, `matugen.nix`, `theme.nix`, plus `battery.nix` (UPower alerts, laptop) and `nixos-update-check.nix`.
+- **Session start**: `start-hyprland` (in `modules/software/hyprland.nix`, behind `desktop.hyprland.enable`) is exec'd by zsh on TTY1 from `home/modules/users/imnos.nix`. That caller guards on `command -v` — load-bearing, not defensive: zsh does **not** survive an `exec` of a missing command even when interactive, so on an auto-login TTY a bare exec of an absent binary means the shell dies and getty respawns it forever. `hyprlock` runs last in the shared `hyprland.start` handler in `config.nix`, since there is no greeter.
 
 ## Debugging
 

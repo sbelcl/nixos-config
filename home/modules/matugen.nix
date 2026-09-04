@@ -388,9 +388,9 @@ in {
   # inside the store).
   #
   # This lives here rather than in fonts.nix because fonts.nix is shared and
-  # matugen is not: on fulcrum the imported file would never be written, and
-  # every GTK app there would log a failed import at startup for colours it
-  # was never going to get.
+  # matugen is not: on a host that does not import this module the file would
+  # never be written, and every GTK app there would log a failed import at
+  # startup for colours it was never going to get.
   #
   # The import lands after the theme's, and in GTK CSS the last
   # @define-color for a name wins, so these override adw-gtk3-dark.
@@ -402,9 +402,9 @@ in {
   '';
 
   # btop only reads the theme above if its config points at it, and the theme
-  # only exists where matugen runs — which is this module, flanker-only. So
-  # the pointer lives here too rather than in packages.nix, where btop itself
-  # is installed for both machines; fulcrum keeps btop's own default theme.
+  # only exists where matugen runs — which is this module, imported per-host.
+  # So the pointer lives here rather than in packages.nix, where btop itself is
+  # installed; a host without matugen keeps btop's own default theme.
   #
   # theme_background = false lets Alacritty's own (translucent, blurred)
   # background through instead of painting the wallpaper's background colour

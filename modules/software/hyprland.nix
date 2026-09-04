@@ -40,8 +40,8 @@ with lib; {
       # Paired with the `command -v` guard on the caller, a host that does not
       # enable this module drops to a normal shell instead of a getty respawn
       # loop. Before this, the caller exec'd a name nothing in the repo
-      # defined -- survivable only because fulcrum had SDDM and never reached
-      # TTY1, and a login loop the moment it didn't.
+      # defined -- survivable only on a host with a display manager that never
+      # reached TTY1, and a login loop the moment one didn't.
       (writeShellScriptBin "start-hyprland" ''
         exec ${config.programs.hyprland.package}/bin/Hyprland "$@"
       '')

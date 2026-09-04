@@ -21,7 +21,7 @@ Total disk space needed: ~200 GB.
 
 ### NixOS system packages
 
-Add to `hosts/<hostname>/fulcrum.nix` (or wherever your system packages live):
+Add to `hosts/<hostname>/<hostname>.nix` (or wherever your system packages live):
 
 ```nix
 environment.systemPackages = with pkgs; [

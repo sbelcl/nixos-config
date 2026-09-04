@@ -25,8 +25,8 @@
     WLR_NO_HARDWARE_CURSORS = "1";
 
     # NVIDIA-specific env vars (GBM_BACKEND, __GLX_VENDOR_LIBRARY_NAME,
-    # LIBVA_DRIVER_NAME, NVD_BACKEND) are host-scoped — set per-host where the
-    # compositor actually runs on NVIDIA (fulcrum). On flanker the AMD iGPU
-    # drives the compositor; forcing nvidia here pulls in the modules at boot.
+    # LIBVA_DRIVER_NAME, NVD_BACKEND) belong in the host whose compositor
+    # actually runs on NVIDIA. On flanker the AMD iGPU drives the compositor;
+    # forcing nvidia here pulls in the modules at boot.
   };
 }

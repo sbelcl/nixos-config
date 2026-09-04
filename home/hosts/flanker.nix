@@ -18,9 +18,10 @@
     exec ${pkgs.fuzzel}/bin/fuzzel --dmenu --password --prompt-only="''${1:-sudo password: }"
   '';
 in {
-  # Hyprland stack + WM-specific bits. Fulcrum imports most of this set too
-  # now that it has migrated off Plasma; battery.nix and nixos-update-check.nix
-  # are what stay flanker-only. tomcat (GNOME, separate repo) imports none of it.
+  # Hyprland stack + WM-specific bits. Kept here rather than in the shared
+  # modules so a host on another desktop (tomcat runs GNOME, from its own repo)
+  # does not pick them up; battery.nix and nixos-update-check.nix are laptop-
+  # and canary-specific on top of that.
   imports = [
     ../modules/hyprland/hyprland.nix
     ../modules/rofi.nix              # launcher
@@ -33,11 +34,9 @@ in {
 
   # No desktop dir on flanker — Hyprland has no desktop containment, so
   # ~/Namizje was only ever an empty folder. null drops XDG_DESKTOP_DIR from
-  # user-dirs.dirs entirely. Still host-local, but no longer for the original
-  # reason: fulcrum ran Plasma, which renders desktop icons, so it kept
-  # $HOME/Namizje from the shared module. Fulcrum is Hyprland now and has the
-  # same empty-folder situation — dropping it there too is a live decision,
-  # not a no-op, because the directory may already have files in it.
+  # user-dirs.dirs entirely. Kept host-local rather than moved into the shared
+  # module, because a desktop environment that renders desktop icons wants the
+  # $HOME/Namizje the shared module sets.
   # Caveat: with the key absent, `xdg-user-dir DESKTOP` reports the spec
   # fallback $HOME/Desktop — so anything that writes a desktop shortcut would
   # resurrect an English ~/Desktop. ~/.wine/drive_c/users/imnos/Desktop used to
@@ -55,8 +54,9 @@ in {
 
   home.packages = [
     sudo-askpass
-    # Client for fulcrum's Sunshine host (hosts/fulcrum/fulcrum.nix). Flanker
-    # only — fulcrum is the machine being streamed from.
+    # Client for the Sunshine host on the desktop at 192.168.43.152. That
+    # machine runs Arch and is not configured from this repo, so only this
+    # (client) half of the pair lives here.
     pkgs.moonlight-qt
   ];
 

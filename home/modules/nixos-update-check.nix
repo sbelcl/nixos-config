@@ -12,10 +12,11 @@
 #     left the tree dirty — silently changing what the next `updsys` would
 #     build, with no record of when or why.
 #
-#   * It checks *every* host, not just this one. The previous version built
-#     flanker only, which is how fulcrum sat un-rebuildable for two days after
-#     nixpkgs grew its own services.comfyui and collided with the comfyui-nix
-#     module: the canary was structurally incapable of seeing it.
+#   * It checks *every* host the flakes declare, not a hardcoded one. There is
+#     only flanker today, so the other-host loops below are no-ops — but an
+#     earlier version named the host it built, and a second machine then sat
+#     un-rebuildable for two days after a nixpkgs option collision the canary
+#     was structurally incapable of seeing.
 #
 { config, pkgs, ... }: let
   flakeDir = "${config.home.homeDirectory}/.nixos";
@@ -50,8 +51,8 @@
 
       # Other hosts: evaluate only. That is enough to catch option collisions,
       # renamed attributes and type errors — the failures that actually happen
-      # on a lock bump — without pulling another machine's closure (fulcrum's
-      # CUDA/ComfyUI stack) onto this laptop every week.
+      # on a lock bump — without pulling another machine's whole closure onto
+      # this laptop every week. No-op while flanker is the only host.
       for host in $(nix eval --json .#nixosConfigurations --apply builtins.attrNames | jq -r '.[]'); do
         [ "$host" = "$this_host" ] && continue
         if ! nix eval --raw \

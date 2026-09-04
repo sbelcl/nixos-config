@@ -1,5 +1,5 @@
 {
-  description = "Home Manager configuration for flanker and fulcrum";
+  description = "Home Manager configuration for flanker";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -51,7 +51,6 @@
   in {
     homeConfigurations = {
       "imnos@flanker" = mkHome ./hosts/flanker.nix;
-      "imnos@fulcrum" = mkHome ./hosts/fulcrum.nix;
     };
 
     # `nix flake check` does not understand homeConfigurations. It is not a
@@ -68,7 +67,6 @@
     # store copy; the honest `path:` form failed outright.
     checks.${system} = {
       home-flanker = self.homeConfigurations."imnos@flanker".activationPackage;
-      home-fulcrum = self.homeConfigurations."imnos@fulcrum".activationPackage;
     };
 
     # Development shell
