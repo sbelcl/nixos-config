@@ -7,7 +7,27 @@
   # Shared with webapps.nix — see yandex-flags.nix.
   flags = import ./yandex-flags.nix;
 
-  yandex-browser-beta = inputs.yandex-browser.packages.${pkgs.stdenv.hostPlatform.system}.yandex-browser-beta;
+  # `gnome2 = { GConf = null; }` drops one buildInputs entry. nixpkgs removed
+  # gnome2.GConf on 2026-07-23 and replaced the attribute with a `throw`, so
+  # merely *evaluating* the package's buildInputs fails against any newer
+  # nixpkgs — the whole home config stops evaluating, which is what the weekly
+  # canary has been reporting. Overriding the argument replaces the attrset the
+  # package receives, so the throwing attribute is never touched; a null in
+  # buildInputs is filtered by stdenv.
+  #
+  # Nothing is lost: Chromium dropped GConf support years ago and no ELF in the
+  # built package has a libgconf DT_NEEDED (checked on 26.6.1.1084) — it was
+  # dead weight in the dependency list.
+  #
+  # This is a workaround for github:sbelcl/nix-yandex-browser, where the real
+  # one-line fix belongs (drop `gnome2` from the argument list and from
+  # buildInputs in package/default.nix). The same file's `xorg.libxkbfile` is
+  # already emitting a deprecation warning — renamed to a top-level
+  # `libxkbfile` — so it is the next thing to break there.
+  yandex-browser-beta =
+    inputs.yandex-browser.packages.${pkgs.stdenv.hostPlatform.system}.yandex-browser-beta.override {
+      gnome2 = { GConf = null; };
+    };
 
   # The GStreamer wrapper that used to live here is gone: it prepended the
   # plugin packages to LD_LIBRARY_PATH, which was the wrong variable —
