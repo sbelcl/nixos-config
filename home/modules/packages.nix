@@ -196,6 +196,18 @@ in {
     codex
     herdr         # agent multiplexer — run/switch multiple coding agents in one terminal
     python315
+    # Rust toolchain, as separate nixpkgs packages rather than rustup: the
+    # toolchain is then pinned by the flake lock like everything else, and
+    # nothing writes into ~/.rustup or ~/.cargo/bin behind Nix's back. Use
+    # rustup instead if a project ever needs a specific channel or a
+    # cross-compilation target.
+    rustc
+    cargo
+    rustfmt
+    clippy
+    # rustc's default linker driver is `cc`, which nothing else here provides —
+    # without it `cargo build` fails on the link step of even a hello-world.
+    gcc
     # LibreOffice
     libreoffice-qt-fresh
     hunspell
