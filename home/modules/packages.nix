@@ -114,6 +114,21 @@ in {
     mimeType = ["x-scheme-handler/http" "x-scheme-handler/https"];
   };
 
+  # herdr is a TUI and ships no .desktop file, so without an entry of its own
+  # it is unreachable from rofi/fuzzel — you would have to open a terminal
+  # first. alacritty is spelled out rather than using `terminal = true`, which
+  # leaves the choice of terminal to whatever the desktop happens to think it
+  # is.
+  xdg.desktopEntries.herdr = {
+    name        = "herdr";
+    genericName = "Agent multiplexer";
+    comment     = "Run and switch between multiple coding agents in one terminal";
+    exec        = "alacritty -e herdr";
+    icon        = "utilities-terminal";
+    categories  = [ "Development" "Utility" ];
+    terminal    = false;
+  };
+
   home.packages = with pkgs; [
     # Image viewing and manipulation
     gimp

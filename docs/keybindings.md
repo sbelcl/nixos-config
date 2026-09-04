@@ -12,6 +12,7 @@
 | `SUPER + Return` | Terminal |
 | `SUPER + E` | File manager (Nautilus) |
 | `SUPER + R` | File manager (ranger) |
+| `SUPER + A` | Agent multiplexer (herdr) |
 | `SUPER + SPACE` | App launcher |
 | `SUPER + M` | System monitor |
 | `XF86Calculator` | Calculator |

@@ -89,6 +89,9 @@ let
     # behave identically. See config.nix's window_rule list for why the class
     # is still needed now that ranger tiles.
     { keys = "SUPER + R"; exec = "alacritty --class ranger -e ranger ~"; desc = "File manager (ranger)"; category = "Apps"; }
+    # herdr is a TUI, so the terminal is part of the launch rather than a
+    # window it opens into. Same shape as ranger above.
+    { keys = "SUPER + A"; exec = "alacritty -e herdr"; desc = "Agent multiplexer (herdr)"; category = "Apps"; }
     # Launching the launcher from the launcher is not a thing anyone needs.
     { keys = "SUPER + SPACE"; exec = "fuzzel"; desc = "App launcher"; category = "Apps"; menu = false; }
     { keys = "SUPER + M"; exec = "missioncenter"; desc = "System monitor"; category = "Apps"; }
