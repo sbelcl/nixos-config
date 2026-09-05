@@ -115,6 +115,74 @@
   # Ollama is not needed on the laptop
   services.ollama.enable = lib.mkForce false;
 
+  # Keyboard RGB (Aura). This is a TUF A15 FA506IU: one RGB zone, driven by
+  # asus-wmi rather than the USB HID interface the ROG models use. The kernel
+  # exposes it as two write-only, root-owned files next to the backlight —
+  # /sys/class/leds/asus::kbd_backlight/{kbd_rgb_mode,kbd_rgb_state} — which is
+  # exactly why the Fn brightness keys work while colour does nothing: the
+  # brightness node is writable through logind, the colour nodes are not.
+  #
+  # asusd owns those nodes and takes commands over D-Bus, so `asusctl aura`
+  # works unprivileged. The module also brings in the package, its udev rules
+  # and its D-Bus policy; there is no user service any more (the option was
+  # removed upstream as no longer required).
+  services.asusd.enable = true;
+
+  # The Aura key (Fn+Left) reaches the OS as a WMI event the kernel has no
+  # keymap entry for: `asus_wmi: Unknown key code 0xb2`. That log line is the
+  # only trace of it anywhere — there is no input event, so nothing for the
+  # compositor to bind, and no ACPI netlink event either.
+  #
+  # hwdb is the usual answer and does not work here. KEYBOARD_KEY_b2 applies
+  # cleanly (udevadm shows the property on the device) but the EVIOCSKEYCODE
+  # behind it fails silently: asus-wmi keeps its keymap in a sparse_keymap,
+  # whose setkeycode only *replaces* scancodes already in the table and cannot
+  # add 0xb2. Verified by reading the device's key capability bitmap — 228
+  # (KBDILLUMTOGGLE) never appears, while 229/230 (the Fn+Up/Down brightness
+  # keys, which the kernel does map) are there. Adding the entry upstream, or
+  # patching asus-nb-wmi, is the only way to make this a real keycode.
+  #
+  # So the log line is the event. dmesg --follow-new rather than journalctl:
+  # no dependency on journald being up or on its output format, and it starts
+  # at the end of the ring buffer instead of replaying it. Fn+Right sends
+  # nothing at all — not even this — so it stays dead.
+  systemd.services.aura-key = let
+    watcher = pkgs.writeShellApplication {
+      name = "aura-key-watch";
+      runtimeInputs = with pkgs; [ util-linux asusctl ];
+      text = ''
+        dmesg --follow-new | while IFS= read -r line; do
+          case "$line" in
+            *"Unknown key code 0xb2"*)
+              # asusd owns the LED; a failure here (daemon restarting, say)
+              # must not take the watcher down with it.
+              asusctl aura effect --next-mode || true
+              ;;
+          esac
+        done
+      '';
+    };
+  in {
+    description = "Aura key (Fn+Left) — next keyboard lighting effect";
+    wants = [ "asusd.service" ];
+    after = [ "asusd.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      ExecStart = lib.getExe watcher;
+      Restart = "always";
+      RestartSec = 2;
+    };
+  };
+
+  # ...but enabling the module is not enough to make it run, which is easy to
+  # mistake for the hardware being unsupported. asusd.service is Type=dbus with
+  # BusName=xyz.ljones.Asusd and ships no [Install] section, so nothing in the
+  # module ever wants it, and the package installs only D-Bus *policy*
+  # (share/dbus-1/system.d/asusd.conf) — no activation file under
+  # system-services/, so the bus cannot start it on demand either. The unit
+  # lands "linked" and inactive, and asusctl answers "asusd is not running".
+  systemd.services.asusd.wantedBy = [ "multi-user.target" ];
+
   # GNOME Keyring — unlock on hyprlock auth (the primary login point)
   services.gnome.gnome-keyring.enable = true;
   security.pam.services.login.enableGnomeKeyring = true;
