@@ -204,15 +204,29 @@ in {
   '';
 
   # Hyprlang variables sourced by hyprlock.conf
+  # The only template pinned to `.dark` instead of `.default`, and deliberately.
+  # Every other target paints a Material surface it also owns, so following the
+  # session mode keeps text and background in step. hyprlock does not: its
+  # backdrop is the wallpaper, blurred and dimmed, which is dark whatever the
+  # session thinks. `.default` therefore gave near-black text on a dark photo in
+  # light mode — 1.22:1 against a black wallpaper, where 4.5:1 is the readable
+  # floor. The dark half of the same wallpaper-derived palette is light text, so
+  # the lock screen still matches the session's colours without inheriting a
+  # polarity that does not apply to it.
+  #
+  # inputBg is near-opaque (ee) rather than cc: it is the one guaranteed surface
+  # on the screen, and the password field has to stay legible over any photo.
+  # See hyprland/hyprlock.nix for the matching `brightness`, which is what keeps
+  # the worst case — a white wallpaper — from washing the text out.
   xdg.configFile."matugen/templates/hyprlock-colors.conf".text = ''
-    $inputOutline  = rgba({{colors.primary.default.hex_stripped}}aa)
-    $inputBg       = rgba({{colors.background.default.hex_stripped}}cc)
-    $inputFg       = rgb({{colors.on_background.default.hex_stripped}})
-    $checkColor    = rgba({{colors.primary.default.hex_stripped}}ff)
-    $failColor     = rgba({{colors.error.default.hex_stripped}}ff)
+    $inputOutline  = rgba({{colors.primary.dark.hex_stripped}}aa)
+    $inputBg       = rgba({{colors.background.dark.hex_stripped}}ee)
+    $inputFg       = rgb({{colors.on_background.dark.hex_stripped}})
+    $checkColor    = rgba({{colors.primary.dark.hex_stripped}}ff)
+    $failColor     = rgba({{colors.error.dark.hex_stripped}}ff)
     $capslockColor = rgba(f97316ff)
-    $clockColor    = rgba({{colors.on_background.default.hex_stripped}}ff)
-    $dateColor     = rgba({{colors.on_surface_variant.default.hex_stripped}}cc)
+    $clockColor    = rgba({{colors.on_background.dark.hex_stripped}}ff)
+    $dateColor     = rgba({{colors.on_surface_variant.dark.hex_stripped}}cc)
   '';
 
   xdg.configFile."matugen/templates/fuzzel.ini".text = ''

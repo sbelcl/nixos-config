@@ -18,7 +18,13 @@
         path       = "$HOME/.config/background";
         blur_passes = 2;
         blur_size  = 8;
-        brightness = 0.7;
+        # 0.7 only worked for bright wallpapers. The text is light now (see the
+        # hyprlock template in matugen.nix), so the backdrop has to be dark for
+        # every wallpaper, not just the dark ones: against a white wallpaper
+        # 0.7 leaves 1.64:1 and 0.4 leaves 4.45:1, while a dark wallpaper is far
+        # above either. Drop to 0.35 if a future wallpaper still reads washed
+        # out — that is 5.43:1 at the cost of showing less of the picture.
+        brightness = 0.4;
       }];
     };
 
@@ -52,6 +58,12 @@
           monitor     =
           text        = cmd[update:1000] echo "$(date +'%H:%M')"
           color       = $clockColor
+          # Contrast against a *photo* is an average, not a guarantee: a pale
+          # blurred highlight under the glyphs beats any single colour choice.
+          # The shadow costs nothing on a dark backdrop and rescues that case.
+          shadow_passes = 2
+          shadow_size   = 3
+          shadow_color  = rgba(00000099)
           font_size   = 72
           font_family = Inter
           position    = 0, 200
@@ -63,6 +75,9 @@
           monitor     =
           text        = cmd[update:60000] echo "$(date +'%A, %B %-d')"
           color       = $dateColor
+          shadow_passes = 2
+          shadow_size   = 3
+          shadow_color  = rgba(00000099)
           font_size   = 20
           font_family = Inter
           position    = 0, 120
