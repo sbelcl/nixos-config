@@ -1,7 +1,33 @@
 #
 # ~/.nixos/home/modules/session-variables.nix
 #
-{
+{pkgs, ...}: {
+  # Locale archive, trimmed to the same two locales the system declares in
+  # modules/settings/locales.nix. Keep the lists in step — see the note there.
+  #
+  # Without this, the session gets *every* locale glibc ships. home-manager
+  # defines `nixosConfig.i18n.glibcLocales or pkgs.glibcLocales`, and as a
+  # standalone flake there is no nixosConfig to read, so the fallback wins:
+  # 223 MB of archive against the 3.1 MB NixOS builds from i18n.supportedLocales.
+  #
+  # It is not a harmless duplicate either — it is the archive that actually
+  # gets used. nixpkgs patches glibc to prefer the version-suffixed variable,
+  # and home-manager sets LOCALE_ARCHIVE_2_27 (~/.config/environment.d), which
+  # outranks the LOCALE_ARCHIVE that NixOS points at its trimmed build. Before
+  # this, `LC_ALL=ja_JP.UTF-8 date +%B` answered in Japanese on a system
+  # declaring exactly two locales.
+  #
+  # The list cannot be shared with the system module: that file is outside this
+  # flake's root, and a path escaping home/ only resolves by accident of the
+  # repo being a git tree (see home/modules/hyprland/hyprpaper.nix).
+  i18n.glibcLocales = pkgs.glibcLocales.override {
+    allLocales = false;
+    locales = [
+      "en_US.UTF-8/UTF-8"
+      "sl_SI.UTF-8/UTF-8"
+    ];
+  };
+
   home.sessionVariables = {
     # User preferences
     EDITOR = "nvim";
