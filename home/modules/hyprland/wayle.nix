@@ -73,8 +73,20 @@ in {
     #   * add brightness module
     #   * mouse-wheel volume/brightness
 
+    # The bar paints its own surface. It used to be transparent, with the text
+    # sitting straight on the wallpaper, and that made legibility a property of
+    # whatever happened to be behind it: a wallpaper with a dark band along the
+    # top under a light scheme gives dark fg-default text on a dark strip, and
+    # no amount of palette tuning fixes it, because the mode is chosen from the
+    # wallpaper's overall luminance rather than the strip under the bar.
+    #
+    # bg-surface (Wayle's default) is the matugen surface for the current mode:
+    # near-white in light, near-black in dark, and always paired with
+    # fg-default, so the contrast is whatever Material intends instead of
+    # whatever the wallpaper allows. Buttons stay transparent — they sit on
+    # that surface now, and boxing each one is noise.
     [bar]
-    background-opacity = 0
+    background-opacity = 100
     button-bg-opacity = 0
     button-group-opacity = 0
 
@@ -147,10 +159,11 @@ in {
     border-show = false
 
     # ── Theming: follow the wallpaper ────────────────────────────────────────────
-    # The bar is fully transparent, so its text sits on the wallpaper. matugen
-    # derives Wayle's palette from the current wallpaper; wallpaper-next flips
-    # styling.matugen-light by wallpaper luminance (written to runtime.toml, which
-    # overrides this file) so text stays readable on light and dark wallpapers.
+    # matugen derives Wayle's palette from the current wallpaper; wallpaper-next
+    # flips styling.matugen-light by wallpaper luminance (written to runtime.toml,
+    # which overrides this file). With the bar opaque that flip no longer decides
+    # legibility — surface and text move together — but it still keeps the bar in
+    # the same key as the rest of the session.
     [styling]
     theme-provider = "matugen"
   '';

@@ -22,6 +22,13 @@
   notify = "${pkgs.libnotify}/bin/notify-send";
   stateDir = "${config.xdg.stateHome}/theme";
 
+  # matugen's contrast, -1 (flattest) to 1 (maximum). 0 is the Material spec
+  # default, and on a wallpaper-derived light scheme it lands too close to
+  # comfortable: surfaces and their on- colours sit only a few tones apart, so
+  # text reads as washed out rather than dark. Everything matugen writes moves
+  # with this — Alacritty, rofi, fuzzel, GTK, hyprlock, btop and the bar.
+  contrast = "0.3";
+
   # Switch to false to keep the light/dark timers out of the session.
   autoSwitch = true;
   lightAt = "07:30";
@@ -59,12 +66,12 @@
 
     case "$kind" in
       color)
-        ${pkgs.matugen}/bin/matugen -m "$mode" color hex "$value" || exit 1
+        ${pkgs.matugen}/bin/matugen -m "$mode" --contrast ${contrast} color hex "$value" || exit 1
         ;;
       *)
         # --prefer is mandatory from a keybind: matugen aborts rather than
         # pick between candidate source colours when it has no TTY to ask on.
-        ${pkgs.matugen}/bin/matugen -m "$mode" image "$value" --prefer saturation || exit 1
+        ${pkgs.matugen}/bin/matugen -m "$mode" --contrast ${contrast} image "$value" --prefer saturation || exit 1
         ;;
     esac
 
@@ -154,15 +161,11 @@
     printf 'image %s\n' "$BG" > ${stateDir}/source
     ${theme-apply}/bin/theme-apply
 
-    # Last word on Wayle's polarity, overriding what theme-apply just set.
-    # The bar is fully transparent (bar.background-opacity = 0), so its text
-    # sits directly on the wallpaper: a bright picture leaves light text on
-    # light pixels regardless of which mode the session is in. Readability
-    # over consistency, deliberately.
-    LUMA=$(${pkgs.imagemagick}/bin/magick "$BG" -resize '1x1!' -colorspace gray \
-      -format "%[fx:int(255*u)]" info: 2>/dev/null || echo 0)
-    if [ "$LUMA" -gt 128 ]; then LIGHT=true; else LIGHT=false; fi
-    ${pkgs.wayle}/bin/wayle config set styling.matugen-light "$LIGHT" >/dev/null 2>&1 || true
+    # Wayle's polarity is theme-apply's business now. It used to be overridden
+    # here from the wallpaper's mean luminance, because a transparent bar put
+    # its text straight onto the picture and readability had to win over
+    # consistency. The bar paints its own surface, so that trade is gone: the
+    # session mode decides, and the bar matches everything else it sits above.
   '';
 
   modeUnit = mode: at: {

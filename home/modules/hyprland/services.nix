@@ -60,13 +60,24 @@ in {
   };
 
   # USB auto-mount — pops ranger open on the new mount point
+  #
+  # icon_names picks the symbolic variant on purpose. udiskie's default resolves
+  # to drive-removable-media-usb-panel, and Papirus draws its panel icons white
+  # for dark panels — which was invisible the moment the bar started painting
+  # its own light surface (see hyprland/wayle.nix). Symbolic icons are
+  # monochrome and get tinted with the renderer's foreground colour, so this one
+  # follows the bar's polarity instead of assuming it. `media` is the tray icon
+  # in udiskie's icon_names table.
   services.udiskie = {
     enable = true;
     automount = true;
     notify = true;
     tray = "auto";
-    settings.program_options.event_hook =
-      "${usb-ranger}/bin/usb-ranger {event} {mount_path}";
+    settings = {
+      program_options.event_hook =
+        "${usb-ranger}/bin/usb-ranger {event} {mount_path}";
+      icon_names.media = [ "drive-removable-media-usb-symbolic" ];
+    };
   };
   systemd.user.services.udiskie.Unit.ConditionEnvironment =
     lib.mkForce "HYPRLAND_INSTANCE_SIGNATURE";
