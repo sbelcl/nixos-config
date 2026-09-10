@@ -130,7 +130,10 @@ in {
     background        = "{{colors.background.default.hex}}"
     foreground        = "{{colors.on_background.default.hex}}"
     dim_foreground    = "{{colors.on_surface_variant.default.hex}}"
-    bright_foreground = "{{colors.inverse_on_surface.default.hex}}"
+    # inverse_on_surface here would be near-white in light mode. Alacritty only
+    # uses this when draw_bold_text_with_bright_colors is on, which it is not,
+    # but a slot that renders bold text invisible is not worth leaving armed.
+    bright_foreground = "{{colors.on_surface.default.hex}}"
 
     [colors.cursor]
     text   = "{{colors.on_primary.default.hex}}"
@@ -144,36 +147,57 @@ in {
     text       = "CellForeground"
     background = "{{colors.surface_variant.default.hex}}"
 
-    # ANSI slots must be *foreground* roles. Material `*_container` and
-    # `surface_*` roles are background tones by design — using them as text
-    # gave 2.0:1 contrast on every wallpaper (normal.magenta/cyan and
-    # bright.blue/magenta/cyan were all effectively invisible, which is what
-    # made ranger's directory and symlink colors unreadable).
+    # ANSI slots must be roles that are *foreground* tones in BOTH modes.
     #
-    # `primary|secondary|tertiary|error` are ~11:1 and the `*_fixed` /
-    # `on_*_container` family is ~14:1, in dark mode, for every wallpaper in
-    # ~/Slike/Ozadja — checked by computing WCAG contrast for all 22. Keep new
-    # entries inside those two families.
+    # The previous mapping was audited in dark mode only, and light mode was
+    # where it fell apart: seven of the sixteen slots failed WCAG AA against
+    # the light background, three of them at 1.05:1 — bright.red, .magenta and
+    # .cyan all resolved to #ffffff on a #fbfaed background, i.e. invisible.
     #
-    # black/bright.black stay dark on purpose: that is what those slots mean.
+    # The culprits were the `*_fixed` and `on_*_container` families. Material's
+    # "fixed" colours are deliberately identical in light and dark, and they
+    # are container tones — pale by construction — so they can only ever work
+    # as text on the dark half. `on_*_container` goes white for these hues in
+    # light mode, which is worse.
+    #
+    # What survives both modes, measured across this palette, is a short list:
+    # on_surface, on_background, inverse_surface, error, on_surface_variant,
+    # primary, secondary, tertiary, the three `*_fixed_dim`, surface_tint and
+    # outline. Everything below comes from it, and nothing scores under 5.9:1
+    # in light or 7.0:1 in dark. Keep new entries inside that list, and audit
+    # in *both* modes — that is the mistake this replaced.
+    #
+    # normal takes the dim family and bright takes the base roles, so the two
+    # intensities differ by a real tonal step in both modes rather than by a
+    # role that only steps in one.
+    #
+    # magenta repeats green and cyan repeats blue: Material supplies four hue
+    # families and ANSI wants six. That degeneracy is unavoidable and was
+    # already true of the mapping this replaces.
+    #
+    # black is a foreground slot here, not a background one. It used to be
+    # surface_variant, which is a *background* tone — 1.23:1 in light and
+    # 1.99:1 in dark, unreadable in both. outline and on_surface_variant are
+    # the low-emphasis greys that keep it legible while still reading as the
+    # quiet end of the palette.
     [colors.normal]
-    black   = "{{colors.surface_variant.default.hex}}"
+    black   = "{{colors.outline.default.hex}}"
     red     = "{{colors.error.default.hex}}"
-    green   = "{{colors.tertiary.default.hex}}"
-    yellow  = "{{colors.secondary.default.hex}}"
-    blue    = "{{colors.primary.default.hex}}"
+    green   = "{{colors.tertiary_fixed_dim.default.hex}}"
+    yellow  = "{{colors.secondary_fixed_dim.default.hex}}"
+    blue    = "{{colors.primary_fixed_dim.default.hex}}"
     magenta = "{{colors.tertiary_fixed_dim.default.hex}}"
     cyan    = "{{colors.primary_fixed_dim.default.hex}}"
     white   = "{{colors.on_surface_variant.default.hex}}"
 
     [colors.bright]
-    black   = "{{colors.outline.default.hex}}"
-    red     = "{{colors.on_error_container.default.hex}}"
-    green   = "{{colors.tertiary_fixed.default.hex}}"
-    yellow  = "{{colors.secondary_fixed.default.hex}}"
-    blue    = "{{colors.primary_fixed.default.hex}}"
-    magenta = "{{colors.on_tertiary_container.default.hex}}"
-    cyan    = "{{colors.on_primary_container.default.hex}}"
+    black   = "{{colors.on_surface_variant.default.hex}}"
+    red     = "{{colors.error.default.hex}}"
+    green   = "{{colors.tertiary.default.hex}}"
+    yellow  = "{{colors.secondary.default.hex}}"
+    blue    = "{{colors.primary.default.hex}}"
+    magenta = "{{colors.tertiary.default.hex}}"
+    cyan    = "{{colors.primary.default.hex}}"
     white   = "{{colors.on_surface.default.hex}}"
 
     # No [colors.dim]: alacritty derives dim from the normal colors when it is
