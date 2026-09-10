@@ -7,8 +7,12 @@
 #
 #   SHIFT + Print         region → satty → clipboard or file
 #   SUPER + CTRL + Print  region → tesseract → clipboard
+#   ALT + Print           region → mp4        (toggle)
+#   SUPER + ALT + Print   monitor → mp4       (toggle)
 #
-# Screenshots are written to ~/Slike/Screenshots, which already existed.
+# Screenshots are written to ~/Slike/Screenshots, which already existed;
+# recordings to ~/Videi/Screencasts, resolved through xdg-user-dir rather than
+# hardcoded, because that directory name is localised.
 #
 { pkgs, ... }: let
   # Annotate before sending. grim hands the PNG to satty on stdin, and satty
@@ -33,6 +37,73 @@
     # Everything else is in ~/.config/satty/config.toml below, so a bare
     # `satty --filename shot.png` from a shell behaves like the keybind.
     ${pkgs.grim}/bin/grim -g "$region" - | ${pkgs.satty}/bin/satty --filename -
+  '';
+
+  # Screen recording — the video half of the Print family, and a toggle rather
+  # than a hold: the second press stops whichever mode started it.
+  #
+  # The toggle goes through a pidfile rather than pkill. The process name the
+  # kernel keeps is truncated to 15 characters — "gpu-screen-reco" — so
+  # `pkill -x gpu-screen-recorder` matches nothing and says so, and matching
+  # the short name instead would be a guess about where the truncation lands.
+  #
+  # Stopping is SIGINT, which is how gpu-screen-recorder is asked to finalise
+  # the container. Anything harder leaves an mp4 with no moov atom, i.e. an
+  # unplayable file with the recording inside it.
+  #
+  # gpu-screen-recorder is called by bare name on purpose. The NixOS module
+  # (hosts/flanker/flanker.nix) puts a setcap wrapper on PATH, and that is the
+  # one that records without opening a portal dialog; a ''${pkgs...} store path
+  # would bypass the wrapper and prompt every time.
+  screen-record = pkgs.writeShellScriptBin "screen-record" ''
+    set -euo pipefail
+
+    pidfile="''${XDG_RUNTIME_DIR:-/tmp}/screen-record.pid"
+
+    # Second press: stop the running recorder and let the first invocation —
+    # still sitting in `wait` below — do the notifying.
+    if [ -e "$pidfile" ] && ${pkgs.coreutils}/bin/kill -0 "$(<"$pidfile")" 2>/dev/null; then
+      ${pkgs.coreutils}/bin/kill -INT "$(<"$pidfile")"
+      exit 0
+    fi
+
+    dir="$(${pkgs.xdg-user-dirs}/bin/xdg-user-dir VIDEOS)/Screencasts"
+    ${pkgs.coreutils}/bin/mkdir -p "$dir"
+    out="$dir/$(${pkgs.coreutils}/bin/date +%Y-%m-%d_%H-%M-%S).mp4"
+
+    case "''${1:-monitor}" in
+      region)
+        # slurp's default output is "X,Y WxH"; -region wants "WxH+X+Y".
+        # Cancelling the selection exits quietly, as the other scripts do.
+        region=$(${pkgs.slurp}/bin/slurp -f "%wx%h+%x+%y") || exit 0
+        set -- -w region -region "$region"
+        ;;
+      *)
+        # The monitor Hyprland says has focus. Not `-w focused`, which is a
+        # different feature — it follows focus between monitors and then
+        # demands an explicit -s WxH for the output size, since that size can
+        # no longer be read off one monitor.
+        monitor=$(${pkgs.hyprland}/bin/hyprctl monitors -j \
+          | ${pkgs.jq}/bin/jq -r 'map(select(.focused)) | .[0].name // empty')
+        set -- -w "''${monitor:-screen}"
+        ;;
+    esac
+
+    ${pkgs.libnotify}/bin/notify-send -a Recording -t 2000 \
+      "Recording started" "Press the same key again to stop"
+
+    # -a default_output is desktop sound. Add default_input as a second -a for
+    # the microphone; gpu-screen-recorder takes one flag per source.
+    gpu-screen-recorder "$@" -f 60 -a default_output -o "$out" &
+    pid=$!
+    echo "$pid" > "$pidfile"
+    # SIGINT is a normal stop here, so a non-zero status is not a failure.
+    wait "$pid" || true
+    ${pkgs.coreutils}/bin/rm -f "$pidfile"
+
+    ${pkgs.wl-clipboard}/bin/wl-copy "$out"
+    ${pkgs.libnotify}/bin/notify-send -a Recording -t 5000 \
+      "Recording saved" "$out (path copied)"
   '';
 
   # Select a screen region, OCR it, put the text on the clipboard.
@@ -122,6 +193,7 @@ in {
   home.packages = [
     screenshot-annotate
     ocr-region
+    screen-record
     # On PATH in its own right: `satty --filename shot.png` reopens an old
     # capture for another pass.
     pkgs.satty

@@ -78,6 +78,8 @@
 | `SHIFT + Print` | Screenshot region → annotate → clipboard |
 | `SUPER + CTRL + Print` | OCR region → clipboard (slv+eng) |
 | `SUPER + SHIFT + Print` | Pick a colour → clipboard |
+| `ALT + Print` | Record region → ~/Videi/Screencasts (toggle) |
+| `SUPER + ALT + Print` | Record monitor → ~/Videi/Screencasts (toggle) |
 
 ## Clipboard
 

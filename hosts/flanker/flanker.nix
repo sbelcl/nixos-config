@@ -115,6 +115,17 @@
   # Ollama is not needed on the laptop
   services.ollama.enable = lib.mkForce false;
 
+  # Screen recording. The module rather than the package: promptless capture
+  # needs setcap on the binary, and installing the package alone makes every
+  # recording open a portal dialog. Same reasoning that put it on fulcrum
+  # before that host went away — only the encoder differs, VA-API on the AMD
+  # iGPU here instead of NVENC.
+  #
+  # The setcap wrapper is what must be on PATH, so home/modules/hyprland/
+  # screenshot.nix calls `gpu-screen-recorder` by name rather than by store
+  # path. A store path would resolve to the uncapped binary and prompt.
+  programs.gpu-screen-recorder.enable = true;
+
   # Keyboard RGB (Aura). This is a TUF A15 FA506IU: one RGB zone, driven by
   # asus-wmi rather than the USB HID interface the ROG models use. The kernel
   # exposes it as two write-only, root-owned files next to the backlight —

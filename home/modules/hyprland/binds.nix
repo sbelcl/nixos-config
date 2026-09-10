@@ -167,6 +167,11 @@ let
     # Not SUPER+Print (Omarchy's key for this) — that is already full-screen
     # capture here.
     { keys = "SUPER + SHIFT + Print"; exec = "hyprpicker -a"; desc = "Pick a colour → clipboard"; category = "Capture"; }
+    # Recording mirrors the screenshot keys one modifier over: region on the
+    # bare key, whole monitor with SUPER. Both are the same toggle — whichever
+    # started the recording, either one stops it.
+    { keys = "ALT + Print"; exec = "screen-record region"; desc = "Record region → ~/Videi/Screencasts (toggle)"; category = "Capture"; }
+    { keys = "SUPER + ALT + Print"; exec = "screen-record monitor"; desc = "Record monitor → ~/Videi/Screencasts (toggle)"; category = "Capture"; }
 
     # ── Clipboard ───────────────────────────────────────────────────────────
     { keys = "SUPER + V"; exec = "rofi-clipboard"; desc = "Clipboard history"; category = "Clipboard"; }
