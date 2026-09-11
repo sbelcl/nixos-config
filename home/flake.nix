@@ -15,6 +15,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # QEMU/KVM VM manager (TUI). Not in nixpkgs, but upstream ships a flake
+    # whose default package is a plain rustPlatform.buildRustPackage, so there
+    # is nothing to hand-roll. Tracking the default branch rather than a tag:
+    # a `?ref=vX` URL can never be moved by `nix flake update`, which makes it
+    # look pinned-and-maintained when it is only pinned. The lock holds the
+    # revision either way.
+    vm-curator = {
+      url = "github:mroboff/vm-curator";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Prebuilt nix-index database, refreshed upstream twice a week. Without
     # it, `nix-locate` needs a local `nix-index` run (tens of minutes, and
     # stale the moment nixpkgs moves) before the command-not-found handler
@@ -38,6 +49,7 @@
     nixpkgs,
     home-manager,
     yandex-browser,
+    vm-curator,
     ...
   } @ inputs: let
     system = "x86_64-linux";

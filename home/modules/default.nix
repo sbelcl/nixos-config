@@ -14,6 +14,7 @@
     ./session-variables.nix
 
     ./yandex.nix
+    ./vm-curator.nix
     ./webapps.nix
     ./git.nix
     ./alacritty.nix
