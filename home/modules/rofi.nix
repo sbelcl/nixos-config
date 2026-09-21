@@ -115,9 +115,11 @@ in {
   programs.rofi = {
     enable  = true;
     package = pkgs.rofi;
-    terminal = "${pkgs.alacritty}/bin/alacritty";
 
-    extraConfig = {
+    # One attrset since home-manager renamed both `terminal` and
+    # `extraConfig` into `settings`.
+    settings = {
+      terminal               = "${pkgs.alacritty}/bin/alacritty";
       modi                   = "drun";
       show-icons             = true;
       icon-theme             = "Papirus";
