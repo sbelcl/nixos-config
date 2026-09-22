@@ -14,6 +14,5 @@
     ./libvirt.nix
     ./packages.nix
     ./hyprland.nix
-    ./ollama.nix
   ];
 }

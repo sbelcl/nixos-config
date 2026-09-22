@@ -64,6 +64,7 @@ Always `git pull` on the other machine after pushing changes.
 - `/mnt/storage` — NFS mount from the desktop at `192.168.43.152:/mnt/storage`. That machine runs Arch and is **not** configured from this repo, so its export, Sunshine host and ComfyUI are all managed there; `nofail` + automount keeps a rebuild working when it is offline.
 - `/mnt/games` — local XFS NVMe
 - Moonlight client for that desktop's Sunshine host
+- **Local LLMs**: ollama is the Docker container `ollama` (`ollama/ollama:0.34.2`), not nixpkgs' `ollama-cuda` — that package is unfree, so no public cache has it and every build is local (they ran out of disk). GPU via CDI (`hardware.nvidia-container-toolkit`, `--device nvidia.com/gpu=all`), no nvidia runtime. `autoStart = false` keeps Docker socket-activated: `sudo systemctl start docker-ollama`. API on `127.0.0.1:11434`, models in `/mnt/games/ollama` (`RequiresMountsFor` stops it filling `/` if that disk is absent), and `ollama` on PATH is a wrapper around `docker exec`. The GTX 1660 Ti's 6 GB fits 3–8B models at Q4.
 
 ### General
 - **Terminal**: Alacritty · **Files**: Nautilus (GUI, SUPER+E), ranger (TUI, SUPER+R) · **Browser**: Yandex Browser (custom flake, GStreamer + Chrome 144 codecs)

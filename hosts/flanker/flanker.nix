@@ -8,7 +8,29 @@
   pkgs,
   lib,
   ...
-}: {
+}: let
+  # The ollama CLI, talking to the container (see "Local LLMs" below).
+  # Starting the container is left to you — a wrapper that silently ran sudo
+  # would be a surprise.
+  ollama-cli = pkgs.writeShellScriptBin "ollama" ''
+    if ! ${pkgs.docker}/bin/docker inspect -f '{{.State.Running}}' ollama 2>/dev/null | grep -q true; then
+      # Two different states look identical from `docker inspect`: never
+      # started, and started but still pulling. The container does not
+      # exist until the ~3 GB pull finishes, so the unit being active is
+      # what tells them apart.
+      if ${pkgs.systemd}/bin/systemctl is-active --quiet docker-ollama; then
+        echo "ollama is still starting — the first start pulls a ~3 GB image." >&2
+        echo "  follow it with: journalctl -fu docker-ollama" >&2
+      else
+        echo "ollama container is not running — start it with:" >&2
+        echo "  sudo systemctl start docker-ollama" >&2
+      fi
+      exit 1
+    fi
+    tty=""; [ -t 0 ] && [ -t 1 ] && tty="-t"
+    exec ${pkgs.docker}/bin/docker exec -i $tty ollama ollama "$@"
+  '';
+in {
   imports = [
     ./hardware
     ../../modules/software
@@ -89,6 +111,7 @@
     xfsprogs   # XFS filesystem tools (mkfs.xfs, xfs_repair, etc.)
     wine
     winetricks
+    ollama-cli  # CLI for the ollama container — see "Local LLMs"
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -112,8 +135,44 @@
   # NixOS only applies this to tty1 — tty2–tty6 still require login.
   services.getty.autologinUser = "imnos";
 
-  # Ollama is not needed on the laptop
-  services.ollama.enable = lib.mkForce false;
+  # ── Local LLMs ────────────────────────────────────────────────────────────
+  # Ollama runs from its own CUDA image rather than nixpkgs' ollama-cuda.
+  # That package is unfree, so Hydra never builds it: no public cache has it
+  # (checked by store hash against cache.nixos.org, cuda-maintainers and
+  # nix-community), every build is local, and CUDA builds on this disk ran
+  # out of space. The image is upstream's own prebuilt binary — an image pull
+  # instead of a compile, and an update is a tag bump instead of a rebuild.
+  #
+  # The GTX 1660 Ti has 6 GB, which fits 3–8B models at Q4; anything bigger
+  # spills into RAM and slows to single-digit tokens/s.
+  #
+  # GPU access is CDI: the toolkit generates specs into /etc/cdi and
+  # /var/run/cdi, which Docker 29 reads out of the box, and the container asks
+  # for the card by name. No nvidia runtime, no daemon changes.
+  hardware.nvidia-container-toolkit.enable = true;
+
+  virtualisation.oci-containers = {
+    backend = "docker";
+    containers.ollama = {
+      # Pinned: `latest` would make what runs depend on when it was pulled.
+      image = "ollama/ollama:0.34.2";
+      # Off at boot on purpose. Docker is socket-activated here (see
+      # enableOnBoot above) to keep ~2.3s off boot, and an auto-started
+      # container would pull the daemon back into the boot path. Start it
+      # when you want it: `sudo systemctl start docker-ollama`.
+      autoStart = false;
+      # Loopback only — this is a laptop on other people's networks.
+      ports = [ "127.0.0.1:11434:11434" ];
+      # Models are 2–9 GB each; /mnt/games has the room, / does not.
+      volumes = [ "/mnt/games/ollama:/root/.ollama" ];
+      devices = [ "nvidia.com/gpu=all" ];
+    };
+  };
+
+  # /mnt/games is `nofail`, so without this a missing disk would let Docker
+  # create an empty bind source on the root filesystem and quietly start
+  # downloading models there.
+  systemd.services.docker-ollama.unitConfig.RequiresMountsFor = [ "/mnt/games/ollama" ];
 
   # Screen recording. The module rather than the package: promptless capture
   # needs setcap on the binary, and installing the package alone makes every
