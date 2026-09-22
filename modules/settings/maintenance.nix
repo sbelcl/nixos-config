@@ -77,11 +77,13 @@
     flake = "/home/imnos/.nixos";
   };
 
-  # Limit systemd journal size
-  services.journald.extraConfig = ''
-    SystemMaxUse=1G
-    MaxRetentionSec=7day
-  '';
+  # Limit systemd journal size. `extraConfig` was removed in the 2026-09-19
+  # nixpkgs bump — it is now a hard assertion, not a warning, so the old
+  # spelling stops the whole system config from evaluating.
+  services.journald.settings.Journal = {
+    SystemMaxUse = "1G";
+    MaxRetentionSec = "7day";
+  };
 
   # Keep the desktop responsive during rebuilds. nix-daemon runs at idle
   # CPU/IO priority — only uses cycles when nothing else wants them, so
